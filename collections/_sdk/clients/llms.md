@@ -454,21 +454,23 @@ LlmSettingsGpt4(
 
 Settings for Anthropic Claude API.
 
-| Field         | Type    | Description                                      |
-|---------------|---------|--------------------------------------------------|
-| `api_key`     | `str`   | Anthropic API key                                |
-| `model`       | `str`   | Model name (e.g., `claude-sonnet-4-5-20250929`)  |
-| `temperature` | `float` | Randomness control (0.0-1.0)                     |
-| `max_tokens`  | `float` | Maximum tokens to generate                       |
+| Field                | Type            | Description                                                                                                                                                                                              |
+|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_key`            | `str`           | Anthropic API key                                                                                                                                                                                        |
+| `model`              | `str`           | Model name (e.g., `claude-opus-5-5`, `claude-sonnet-4-5-20250929`)                                                                                                                                       |
+| `temperature`        | `float \| None` | Randomness control (0.0-1.0). Has no default. Pass `None` to leave it out of the request, which Claude Opus 4.7 and later models require.                                                                 |
+| `max_tokens`         | `float`         | Maximum tokens to generate, including thinking tokens                                                                                                                                                    |
+| `structured_outputs` | `bool`          | Defaults to `False`. Set to `True` to send `set_schema` requests with Anthropic structured outputs instead of a forced tool call. Claude Opus 5.5, Claude Sonnet 5.5, and Claude Fable 5.1 require it. See [Anthropic](#anthropic). |
 
 **Example:**
 
 ```python?partial=true
 LlmSettingsAnthropic(
     api_key="sk-ant-...",
-    model="claude-sonnet-4-5-20250929",
-    temperature=0.7,
-    max_tokens=8192,
+    model="claude-opus-5-5",
+    temperature=None,
+    max_tokens=16000,
+    structured_outputs=True,
 )
 ```
 
@@ -597,6 +599,8 @@ class MySchema(BaseModelLlmJson):
     field_name: str = Field(description="Description for the LLM")
     another_field: int = Field(description="Another description")
 ```
+
+With `LlmAnthropic` and `structured_outputs=True`, a schema can have at most 24 optional fields and 16 fields with union types, can't contain `dict` fields or PHI, and some validation keywords are moved into field descriptions. See [Anthropic](#anthropic) under Provider-Specific Notes.
 
 ## Constants (Enums)
 
@@ -783,7 +787,19 @@ else:
 - Uses the Messages API (`/v1/messages`)
 - Supports images, PDFs, and text files via URL or direct content
 - Text files are base64-decoded and sent as plain text
-- Structured output uses tool calling
+- Without a schema, the response is the text of the first block that isn't a thinking block, so thinking that comes before the answer is skipped
+- By default, structured output uses tool calling: the client forces a call to a tool whose input schema is your schema, and sends the schema unchanged. Claude Opus 5.5, Claude Sonnet 5.5, and Claude Fable 5.1 reject forced tool calls with a 400 error. To use `set_schema` with these models, set `structured_outputs=True` in `LlmSettingsAnthropic`.
+- With `structured_outputs=True`, structured output uses Anthropic [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs), sent as `output_config.format` with type `json_schema`. The response is the model's text blocks joined together.
+- Structured outputs rejects some JSON Schema keywords. When `structured_outputs=True`, the client removes them from the schema it sends and adds each removed constraint to the field's description. The model still sees the constraint, but the API doesn't enforce it. Removed keywords include:
+  - `minimum`, `maximum`, `exclusiveMinimum`, `exclusiveMaximum`, and `multipleOf`
+  - `minLength`, `maxLength`, `maxItems`, `uniqueItems`, `minContains`, `maxContains`, `minProperties`, and `maxProperties`
+  - `minItems` values other than 0 or 1
+  - `format` values other than `date-time`, `time`, `date`, `duration`, `email`, `hostname`, `uri`, `ipv4`, `ipv6`, and `uuid`
+  - `discriminator`
+- Structured outputs also rejects `oneOf` and any object whose `additionalProperties` isn't explicitly `false`. The client sends `oneOf` as `anyOf` and adds `additionalProperties: false` to every object that doesn't set it. A Pydantic discriminated union still works: the `Literal` tag on each variant keeps the response valid against your model.
+- Structured outputs can't express a `dict` field, such as `dict[str, Item]` or `dict[str, Any]`. With `structured_outputs=True` and a schema that has one, `request()` raises a `ValueError` that names the model before it sends anything, and `attempt_requests()` returns the error as a failed response. Use a list of models instead.
+- Anthropic caches structured outputs schemas for up to 24 hours without PHI protections. Keep PHI out of your schema, including property names, enum and const values, patterns, and descriptions.
+- A schema sent with structured outputs can have at most 24 optional fields and 16 fields with union types (for example, `str | None`). A schema over either limit, or one that's too complex in other ways, fails with a 400 error. To stay under the limits, make fields required and have the model return empty values instead of leaving fields out. If you can't reduce the schema, leave `structured_outputs` off and use a model that accepts forced tool calls. See [Anthropic's schema complexity limits](https://platform.claude.com/docs/en/build-with-claude/structured-outputs#json-schema-limitations) for details.
 
 ### Google Gemini
 
