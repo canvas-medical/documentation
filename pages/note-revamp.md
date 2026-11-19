@@ -12,34 +12,59 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 ## Expected Benefits
 
-**Clinical sections:** The note body is grouped into History, Exam, Assessment & Plan and Internal sections, ordered to match the note's SOAP or APSO format. Each section has its own prompt for adding commands, and a **Sections / All** toggle in the note header switches between the sectioned view and the whole note.
+**Clinical sections:** The note body is grouped into History, Exam, Assessment & Plan and Internal sections, ordered to match the note's SOAP or APSO format. Each section has its own prompt for adding commands, and a **Sections / All** toggle in the note header switches between the sectioned view and the whole note. In the **Sections** view, selecting a section's command prompt, or switching a note from **All** to **Sections**, makes that note the one that commands added from the chart go into.
 
-**Commands nested under their Assessment:** Plan and Procedure commands, along with Prescribe, Refill, Adjust Prescription, Change Medication, Lab Order, Imaging Order, Order DME, Refer and Educational Material, appear nested under the Assess Condition command they are linked to.
+**Commands nested under their Assessment:** Plan and Procedure commands, along with Prescribe, Refill, Adjust Prescription, Change Medication, Lab Order, Imaging Order, Order DME, Refer, Educational Material and Structured Assessment, appear nested under the Assess Condition command they are linked to.
 - Drag a command onto an Assessment to link it, or drag it out to unlink it.
 - Linking a prescription or order adds the assessed condition to its Indications.
+- Entering an Assess Condition command in error moves a Structured Assessment linked to it back to the top level.
 - Changes show up live for everyone who has the note open.
 
 **Printed in the note's sections:** A printed note in the revamped format shows the History, Exam and Assessment & Plan sections in the note's SOAP or APSO order, the same sections it shows on screen. Commands in each section print in the order the provider arranged them, and each Assess Condition command prints with its linked commands indented beneath it. The Internal section isn't printed, and free text prints under Notes at the end. Faxed notes, the copy saved when a note is locked, and the patient's entire-record print use the same layout.
 
+**Cleaner commands:** Each command is an outlined card edged in its section's color, with sentence-case labels and fields that show their underline when you hover over or select them.
+- A choice with up to five options shows every option as a chip, so one click picks it. Arrow keys move between the chips.
+- **Delete** for an uncommitted command is in the command's ⋮ menu.
+
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
+- A collapsed command is a read-only summary of up to two lines that shows only the fields that have a value. A summary that runs longer ends in an ellipsis.
+- Interaction warnings and failed interaction checks stay in the summary; a clean "no interactions found" result is left out.
+- Select anywhere on a collapsed command to open it. The command's title also opens and collapses it from the keyboard with Enter or Space.
+- Collapsing an Assess Condition command also hides the commands nested under it, and a pill beside its title shows how many there are, such as **2 items**. Expanding it shows them again, each open or collapsed as it was.
+- A committed Assess Condition command opens collapsed, with its nested commands hidden.
+- Dragging a collapsed Assess Condition command moves its nested commands with it.
 
 **Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.
 - A command matches on its name or on the content the note shows for it, such as a field's text, a selected option's label or a questionnaire answer. Matching ignores case and starts at two characters.
 - In the **Sections** view, each section shows only its matching commands. In the **All** view, only the commands that don't match are hidden; free text stays in place.
+- A matching command nested under an Assess Condition command shows under it, even when the Assess Condition command doesn't match. Commands nested under it that don't match stay hidden. In the **Sections** view, a match in a different section from its Assess Condition command shows at the top level of its own section instead.
+- A collapsed Assess Condition command opens while the search shows a match under it, and collapses again when the search is cleared. If you collapse or expand it during the search, it keeps that state after the search is cleared. If you collapse it and then change the search to text that still matches under it, it opens again.
 - A command added while a search is active stays in view. Commands can't be dragged to a new position until the search is cleared.
 - When nothing matches, the box shows **No matches**. Select the clear button or press Escape to show the whole note again.
 
 **Easier drag and drop:** Commands are picked up by a grip in the left gutter, so clicks inside a command's fields always go to the fields.
 
+**Diagnoses billed in the note's order:** The billing footer lists the note's diagnoses in the order their commands appear in the note body, so dragging an Assess Condition command to the top makes its diagnosis the primary one.
+- Each condition takes the position of the topmost command that records or assesses it, such as Assess Condition, Diagnose, Change Diagnosis or a Structured Assessment. The footer updates as soon as you drop a command.
+- Conditions with no command of their own, such as an order's indication, follow in the order they were added.
+- Each time charges are pushed or the note is locked, the claim ranks the note's diagnosis codes in the same order, ahead of any codes added only on the claim. This includes a claim that has already been filed.
+- When the order changes, the claim gets a comment listing the new order.
+
+**Commands from plugins and the API marked:** A command a plugin or the API added has a sparkle after its title, whether the command is open or collapsed. Hover over the sparkle to see where the command came from and, once someone else edits it, who last modified it.
+
 ## For developers
 
-Plugins can link commands to an Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and sectioned print are what the beta adds.
+Plugins can link commands to an Assess command's Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and sectioned print are what the beta adds.
 
 Plugins can also add their own content to the revamped note. Respond to the [`NOTE__GET_CUSTOM_CONTENT`](/sdk/events/#note-custom-content) event with one or more `NoteCustomContent` effects (`canvas_sdk.effects.note_custom_content`), each giving either `content` (HTML) or a `url`, not both. See the [Note Custom Content effect](/sdk/effect-note-custom-content/) for every attribute, URL block permissions, keeping content current, and more examples.
 - `section` places the content at the top of a section: `NoteCustomContent.Section.HISTORY`, `EXAM`, `ASSESSMENT_PLAN` or `INTERNAL`, and shows only in the **Sections** view. Leave it unset to place the content above the note body, where it shows in both the **Sections** and **All** views.
 - Content returned for the same section stacks in the order the handlers ran.
 - Each entry renders in its own frame, which starts 120 pixels tall. To fit the frame to the content, send a `RESIZE` message with the content's height over the frame's message channel, as shown in [Frame height](/sdk/effect-note-custom-content/#frame-height).
 - Outside the beta, Canvas doesn't send the event, so the content doesn't appear.
+
+A claim's diagnosis codes follow the note body order in the beta. Plugins that read `ClaimDiagnosisCode.rank` can see how the order is set in [How diagnosis codes are ranked](/sdk/data-claim/#how-diagnosis-codes-are-ranked).
+
+HTML a plugin sets on a command with [`set_custom_html`](/sdk/commands/#set_custom_html) shows only while the command is open. A collapsed command's summary leaves it out.
 
 ```python
 from canvas_sdk.effects.note_custom_content import NoteCustomContent
@@ -58,3 +83,5 @@ class NoteBanner(BaseHandler):
             ).apply()
         ]
 ```
+
+Commands your plugin originates carry the sparkle after their title in the revamped note. Outside the beta, they show **Plugin Generated** above the title instead.

@@ -7,6 +7,57 @@ hidden: false
 
 The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
 
+## Family Portal Access
+
+With family portal access, staff give a family member or another representative, such as a parent, portal access to a patient's chart. Each family member signs in with their own login, and one login can open several charts: its own, if it has one, and each chart it was given. Canvas turns family portal access on for each instance.
+
+### The patient and the person signed in
+
+When a family member has another patient's chart open, two different people are involved: the **patient** whose chart is open, and the **person signed in**. Plugins get both, in different places:
+
+| Where | The patient whose chart is open | The person signed in |
+|---|---|---|
+| [SimpleAPI](/sdk/handlers-simple-api-http/#session) route | `self.request.headers["canvas-logged-in-user-id"]`, or `credentials.logged_in_user["id"]` in `authenticate()` | `self.request.portal_access`, or `credentials.portal_access` in `authenticate()` |
+| [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) | `logged_in_user` | `portal_access` |
+| Portal events: `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` | `self.event.target.id` (target type `Patient`) | `self.event.actor` |
+| `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application) | `self.event.context["user"]["id"]` | `self.event.actor` |
+
+When the patient opens their own chart, both columns point to the patient.
+
+To see what a family member can do on the chart:
+
+- In SimpleAPI and WebSocket, `portal_access` gives the patient, the login acting on the chart, its [PortalAccessGrant](/sdk/data-portal-access-grant/), and its level (none, view, or act) in appointments, messaging, clinical, and billing. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
+- In portal events and applications, look up the login's grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+
+### Which chart is open
+
+The portal is open on one chart at a time, and the family member can switch between their charts. Each browser tab shows one chart.
+
+- Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
+- To keep a plugin page on the chart its own tab shows, have it name that chart in its [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access) and its [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page).
+
+### When there's no chart to open
+
+When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+
+### Messages and notification badges
+
+- A message a family member sends from the portal is filed on the chart that's open. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+- A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+
+### Built-in pages follow the family member's access
+
+With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
+
+| Area | Built-in pages (menu items) | View | Act |
+|---|---|---|---|
+| Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, with a note that the access is view-only. Book Appointment, Reschedule, and each appointment's cancel button show turned off. Join still opens a telehealth visit. | The appointments, with booking, canceling, and rescheduling |
+| Messaging | Messaging (`MESSAGING`) | The chart's messages, including lab reports the care team shared through the portal. The form for sending a message shows turned off, with a note that the access is view-only. Opening a shared lab report's original takes view or act access in clinical. | The messages, with the form for sending one |
+| Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. My Health and Health Records note that the access is view-only. Generated health records can be viewed and downloaded. Generate, Re-Generate, Transmit, and My Health's Upload Records show turned off. | The records, with Generate, Re-Generate, and Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on |
+| Billing | Payments (`PAYMENTS`) | The chart's balance, installment plan, and statements, with a note that the access is view-only. When card payments are set up, the saved payment methods show, and Pay Now, Add, and each card's edit and remove buttons show turned off. Otherwise, a number to call to pay. | The balance and statements, with Pay Now and saved payment methods that can be added, edited, and removed when card payments are set up, or otherwise a number to call to pay |
+
+The ready-made [landing page widgets](#portal-landing-page-widgets) follow the same access. `APPOINTMENTS` and `MESSAGING` don't appear without access in their area. With view access, each shows a note that the access is view-only: `APPOINTMENTS` shows its booking, canceling, and rescheduling buttons turned off, and `MESSAGING` links to the messages with View messages in place of Send a message.
+
 ## Configure Portal Menu Items
 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
@@ -40,6 +91,8 @@ Sets the portal menu for the patient.
 | `LABS`         | `"labs"`         | Lab results      |
 | `CONTACT`      | `"contact"`      | Contact          |
 | `RECORDS`      | `"records"`      | Health Records   |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -118,7 +171,7 @@ To show content across the top or bottom of every page a signed-in patient visit
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments.
 Each appointment can be customized individually, allowing each one to have its own unique settings.
 
-Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action. Each action's exact event, effect, and payload are shown below.
 
 The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
 
@@ -180,7 +233,9 @@ class MyHandler(BaseHandler):
 
 ### Hide 'Join' button
 
-This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": True}` to show the join link.
+The **Join** button shows on telehealth appointments that have a meeting link: the appointment's own link, or the provider's personal meeting room. It shows only while the appointment is in the patient's upcoming appointments. An appointment stays there until its scheduled end, which is its start time plus its duration, so a patient who is late can still join. The appointment moves to past appointments, and the button stops showing, when its scheduled end passes or when the visit is marked Exited, whichever comes first.
+
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": False}` to hide the button. Canvas fires the event only for appointments that have a meeting link.
 
 ```python
 import json
@@ -198,7 +253,7 @@ class MyHandler(BaseHandler):
         return [
           Effect(
             type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
-            payload=json.dumps({"result": True}))
+            payload=json.dumps({"result": False}))
         ]
 ```
 
@@ -227,6 +282,8 @@ Applies the portal options. Every attribute is optional; set only the options yo
 The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
 
 While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Portal consents, [forms](#forms), and [modals from `PATIENT_PORTAL__POST_LOGIN` handlers](#show-a-modal-after-login) still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -337,6 +394,8 @@ Canvas applies the same appointment-type, location, and provider filters when a 
 - A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
+
+To show open times on a booking screen your plugin builds itself, call the native slot search with [`search_slots()`](/sdk/utils/#searching-for-open-appointment-slots).
 
 ### Filter available slots
 
@@ -524,6 +583,8 @@ The event targets the patient. Its context carries `login_method`, which tells y
 
 The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -584,6 +645,8 @@ The event context names the `document` and the record it came from:
 | `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
 | `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
 | `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -728,6 +791,8 @@ Updates the user's phone number or email.
 | `email`        | `str` | The email to store.                                                   | No       |
 
 
+#### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.update_user import UpdateUserEffect
@@ -765,6 +830,8 @@ class SyncPortalUser(BaseHandler):
 
 ### Send Invite
 
+{% include alert.html type="warning" content="<code>SendInviteEffect</code> invites patients only. It doesn't send a family member's portal invite: staff send those from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>). For the login of a family member with no chart of their own, the effect sends nothing." %}
+
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
 
 On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
@@ -776,6 +843,7 @@ On a non-production instance, the invite is only delivered to email addresses an
 Sends the portal invitation.
 
 - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- The invitation goes to the patient whose own login `user_dbid` names.
 
 #### Attributes
 
@@ -783,6 +851,8 @@ Sends the portal invitation.
 |-------------|-------|-----------------------------------------------------------------------|----------|
 | `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. | Yes      |
 
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -812,9 +882,91 @@ class InviteVerifiedPatient(BaseHandler):
         return [SendInviteEffect(user_dbid=user.dbid).apply()]
 ```
 
-**Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link.
+**Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link. Canvas still records the link itself as a [PortalInvitation](/sdk/data-portal-invitation/), so a plugin can check `is_redeemable` on the patient's invitations before sending another one.
 
-What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Signing in is a separate step that sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link and setting a password does not sign the patient in, so a registered patient who has not yet signed in shows both their username and the never-logged-in line.
+What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Each portal session sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link starts a session, so `last_login` can be set before the patient sets a password. Use `is_portal_registered`, not `last_login`, to tell whether the patient activated their account. To follow each link as the patient opens and claims it, handle the [portal invitation events](/sdk/events/#portal-invitations).
+
+### Customize the Login Email
+
+{% include alert.html type="warning" content="This customizes patients' login emails only. A family member's invite or password reset email, which staff send from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>), doesn't fire <code>PATIENT_PORTAL__GET_LOGIN_EMAIL</code> and always uses Canvas's default wording." %}
+
+Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
+
+Canvas fires the event each time it emails a patient a login link:
+
+- Staff send an invite or a password reset from the Portal section of the patient's profile.
+- A plugin returns a [`SendInviteEffect`](#send-invite).
+- A patient requests a login link by email from the portal login page.
+
+The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
+
+| Key                    | Value                                                                                                                                  |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `link_type`            | `"invite"` when the patient hasn't registered yet, or `"reset"` when they have                                                         |
+| `login_url`            | The login link to send the patient                                                                                                     |
+| `practice_location_id` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/) the email is sent from: the primary location of the patient's care team lead, or the first practice location when the patient has no care team lead |
+| `default_subject`      | The subject Canvas uses by default                                                                                                     |
+| `default_body`         | The HTML body Canvas uses by default                                                                                                   |
+
+Canvas sends the subject and body you return in place of the defaults. The sender and recipient stay the same, and text messages that carry the link keep the default wording.
+
+- Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+- Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
+- When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+- Don't return a `SendInviteEffect` from this handler. It would send another login email and fire the event again, so Canvas drops it. See [Disallowed Effect/Event Combinations](/sdk/effects/#disallowed-effectevent-combinations).
+- Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
+
+#### Methods
+
+##### apply() → Effect
+
+Sets the subject and body of the login email.
+
+- `subject` and `html_body` are required and can't be empty or only whitespace.
+- `subject` must fit on one line, with no line breaks. `html_body` can contain line breaks.
+- Any other attribute is an error, so a misspelled attribute name fails instead of being ignored.
+
+#### Attributes
+
+| Attribute   | Type  | Description                               | Required |
+|-------------|-------|-------------------------------------------|----------|
+| `subject`   | `str` | The subject line of the email.            | Yes      |
+| `html_body` | `str` | The body of the email, as HTML.           | Yes      |
+
+#### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.login_email import LoginEmailContent
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils.html import sanitize_html
+from canvas_sdk.v1.data import Patient
+
+
+class PortalLoginEmail(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_LOGIN_EMAIL)
+
+    def compute(self) -> list[Effect]:
+        patient = Patient.objects.get(id=self.target)
+        # Canvas sends the body as written, so escape patient data before adding it
+        first_name = sanitize_html(patient.first_name)
+        login_url = self.context["login_url"]
+
+        if self.context["link_type"] == "invite":
+            subject = "Your patient portal is ready"
+            intro = f"Welcome, {first_name}. Set your password to start using the portal."
+        else:
+            subject = "Reset your patient portal password"
+            intro = f"Hi {first_name}, use this link to set a new password."
+
+        return [
+            LoginEmailContent(
+                subject=subject,
+                html_body=f'<p>{intro}</p><p><a href="{login_url}">Open the patient portal</a></p>',
+            ).apply()
+        ]
+```
 
 <br/>
 <br/>

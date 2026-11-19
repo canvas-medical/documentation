@@ -33,9 +33,9 @@ Represents an individual message record.
 | `created`   | `DateTime`                                | Timestamp when the message was created.                        |
 | `modified`  | `DateTime`                                | Timestamp when the message was last modified.                  |
 | `content`   | `Text`                                    | The body text of the message.                                  |
-| `sender`    | [CanvasUser](/sdk/data-canvasuser)        | The user who sent the message. May be null.                    |
+| `sender`    | [CanvasUser](/sdk/data-canvasuser)        | The user who sent the message. May be null. For a message from a family member through [family portal access](/sdk/patient-portal/#family-portal-access), this is the family member's login, not the patient's. |
 | `recipient` | [CanvasUser](/sdk/data-canvasuser)        | The user who received the message. May be null.                |
-| `note`      | [Note](/sdk/data-note)                    | Associated note (if any) for contextual linkage. May be null.  |
+| `note`      | [Note](/sdk/data-note)                    | Associated note (if any) for contextual linkage. May be null. `note.patient` is the patient whose chart the message is filed on. |
 | `read`      | `DateTime`                                | Timestamp when the recipient read the message. Null if unread. |
 | `team`      | [Team](/sdk/data-team/#team)              | The team the message is assigned to. Null if unassigned. See [Assigning a message to a team](/sdk/effect-messages/#assigning-a-message-to-a-team). |
 | `transmissions` | QuerySet[[MessageTransmission](#messagetransmission)] | The delivery transmissions associated with this message.   |

@@ -36,7 +36,7 @@ sections:
             type: json
             exclude_in: create, update
             description: >-
-              Focus of the message.  Always a **Patient** reference.
+              Focus of the message. Always a **Patient** reference: the patient whose chart the message is filed on. For a message a family member or other representative sent through [family portal access](/sdk/patient-portal/#family-portal-access), that's the chart they sent it on, even when they have a chart of their own.
             attributes:
               - name: reference
                 type: string
@@ -58,7 +58,7 @@ sections:
             required_in: create,update
             description_for_all_endpoints: >-
               Message recipient.<br><br>Supported reference types are a single **Patient** or **Practitioner**. 
-            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient.
+            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson**, the recipient must be a practitioner.
             attributes:
               - name: reference
                 type: string
@@ -71,16 +71,18 @@ sections:
             type: json
             required_in: create,update
             description_for_all_endpoints: >-
-              Message sender.<br><br>Supported reference types are a single **Patient** or **Practitioner**. 
-            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient.
+              Message sender.<br><br>Supported reference types are a single **Patient**, **Practitioner**, or **RelatedPerson**. A **RelatedPerson** sender is a family member or other representative who sent the message through [family portal access](/sdk/patient-portal/#family-portal-access). The reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, even when they also have a chart of their own.
+            create_description: >-
+              Between the sender and recipient, one must be a practitioner while the other must be a patient.<br><br>To send a message as a family member, set `sender` to the RelatedPerson their access was given from and `recipient` to a practitioner. Canvas files the message on that RelatedPerson's patient's chart, sent from the family member's own portal login.
+            read_and_search_description: When Canvas can no longer name the RelatedPerson a family member's message came from, `sender` is the family member's own Patient reference if they have a chart, and is left out if they don't.
             attributes:
               - name: reference
                 type: string
                 required_in: create,update
-                description: The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+                description: The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`.
               - name: type
                 type: string
-                description: Type the reference refers to (e.g. "Patient" or "Practitioner").
+                description: Type the reference refers to (e.g. "Patient", "Practitioner", or "RelatedPerson").
           - name: payload
             type: array[json]
             description: Message payload.<br><br>Messages are now saved in the Canvas database in HTML format. Customers using the Communication endpoint for their own patient applications will need to take this into account either by embedding the html directly using a library like Interweave or extracting the text. Messages sent before 10/26/2022 @ 17:00 PST will remain in plain text format.
@@ -104,7 +106,7 @@ sections:
           - name: sender
             type: string
             description: >-
-              Message sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+              Message sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. A Patient sender matches the messages that patient sent on their own chart, not ones they sent on another chart through family portal access. A RelatedPerson sender matches the messages family members sent through the access given from that RelatedPerson, including after staff removed the contact from the chart.
         endpoints: [create, read, search]
         create:
           description: >-
@@ -119,7 +121,7 @@ sections:
           example_response: communication-read-response
         search:
           description: >-
-            Communication search will only return messages between a practitioner and patient, not between two practitioners.<br><br>
+            Communication search will only return messages between a practitioner and patient, including a family member's messages to a practitioner, not between two practitioners.<br><br>
           responses: [200, 400, 401, 403]
           example_request: communication-search-request
           example_response: communication-search-response

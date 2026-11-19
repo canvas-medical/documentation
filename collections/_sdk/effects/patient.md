@@ -99,12 +99,12 @@ A contact identifies its person in one of two ways, and you must supply one of t
 | `phone_number`       | `str` or `None`                                                   | The contact's phone number. Exactly 10 digits                      | No       |
 | `email`              | `str` or `None`                                                   | The contact's email address                                        | No       |
 | `comments`           | `str` or `None`                                                   | Free-text notes about the contact                                  | No       |
-| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's relationship categories                              | No       |
+| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's categories, including its relationship to the patient. See [Setting a contact's relationship](#setting-a-contacts-relationship) | No       |
 | `inactive`           | `bool` or `None`                                                  | Set with `contact_identifier` to remove the contact                | No       |
 
 ## PatientContactCategory
 
-The `PatientContactCategory` dataclass expresses a contact's relationship to the patient — emergency contact, next-of-kin, and so on — as a coding.
+The `PatientContactCategory` dataclass expresses one of a contact's categories as a coding: a relationship such as mother or spouse, or a role such as emergency contact.
 
 All three fields are required, and the coding must already exist in the instance. Look one up with the [ContactCategory](/sdk/data-patient/#contactcategory) data model rather than composing a coding by hand; a coding the instance does not have raises a validation error instead of being created.
 
@@ -416,6 +416,48 @@ class MyHandler(BaseHandler):
 ```
 
 A `related_patient` contact carries no name of its own; Canvas shows the referenced patient's details instead.
+
+### Setting a contact's relationship
+
+A contact's relationship to the patient is a category in the `http://terminology.hl7.org/CodeSystem/v3-RoleCode` coding system, such as `MTH` (mother). Staff pick it under Categories on the patient's Contacts, and FHIR [RelatedPerson](/api/relatedperson/) and family portal access read it from there. A contact your plugin writes without a relationship category shows no relationship in family portal access.
+
+To set the relationship, look up the coding with the [ContactCategory](/sdk/data-patient/#contactcategory) data model and send it in `categories` with any other categories the contact has:
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact, PatientContactCategory
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import ContactCategory
+
+RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        mother = ContactCategory.objects.filter(system=RELATIONSHIP_SYSTEM, code="MTH").first()
+        emergency = ContactCategory.objects.filter(code="EMC").first()
+        if mother is None or emergency is None:
+            return []
+
+        patient = Patient(
+            patient_id="existing-patient-id",
+            contacts=[
+                PatientContact(
+                    name="Jane Doe",
+                    phone_number="5551234567",
+                    categories=[
+                        PatientContactCategory(
+                            code=category.code, code_system=category.system, name=category.name
+                        )
+                        for category in (mother, emergency)
+                    ],
+                )
+            ],
+        )
+
+        return [patient.update()]
+```
+
+Family portal access shows the names of the contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". Other categories, such as an emergency contact, aren't part of the relationship. The relationship categories Canvas provides don't include a legal guardian code.
 
 ### Removing a contact
 

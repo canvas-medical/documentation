@@ -278,12 +278,18 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | patient              | [Patient](/sdk/data-patient/#patient)                          |
 | note_id              | Integer                                                        |
 | appointment_id       | Integer                                                        |
+| assessment           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | questionnaires       | [Questionnaire](#questionnaire)[]                              |
 | progress_status      | String                                                         |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
-| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
+| assessments          | [Assessment](/sdk/data-assessment/#assessment)[]               |
+
+An interview has two relations to assessments:
+
+- `assessment` is the assessment in the same note that a [Structured Assessment](/sdk/commands/#structuredassessment) is linked to through its `assessment_id`. It's `None` when the interview isn't linked. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment).
+- `assessments` holds the assessments that a Structured Assessment produces when it's committed.
 
 ### InterviewQuestionnaireMap
 

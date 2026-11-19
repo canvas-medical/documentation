@@ -69,6 +69,20 @@ The `filter` method can be used to filter by desired attributes. The following e
 ['11901', '00950']
 ```
 
+**Find a Patient's BillingLineItems in a Value Set**
+
+To check whether a patient was billed for a kind of encounter, such as when computing an electronic clinical quality measure (eCQM), pass a [Value Set](/sdk/data-value-sets) to the `find` method:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from canvas_sdk.value_set.v2022.encounter import OfficeVisit
+
+patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+office_visit_items = patient.billing_line_items.find(OfficeVisit)
+```
+
+A billing line item stores its code in the `cpt` field without a code system, so `find` matches the field against the value set's `CPT`, `HCPCSLEVELII`, and `HCPCS` codes.
+
 For examples of how to use the BillingLineItem data class with the BillingLineItem effects, check out [this page](/sdk/effect-billing-line-items)
 
 ## Attributes

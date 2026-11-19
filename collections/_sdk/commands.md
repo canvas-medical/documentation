@@ -64,7 +64,8 @@ The same pattern works with any command class — `PlanCommand(note_uuid=...)`, 
 `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
 check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` works
-on any staged command, including [custom commands](/sdk/commands-custom-command/#collapsible-content).
+on any staged command except [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill), including
+[custom commands](/sdk/commands-custom-command/#collapsible-content).
 
 To call these over HTTP rather than from a handler, see
 [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
@@ -77,7 +78,7 @@ Returns an Effect that originates a new command in the note body.
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill) don't support `commit=True`. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
 | `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
 
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
@@ -289,9 +290,11 @@ def compute():
 
 #### set_custom_html
 
-Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
 
-The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
+The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state. Calling this method on a committed command raises a validation error.
+
+`set_custom_html` isn't available on [ApproveRefill](#approverefill) or [DenyRefill](#denyrefill) commands. Calling it on one raises a `ValueError`, because the provider sends the refill response from the command.
 
 | Parameter     | Type              | Description                                                      |
 |---------------|-------------------|------------------------------------------------------------------|
@@ -513,6 +516,10 @@ the note. There is no SDK command class for it, so a plugin cannot originate one
 resulting records are readable through the
 [CancelPrescription](/sdk/data-cancel-prescription/) data module.
 
+To answer a refill request a pharmacy sent, use [ApproveRefill](#approverefill) or
+[DenyRefill](#denyrefill). A plugin starts the response in a note, and the provider sends it to the
+pharmacy from the command.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -648,6 +655,43 @@ allergy = AllergyCommand(
 
 ---
 
+### ApproveRefill
+
+Approves a pharmacy's refill request. A plugin starts the Approve Refill command in a note and can
+edit or delete it, and the provider sends the approval to the pharmacy from the command. To decline a
+request instead, use [DenyRefill](#denyrefill).
+
+The command takes its medication, quantity, sig, and pharmacy from the
+[RefillRequest](/sdk/data-refill-request/#refillrequest). The plugin names the request and can add a
+note to the pharmacist.
+
+Approve Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+approval from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ApproveRefillCommand
+
+approve_refill = ApproveRefillCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    refill_request_id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10",
+    note_to_pharmacist="OK to fill. Patient seen last month.",
+)
+
+effects = [approve_refill.originate()]
+```
+
+---
+
 ### Assess
 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
@@ -659,11 +703,38 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 {% include alert.html type="info" content="If your plugin relies on <a href='/sdk/events/#assess_command__condition_selected'><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a> or <a href='/sdk/events/#assess_command__icd10_code_selected'><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a>, set the condition with <code>edit()</code>. These events fire when an existing Assess command's condition changes, so originating an Assess with <code>condition_id</code> or <code>icd10_code</code> already set sends neither. To trigger them, originate the command without a condition, then <code>edit()</code> it to set one. An <code>edit()</code> with <code>icd10_code</code> sends <code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code> even when the patient already has that condition charted." %}
 
-Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
+**Problem list or encounter diagnosis**
 
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing an Assess always records the condition as an encounter diagnosis, because it was assessed in a note. With `True`, the condition is also a problem list item. With `False`, it's an encounter diagnosis only, such as a sore throat that doesn't need tracking, and committing takes it off the problem list. The choice is saved as the condition's categories, which the [FHIR Condition](/api/condition/) resource returns: `encounter-diagnosis`, plus `problem-list-item` when the condition is on the problem list. Putting a health concern on the problem list replaces its `health-concern` category with `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, an active condition that's an encounter diagnosis only is left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An [UpdateDiagnosis](#updatediagnosis) command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the condition's categories or status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing an Assess always records the condition as an encounter diagnosis, because it was assessed in a note.
 
-Entering in error an Assess that changed the condition's problem list status resets that status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it, and a health concern that an Assess put on the problem list becomes a health concern again. Entering in error an Assess that made a resolved condition active again leaves the condition active, so it goes back on the problem list unless it's a health concern.
+- `True`: the condition is also a problem list item. Putting a health concern on the problem list replaces its `health-concern` category with `problem-list-item`.
+- `False`: the condition is an encounter diagnosis only, such as a sore throat that doesn't need tracking, and committing takes it off the problem list.
+- Unset or `None`: a condition that's an encounter diagnosis only stays one, and any other condition goes on the problem list, including a health concern and a new condition.
+
+The choice is saved as the condition's categories, which the [FHIR Condition](/api/condition/) resource returns: `encounter-diagnosis`, plus `problem-list-item` when the condition is on the problem list. A commit that changes the condition's categories, domain, or status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+
+An encounter diagnosis is still one assessed condition, not a copy:
+
+- Plan commands and billing in the note can use it.
+- In the chart, an active condition that's an encounter diagnosis only is left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition, and an [UpdateDiagnosis](#updatediagnosis) command can't name it by code.
+- Clinicians can still pick it as a Prescribe indication.
+
+**Category domain**
+
+A problem list item can have a domain, such as `sdoh`. A condition that's an encounter diagnosis only has none.
+
+- Clinicians choose the domain in the Assess command's **Category Domain** field, which is filled in from the condition and can be set only while **Show in problem list** is on.
+- `AssessCommand` has no parameter for the domain. Committing a plugin's Assess with `show_in_problem_list` set to `True` or unset keeps the condition's current domain, and committing with `False` removes it.
+- Plugins can read the chosen domain as `category_domain` in the command's data: `sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+
+**Entering an Assess in error**
+
+You can always enter a committed Assess in error, even when other assessments use the condition it recorded.
+
+- **A condition the Assess recorded** is entered in error too, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. It stays on the chart while another committed assessment that isn't entered in error still uses it.
+- **A condition the Assess didn't record**, such as one already on the chart or one recorded by a Diagnose or AddCondition command, stays on the chart.
+- **Categories and domain** the Assess changed go back to what the condition had before that commit, including a health concern category or a domain the commit removed. The condition keeps its current categories and domain instead when another Assess of the condition was committed after this one and isn't entered in error, whether or not it changed them, or when something else has changed them since.
+- **A resolved condition the Assess made active again** stays active, so it goes back on the problem list unless it's a health concern.
 
 **Command-specific parameters**:
 
@@ -672,7 +743,7 @@ Entering in error an Assess that changed the condition's problem list status res
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
 | `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
-| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current problem list status. A new condition goes on the problem list, and so does a resolved condition the command makes active again, unless it's a health concern. |
+| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, a condition that's an encounter diagnosis only stays one, and any other condition goes on the problem list, including a health concern and a new condition. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
@@ -751,7 +822,7 @@ Changes the sig on an active medication without issuing a new prescription. See 
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
-| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -827,7 +898,7 @@ def compute():
 | `goal_id`            | _int_                    | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.                                     |
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The final achievement status of the goal. Must be one of [`GoalCommand.AchievementStatus`](#goal-achievementstatus). |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -842,13 +913,96 @@ close_goal = CloseGoalCommand(
 )
 ```
 
+---
+
+### DenyRefill
+
+Denies a pharmacy's refill request with an NCPDP reason code. Like [ApproveRefill](#approverefill),
+a plugin starts the Deny Refill command in a note and can edit or delete it, and the provider sends
+the denial to the pharmacy from the command. The command takes its medication, quantity, sig, and
+pharmacy from the [RefillRequest](/sdk/data-refill-request/#refillrequest).
+
+Deny Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+denial from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `reason_code`        | _[Reason](#denyrefill-reason) enum_ | `false` | The reason for the denial. Must be one of [`DenyRefillCommand.Reason`](#denyrefill-reason). |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+**Enums and Types**:
+
+<a id="denyrefill-reason"></a>
+
+| Reason                                  | Value  | Description |
+|:----------------------------------------|:-------|:------------|
+| `PATIENT_UNKNOWN_TO_PRESCRIBER`         | `"AA"` | Patient unknown to the prescriber |
+| `PATIENT_NEVER_UNDER_PROVIDER_CARE`     | `"AB"` | Patient never under provider care |
+| `PATIENT_NO_LONGER_UNDER_PROVIDER_CARE` | `"AC"` | Patient no longer under provider care |
+| `REFILL_TOO_SOON`                       | `"AD"` | Refill too soon |
+| `MEDICATION_NEVER_PRESCRIBED`           | `"AE"` | Medication never prescribed for patient |
+| `PATIENT_SHOULD_CONTACT_PROVIDER`       | `"AF"` | Patient should contact provider |
+| `REFILL_NOT_APPROPRIATE`                | `"AG"` | Refill not appropriate |
+| `PATIENT_PICKED_UP_PRESCRIPTION`        | `"AH"` | Patient has picked up prescription |
+| `PATIENT_PICKED_UP_PARTIAL_FILL`        | `"AJ"` | Patient has picked up partial fill of prescription |
+| `NOT_PICKED_UP_RETURNED_TO_STOCK`       | `"AK"` | Patient has not picked up prescription, drug returned to stock |
+| `PATIENT_NEEDS_APPOINTMENT`             | `"AM"` | Patient needs appointment |
+| `PRESCRIBER_NOT_AT_PRACTICE`            | `"AN"` | Prescriber not associated with this practice or location |
+| `NO_PRIOR_AUTHORIZATION_ATTEMPT`        | `"AO"` | No attempt will be made to obtain prior authorization |
+| `RESPONDED_BY_OTHER_MEANS`              | `"AP"` | Request already responded to by other means, such as phone or fax |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import DenyRefillCommand
+
+deny_refill = DenyRefillCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    refill_request_id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10",
+    reason_code=DenyRefillCommand.Reason.PATIENT_NEEDS_APPOINTMENT,
+    note_to_pharmacist="Patient must schedule a visit first.",
+)
+
+effects = [deny_refill.originate()]
+```
+
+---
+
 ### Diagnose
+
+{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now, and Canvas Support can record their Diagnose commands as Assess while you move off Diagnose (see <b>Recording Diagnose as Assess</b> below). See <a href='/product-updates/important-dates/'>Important Dates</a>." %}
 
 Records an active condition and assesses it for the first time. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess, MedicalHistory and
 AddCondition.
 
-{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now." %}
+**Recording Diagnose as Assess**:
+
+As part of the rollout retiring the Diagnose command, Canvas records a `DiagnoseCommand` a plugin
+originates as an Assess, as described below. Existing plugins keep working without code changes, and
+a code the patient already has reuses the charted condition instead of adding a second one. To use
+this behavior now, ahead of the rollout,
+[contact Canvas Support](https://canvas-medical.help.usepylon.com/). The Assess command must also be
+enabled on the instance.
+
+With it on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch,
+or from a protocol card, as an Assess:
+
+- The Assess uses the patient's charted condition with that ICD-10 code, and records a new
+  condition only when the patient has none.
+- `today_assessment` becomes the Assess `narrative`. The other parameters keep their names.
+- An ICD-10 code Canvas doesn't recognize still creates the command, with no condition set, as it
+  does on Diagnose. Editing a saved command to such a code raises an error instead.
+- Your handlers receive Assess events for the command, and SDK queries return it with
+  `schema_key="assess"`.
+
+Calling `edit()`, `commit()`, `delete()`, `enter_in_error()`, or `upsert_metadata()` on the
+`DiagnoseCommand` still works, because Canvas follows the type each command was saved as. Commands
+already in a note keep working when the setting is turned on or off.
 
 **Command-specific parameters**:
 
@@ -947,7 +1101,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
-| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -997,7 +1151,7 @@ unstructured = FollowUpCommand(
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#goal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 
 <a id="goal-achievementstatus"></a>
@@ -1077,7 +1231,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
-| `assessment_id`         | _string_          | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
+| `assessment_id`         | _string_          | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -1252,7 +1406,7 @@ Records a vaccine **administered** during the visit, including the lot it came f
 | `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
 | `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
 | `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
-| `assessment_id`   | _string_  | `false`            | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`   | _string_  | `false`            | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 *`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
 be omitted.
@@ -1316,7 +1470,7 @@ immunize_unstocked = ImmunizeCommand(
 |-----------|------------|----------|-----------------------------------------------------------------------|
 | `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#get-snomedinstruction--instructions). |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
-| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 <!-- source: discussion #1047 -->
 The Educational Material command only supports a fixed set of selectable values and is not available in this commands module. For free-text patient education, use `InstructCommand` instead — its `UNSTRUCTURED` coding accepts arbitrary instruction text.
@@ -1374,7 +1528,7 @@ Built-in validations ensure that:
 | `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
 | `comment`               | _string_       | `false`  | Additional comments related to the lab order (max length: 128 characters).                                                                                        |
-| `assessment_id`         | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
+| `assessment_id`         | _string_       | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -1590,7 +1744,7 @@ Admins manage the formulary in the Django Admin UI under **DME Products**. In a 
 | `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
 | `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
-| `assessment_id`         | _string_                              | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
+| `assessment_id`         | _string_                              | `false` | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
 
@@ -1719,7 +1873,7 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 |------------|----------------------|----------|------------------------------------------------------|
 | `cpt_code` | _string_ or _[Coding](#coding)_ | `true`   | The CPT code of the procedure or action performed. Look it up in the [Charge Description Master](/sdk/data-charge-description-master/#chargedescriptionmaster).   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
-| `assessment_id` | _string_        | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id` | _string_        | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Coding Support**:
 
@@ -1771,7 +1925,7 @@ perform_unstructured = PerformCommand(
 | Name        | Type     | Required to commit | Description                          |
 |:------------|:---------|:---------|:-------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's plan. |
-| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -1922,7 +2076,7 @@ def compute():
 | `prescriber_id`             | _string_                      | `true`   | The [Staff](/sdk/data-staff/#staff) id of the prescriber.                                          |
 | `supervising_provider_id`   | _string_                      | `false`   | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.               |
 | `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist. Up to 210 characters — see [Limits](#prescribe-limits). |
-| `assessment_id`             | _string_                      | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition to `icd10_codes` unless it's already listed. A prescription holds at most two codes, so a link that would add a third is rejected. |
+| `assessment_id`             | _string_                      | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition to `icd10_codes` unless it's already listed. A prescription holds at most two codes, so a link that would add a third is rejected. |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
@@ -2424,6 +2578,7 @@ class MyHandler(BaseHandler):
 
 
  - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
+ - **Changing the questionnaire:** `edit()` keeps the questionnaire the command already uses, along with its responses. A `questionnaire_id` set on the edited command is ignored, so set the questionnaire when you originate the command.
 
 ---
 
@@ -2477,7 +2632,7 @@ unstructured_rfv = ReasonForVisitCommand(
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
 | `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
-| `assessment_id`       | _string_                | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
+| `assessment_id`       | _string_                | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -2813,7 +2968,7 @@ Records that a patient is stopping a medication, along with the reason. See [Rec
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
 | `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
-| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -2837,6 +2992,7 @@ stop_medication = StopMedicationCommand(
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Structured Assessment**, and it must be set to originate in charting. |
 | `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
+| `assessment_id`    | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). The command stays in the note's Assessment section. A Structured Assessment that a user adds from the note starts with no questionnaire picked, and you can still set `assessment_id` on it with `edit()`, for example in a `STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE` handler. When the questionnaire carries responses forward, the link given at `originate` is kept, and a link from an earlier note isn't carried into the new command. |
 
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
@@ -2866,7 +3022,7 @@ questionnaire = StructuredAssessmentCommand(
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
-| `assessment_id`     | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`     | _string_       | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Enums and Types**:
 
@@ -2995,7 +3151,7 @@ UpdateDiagnosisCommand(
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 <a id="updategoal-achievementstatus"></a>
 

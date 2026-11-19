@@ -22,6 +22,61 @@ runs:
         RELEASE_NAME: ${{ inputs.release_name }}
       run: |
         [[ "$RELEASE_NAME" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release_name must look like release/1.2.3, got: $RELEASE_NAME"; exit 1; }
+    # main requires its checks to pass on a branch that is up to date with it, so a release
+    # branch cut before the previous release merged can't be merged as is. The caller checks
+    # out the repository with full history and a GitHub App token: a push made with the
+    # workflow's own GITHUB_TOKEN starts no workflows, so the required checks would never run.
+    - name: Bring the release branch up to date with main
+      id: update-release-branch
+      if: inputs.dry_run != 'true'
+      shell: bash
+      env:
+        RELEASE_NAME: ${{ inputs.release_name }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git fetch --no-tags origin main "$RELEASE_NAME"
+        git checkout -B "$RELEASE_NAME" "origin/$RELEASE_NAME"
+        if git merge-base --is-ancestor origin/main HEAD; then
+          echo "$RELEASE_NAME already contains main."
+          exit 0
+        fi
+        if ! git merge --no-edit origin/main; then
+          echo "::error::$RELEASE_NAME conflicts with main. Merge main into the release branch, resolve the conflict, and run the merge again."
+          exit 1
+        fi
+        git push origin "HEAD:refs/heads/$RELEASE_NAME"
+    - name: Wait for the release PR's required checks
+      id: wait-for-checks
+      if: inputs.dry_run != 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        RELEASE_NAME: ${{ inputs.release_name }}
+      run: |
+        # Give GitHub a moment to register the new head and its pending checks.
+        sleep 20
+        deadline=$((SECONDS + 1800))
+        while :; do
+          state=$(gh pr view "$RELEASE_NAME" --json mergeStateStatus --jq .mergeStateStatus)
+          case "$state" in
+            CLEAN|UNSTABLE|HAS_HOOKS) echo "Release PR is ready to merge ($state)."; exit 0 ;;
+            DIRTY) echo "::error::$RELEASE_NAME conflicts with main."; exit 1 ;;
+          esac
+          # gh pr checks exits non-zero while checks are pending, so read its output only.
+          buckets=$(gh pr checks "$RELEASE_NAME" --required --json bucket --jq '.[].bucket' || true)
+          if [[ $'\n'"$buckets"$'\n' == *$'\nfail\n'* ]]; then
+            echo "::error::A required check failed on $RELEASE_NAME."
+            exit 1
+          fi
+          if (( SECONDS >= deadline )); then
+            echo "::error::Timed out waiting for $RELEASE_NAME's required checks (merge state $state)."
+            exit 1
+          fi
+          echo "Waiting for required checks (merge state $state)."
+          sleep 30
+        done
     # Squash-merging the release PR lands the whole release on main as one commit titled
     # after the PR, and goes through the main ruleset's required checks like any other PR.
     - name: squash-merge the release PR
