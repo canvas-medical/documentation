@@ -3250,7 +3250,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">NOTE_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a note is updated, including changes to fields, commands, or body content.</td></tr>
+    <tr><td colspan="2">Occurs when a note is updated, including changes to fields, commands, or body content, and when a staff member changes its state, such as locking or signing it. <code>user.id</code> is the key of the note's <a href="/sdk/data-note/#note"><code>last_modified_by_staff</code></a>, so after a state change it identifies the staff member who made it. The context has no <code>user</code> when the note has no last editor.</td></tr>
   </thead>
   <tbody>
     <tr>
