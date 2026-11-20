@@ -95,15 +95,46 @@ class IgnoreStaleRefillRequests(CronTask):
         ]
 ```
 
-To reassign a request, set `assignee_id`:
+To reassign requests, set `assignee_id`. This handler runs every 15 minutes and assigns every pending request to an active nurse practitioner who can e-prescribe, skipping requests already assigned to them. Change `REFILL_ROLE` to the role your team routes refills to, and see [Choosing an assignee](#choosing-an-assignee) for who can be assigned:
 
 ```python
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.refill_request import UpdateRefillRequest
+from canvas_sdk.handlers.cron_task import CronTask
+from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data.refill_request import RefillRequest
 
-effect = UpdateRefillRequest(
-    id="d2194110-5c9a-4842-8733-ef09ea5ead11",
-    assignee_id="4150cd20de8a470aa570a852859ac87e",
-).apply()
+REFILL_ROLE = "NP"
+
+
+class AssignPendingRefillRequests(CronTask):
+    SCHEDULE = "*/15 * * * *"
+
+    def execute(self) -> list[Effect]:
+        candidates = (
+            Staff.objects.filter(active=True)
+            .exclude(spi_number="")
+            .prefetch_related("roles")
+        )
+        assignee = next(
+            (
+                staff
+                for staff in candidates
+                if staff.top_clinical_role
+                and staff.top_clinical_role.internal_code == REFILL_ROLE
+            ),
+            None,
+        )
+        if assignee is None:
+            return []
+
+        pending = RefillRequest.objects.pending().exclude(staff=assignee)
+        return [
+            UpdateRefillRequest(
+                id=refill_request.id, assignee_id=assignee.id
+            ).apply()
+            for refill_request in pending
+        ]
 ```
 
 When an assignment changes, Canvas fires the [`REFILL_REQUEST_ASSIGNEE_UPDATED`](/sdk/events/#refill-requests) event.
