@@ -3048,7 +3048,7 @@ These events don't form one sequence that every prescription passes through. Whi
       <td><pre>"id": refill_request_id
 "type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
       <td><pre>"patient":  # present only when the request is filed on a chart
-   "id": pt_id</pre></td>
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -3067,7 +3067,7 @@ These events don't form one sequence that every prescription passes through. Whi
       <td><pre>"id": refill_request_id
 "type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
       <td><pre>"patient":  # present only when the request is filed on a chart
-   "id": pt_id</pre></td>
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
     </tr>
   </tbody>
 </table>
