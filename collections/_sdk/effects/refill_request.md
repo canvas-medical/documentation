@@ -32,42 +32,11 @@ Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_U
 
 ## Choosing an assignee
 
-A refill request can only be assigned to someone who could prescribe the refill, the same people the refill panel's assignee picker lists. Canvas checks three things on the staff member:
+A refill request can only be assigned to a staff member who can e-prescribe, the same people the refill panel's assignee picker lists: they're active, have a Surescripts prescriber ID (`spi_number`), and hold a prescriber role. See [Finding staff who can e-prescribe](/sdk/data-staff/#finding-staff-who-can-e-prescribe) for the exact rule and a query that lists them.
 
-- **Active:** `staff.active` is `True`.
-- **Set up for e-prescribing:** `staff.spi_number` is set. This is the staff member's Surescripts prescriber ID.
-- **A prescriber role:** the `internal_code` of `staff.top_clinical_role` is one of your instance's prescriber roles. By default those are `MD`, `DO`, `NP`, and `PA`.
-
-If any check fails, the effect is refused with "the assignee must be an active prescriber with a Surescripts SPI", and the request keeps its current assignee.
+If the assignee doesn't qualify, the effect is refused with "the assignee must be an active prescriber with a Surescripts SPI", and the request keeps its current assignee.
 
 Reassigning moves the request to the new assignee's queue. It doesn't change the prescriber on the refill: the pharmacy's answer still names the prescriber from the original request.
-
-To pick only staff who pass, filter in your plugin:
-
-```python
-from canvas_sdk.v1.data import Staff
-
-PRESCRIBER_ROLES = {"MD", "DO", "NP", "PA"}
-
-
-def can_be_refill_assignee(staff: Staff) -> bool:
-    role = staff.top_clinical_role
-    return bool(
-        staff.active
-        and staff.spi_number
-        and role is not None
-        and role.internal_code in PRESCRIBER_ROLES
-    )
-
-
-assignees = [
-    staff
-    for staff in Staff.objects.filter(active=True)
-    .exclude(spi_number="")
-    .prefetch_related("roles")
-    if can_be_refill_assignee(staff)
-]
-```
 
 ## Example
 
