@@ -17,7 +17,7 @@ Only pending requests can be updated: requests that aren't ignored and have no c
 
 Updates the refill request.
 
-- `id` must be the id of a pending refill request. A request that was already ignored or answered can't be updated, including to reassign it.
+- `id` must be the id of a [pending refill request](/sdk/data-refill-request/#pending-requests), one that `RefillRequest.objects.pending()` returns. A request that was already ignored or answered can't be updated, including to reassign it.
 - Set `assignee_id`, `ignored`, or both.
 
 Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_UPDATED`](/sdk/events/#refill-requests) event. It doesn't write a response to the request.
