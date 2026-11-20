@@ -27,8 +27,47 @@ Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_U
 | Attribute     | Type            | Description                                                                 | Required |
 |---------------|-----------------|-----------------------------------------------------------------------------|----------|
 | `id`          | `str` or `UUID` | ID of the [refill request](/sdk/data-refill-request/#refillrequest) to update                                          | Yes      |
-| `assignee_id` | `str`           | ID of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. | Unless `ignored` is set |
+| `assignee_id` | `str`           | ID of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. See [Choosing an assignee](#choosing-an-assignee). | Unless `ignored` is set |
 | `ignored`     | `bool`          | Set to `True` to ignore the request. An ignored request can't be returned to the queue, so `True` is the only value this attribute accepts. | Unless `assignee_id` is set |
+
+## Choosing an assignee
+
+A refill request can only be assigned to someone who could prescribe the refill, the same people the refill panel's assignee picker lists. Canvas checks three things on the staff member:
+
+- **Active:** `staff.active` is `True`.
+- **Set up for e-prescribing:** `staff.spi_number` is set. This is the staff member's Surescripts prescriber ID.
+- **A prescriber role:** the `internal_code` of `staff.top_clinical_role` is one of your instance's prescriber roles. By default those are `MD`, `DO`, `NP`, and `PA`.
+
+If any check fails, the effect is refused with "the assignee must be an active prescriber with a Surescripts SPI", and the request keeps its current assignee.
+
+Reassigning moves the request to the new assignee's queue. It doesn't change the prescriber on the refill: the pharmacy's answer still names the prescriber from the original request.
+
+To pick only staff who pass, filter in your plugin:
+
+```python
+from canvas_sdk.v1.data import Staff
+
+PRESCRIBER_ROLES = {"MD", "DO", "NP", "PA"}
+
+
+def can_be_refill_assignee(staff: Staff) -> bool:
+    role = staff.top_clinical_role
+    return bool(
+        staff.active
+        and staff.spi_number
+        and role is not None
+        and role.internal_code in PRESCRIBER_ROLES
+    )
+
+
+assignees = [
+    staff
+    for staff in Staff.objects.filter(active=True)
+    .exclude(spi_number="")
+    .prefetch_related("roles")
+    if can_be_refill_assignee(staff)
+]
+```
 
 ## Example
 
