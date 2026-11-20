@@ -569,12 +569,10 @@ can't express, or an effort that isn't an `Effort` level, raises
 [Structured answers and effort](/sdk/agents-tools/#structured-answers-and-effort)
 for the schema rules and an example schema.
 
-Don't pass `output_schema` to the loop of an agent whose manifest sets
-`progress` to `reply`. That loop streams each model call's text as the
-model writes it (see [Showing a run's progress](#showing-a-runs-progress)),
-and the final call's text is the JSON answer, so the person waiting
-sees raw JSON. Ask a sub-agent for the structured answer instead:
-sub-agent text never streams.
+A loop with `output_schema` doesn't stream its text, even when the
+agent's manifest sets `progress` to `reply` (see
+[Showing a run's progress](#showing-a-runs-progress)). Its answer is
+JSON for your code, not text for the person waiting.
 
 Every tool call gets a context the model never sees, which
 `self.tool_context(gateway)` builds:

@@ -400,9 +400,16 @@ the same class the LLMs client takes for
 [structured JSON output](/sdk/clients-llms/#structured-json-output).
 The model still calls tools on the turns before its answer.
 
-`effort` sets how much the model thinks on each call: `Effort.LOW`,
-`Effort.MEDIUM`, `Effort.HIGH`, `Effort.XHIGH`, or `Effort.MAX`. A
-short extraction can use a lower level than the default. The gateway
+`effort` sets how much the model thinks on each call, trading speed and
+cost against depth:
+
+- `Effort.LOW` answers fastest and costs least. Use it for extraction
+  or classification the model can do at a glance.
+- `Effort.MEDIUM` gives the model room to weigh what it read.
+- `Effort.HIGH` is for answers that need reasoning over many steps, and
+  takes the most time and tokens.
+
+Without `effort`, each call uses the model's default. The gateway
 refuses an effort for a model that doesn't support it.
 
 ```python?partial=true
