@@ -580,6 +580,42 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | is_sig_required                             | Boolean                                            |
 | notes                                       | QuerySet[[Note](#note)]                            |
 | appointments                                | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] |
+| possible_durations                          | QuerySet[[ScheduleDuration](#scheduleduration)]    |
+
+`possible_durations` holds the durations an administrator configured for this note type. Canvas offers them as options when a user selects the note type while scheduling. Each `duration` is a `datetime.timedelta`:
+
+```python
+from canvas_sdk.v1.data import NoteType
+
+note_type = NoteType.objects.get(id="5f8d3c2a-1b4e-4a7f-9c6d-2e8b0a1f3d57")
+minutes = [
+    int(option.duration.total_seconds() // 60)
+    for option in note_type.possible_durations.order_by("duration")
+]
+```
+
+### ScheduleDuration
+
+A length of time offered when scheduling appointments or schedule events. Reach the note types that offer a duration through its `note_types` attribute.
+
+| Field Name                     | Type                                  |
+| ------------------------------ | ------------------------------------- |
+| dbid                           | Integer                               |
+| created                        | DateTime                              |
+| modified                       | DateTime                              |
+| duration                       | Duration (`datetime.timedelta`)       |
+| is_appointment_duration_option | Boolean                               |
+| note_types                     | QuerySet[[NoteType](#notetype)]       |
+
+### NoteTypePossibleDuration
+
+The join between a [NoteType](#notetype) and a [ScheduleDuration](#scheduleduration). Reach the durations through the note type's `possible_durations` attribute rather than querying this model.
+
+| Field Name        | Type                                  |
+| ----------------- | ------------------------------------- |
+| dbid              | Integer                               |
+| note_type         | [NoteType](#notetype)                 |
+| schedule_duration | [ScheduleDuration](#scheduleduration) |
 
 ### NoteMetadata
 
