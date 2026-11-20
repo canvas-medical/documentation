@@ -72,6 +72,54 @@ for interview_response in interview.interview_responses.all():
 
 {% include alert.html type="info" content="A date question writes its answer to <code>response_option_date</code> as a real date, and to <code>response_option_value</code> as the same date in ISO-8601 form. Use <code>response_option_date</code> to compare or to filter, because date lookups such as <code>__gte</code> and <code>__year</code> work only on it. It is <code>None</code> for every other question type, and also when nobody answered the date question." %}
 
+## Questionnaire results
+
+A `QuestionnaireResult` holds the score a questionnaire produced in an interview, with its narrative, its code, and whether the score is abnormal. Reach results from an interview, a questionnaire, or a patient through their `questionnaire_results` attribute.
+
+A result is recorded whether or not its interview has been committed. To read only the results that count, the same ones Canvas shows on the chart, use `committed()`. It returns the results whose interview is committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.questionnaire import QuestionnaireResult
+from logger import log
+
+results = QuestionnaireResult.objects.committed().filter(
+    patient__id="1eed3ea2a8d546a1b681a2a45de1d790"
+)
+
+for result in results:
+    log.info(f"{result.questionnaire.name}: {result.score} (abnormal: {result.abnormal})")
+```
+
+## Interview templates
+
+An `InterviewTemplate` is a reusable set of questionnaires that an interview can start from. Get a template's questionnaires through its `questionnaires` attribute:
+
+```python
+from canvas_sdk.v1.data.questionnaire import InterviewTemplate, QuestionnaireStatus
+from logger import log
+
+for template in InterviewTemplate.objects.filter(status=QuestionnaireStatus.ACTIVE):
+    names = [questionnaire.name for questionnaire in template.questionnaires.all()]
+    log.info(f"{template.name}: {names}")
+```
+
+## Interview send events and visual findings
+
+When an interview is sent to the patient by email or text message, each attempt is recorded as an `InterviewSendEvent`, available through the interview's `send_events` attribute. Media attached to an interview, such as an image captured during a physical exam, is available through its `visual_findings` attribute:
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+from logger import log
+
+interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
+
+for send_event in interview.send_events.all():
+    log.info(f"email to {send_event.to_email} succeeded: {send_event.email_succeeded}")
+
+for finding in interview.visual_findings.committed():
+    log.info(f"media: {finding.media_url}")
+```
+
 ## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
@@ -240,7 +288,7 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | name                      | String                                                         |
 | expected_completion_time  | Float                                                          |
 | can_originate_in_charting | Boolean                                                        |
-| use_case_in_charting      | String                                                         |
+| use_case_in_charting      | String — one of the [use cases](#use-cases-in-charting) below  |
 | scoring_function_name     | String                                                         |
 | scoring_code_system       | String                                                         |
 | scoring_code              | String                                                         |
@@ -251,6 +299,38 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | use_in_shx                | Boolean                                                        |
 | carry_forward             | String                                                         |
 | interview_responses       | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| item_groups               | [QuestionnaireItemGroup](#questionnaireitemgroup)[]            |
+| questionnaire_results     | [QuestionnaireResult](#questionnaireresult)[]                  |
+| interview_templates       | [InterviewTemplate](#interviewtemplate)[]                      |
+
+<a id="use-cases-in-charting"></a>
+
+#### Use cases in charting
+
+`use_case_in_charting` on a questionnaire, an interview, or an interview template holds a code from `QuestionnaireUseCase`:
+
+| `use_case_in_charting` | `QuestionnaireUseCase` member | Used as |
+|:-----------------------|:------------------------------|:--------|
+| `QUES` | `QUESTIONNAIRE` | Questionnaire |
+| `ROS`  | `REVIEW_OF_SYSTEMS` | Review of Systems |
+| `EXAM` | `PHYSICAL_EXAM` | Physical Exam |
+| `SA`   | `STRUCTURED_ASSESSMENT` | Structured Assessment |
+
+### QuestionnaireItemGroup
+
+A group of items in a questionnaire. A group sits at the top level of the questionnaire, under another group (`parent_group`), or under a question (`parent_question_map`), never under both.
+
+| Field Name          | Type                                                  |
+|---------------------|-------------------------------------------------------|
+| id                  | UUID                                                  |
+| dbid                | Integer                                               |
+| created             | DateTime                                              |
+| modified            | DateTime                                              |
+| questionnaire       | [Questionnaire](#questionnaire)                       |
+| parent_group        | [QuestionnaireItemGroup](#questionnaireitemgroup)     |
+| parent_question_map | [QuestionnaireQuestionMap](#questionnairequestionmap) |
+| ordering            | Integer                                               |
+| child_item_groups   | [QuestionnaireItemGroup](#questionnaireitemgroup)[]   |
 
 ### QuestionnaireQuestionMap
 
@@ -274,7 +354,7 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | status               | String                                                         |
 | name                 | String                                                         |
 | language_id          | Integer                                                        |
-| use_case_in_charting | String                                                         |
+| use_case_in_charting | String — one of the [use cases](#use-cases-in-charting)        |
 | patient              | [Patient](/sdk/data-patient/#patient)                          |
 | note_id              | Integer                                                        |
 | appointment_id       | Integer                                                        |
@@ -285,6 +365,9 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
 | assessments          | [Assessment](/sdk/data-assessment/#assessment)[]               |
+| questionnaire_results | [QuestionnaireResult](#questionnaireresult)[]                 |
+| send_events          | [InterviewSendEvent](#interviewsendevent)[]                    |
+| visual_findings      | [InterviewVisualFinding](#interviewvisualfinding)[]            |
 
 An interview has two relations to assessments:
 
@@ -321,6 +404,83 @@ The join between an [Interview](#interview) and the questionnaires it covers. Re
 | questionnaire_state   | String                            |
 | interview_state       | String                            |
 | comment               | String                            |
+
+### QuestionnaireResult
+
+The score a questionnaire produced in an interview. Use `QuestionnaireResult.objects.committed()` to keep only results whose interview is committed and not entered in error.
+
+| Field Name    | Type                                  |
+|---------------|---------------------------------------|
+| dbid          | Integer                               |
+| created       | DateTime                              |
+| modified      | DateTime                              |
+| interview     | [Interview](#interview)               |
+| questionnaire | [Questionnaire](#questionnaire)       |
+| patient       | [Patient](/sdk/data-patient/#patient) |
+| score         | Float, or `None` when there's no score |
+| abnormal      | Boolean                               |
+| narrative     | String                                |
+| code_system   | String                                |
+| code          | String                                |
+
+### InterviewTemplate
+
+A reusable set of questionnaires an interview can start from.
+
+| Field Name           | Type                                                    |
+|----------------------|---------------------------------------------------------|
+| dbid                 | Integer                                                 |
+| created              | DateTime                                                |
+| modified             | DateTime                                                |
+| status               | String — `AC` (`QuestionnaireStatus.ACTIVE`) or `IN` (`QuestionnaireStatus.INACTIVE`) |
+| name                 | String                                                  |
+| language_id          | Integer                                                 |
+| use_case_in_charting | String — one of the [use cases](#use-cases-in-charting) |
+| questionnaires       | [Questionnaire](#questionnaire)[]                       |
+
+### InterviewTemplateQuestionnaireMap
+
+The join between an [InterviewTemplate](#interviewtemplate) and its questionnaires. Its `status` shows whether a questionnaire is active in the template. To read a template's questionnaires, use the template's `questionnaires` attribute.
+
+| Field Name         | Type                                                   |
+|--------------------|--------------------------------------------------------|
+| dbid               | Integer                                                |
+| created            | DateTime                                               |
+| modified           | DateTime                                               |
+| status             | String — `AC` (`QuestionnaireStatus.ACTIVE`) or `IN` (`QuestionnaireStatus.INACTIVE`) |
+| interview_template | [InterviewTemplate](#interviewtemplate)                |
+| questionnaire      | [Questionnaire](#questionnaire)                        |
+
+### InterviewSendEvent
+
+One attempt to send an interview to the patient by email or text message.
+
+| Field Name             | Type                    |
+|------------------------|-------------------------|
+| dbid                   | Integer                 |
+| created                | DateTime                |
+| modified               | DateTime                |
+| interview              | [Interview](#interview) |
+| consent_remark         | String                  |
+| to_email               | String                  |
+| email_succeeded        | Boolean                 |
+| to_phone               | String                  |
+| text_message_succeeded | Boolean                 |
+
+### InterviewVisualFinding
+
+Media attached to an interview. Use `committed()` on the manager or on an interview's `visual_findings` to keep only committed findings that aren't entered in error.
+
+| Field Name       | Type                               |
+|------------------|------------------------------------|
+| dbid             | Integer                            |
+| created          | DateTime                           |
+| modified         | DateTime                           |
+| originator       | [CanvasUser](/sdk/data-canvasuser) |
+| committer        | [CanvasUser](/sdk/data-canvasuser) |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
+| interview        | [Interview](#interview)            |
+| media_url        | String, or `None` when no media is uploaded |
 
 <br/>
 <br/>
