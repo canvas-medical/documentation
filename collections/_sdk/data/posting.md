@@ -41,7 +41,47 @@ print(claim_line_item.proc_code)
 charge = claim_line_item.billing_line_item
 ```
 
+On a remit, each coverage posting also records the amount the payer allowed on each claim line item and the remark codes the payer sent with it:
+
+```python
+from canvas_sdk.v1.data import CoveragePosting
+
+posting = CoveragePosting.objects.get(dbid=1234)
+
+for allowed in posting.lineitemalloweds.active():
+    print(allowed.claim_line_item.proc_code, allowed.amount)
+
+for remark in posting.remark_codes.all():
+    print(remark.claim_line_item.proc_code, remark.remark_code)
+```
+
 {% include alert.html type="warning" content="<b>Deprecation Notice:</b> The <code>billing_line_item</code> attribute on <code>NewLineItemPayment</code>, <code>NewLineItemAdjustment</code>, and <code>LineItemTransfer</code> is deprecated. It can return an unrelated charge, because the stored ID belongs to a claim line item, not a billing line item. Use <code>claim_line_item.billing_line_item</code> instead. <code>billing_line_item_id</code> holds the same claim line item ID as <code>claim_line_item_id</code>." %}
+
+## Remits
+
+A remit is a payer's payment and explanation for one or more claims. Canvas stores each one as a [BaseRemittanceAdvice](#baseremittanceadvice), which is either an [ElectronicRemittanceAdvice](#electronicremittanceadvice) received from a clearinghouse or a [ManualRemittanceAdvice](#manualremittanceadvice) posted by hand. Query the subtype to get only one kind, along with its own fields:
+
+```python
+from canvas_sdk.v1.data import ElectronicRemittanceAdvice
+
+for era in ElectronicRemittanceAdvice.objects.filter(payer_name="Acme Health"):
+    print(era.era_id, era.received_time, era.total_paid)
+```
+
+A remit lists the claims it covers in `claims`, and a claim lists its remits in `remits`. The file a remit was posted from is a [NewRemittanceDocument](#newremittancedocument), reached through the remit's `document`:
+
+```python
+from canvas_sdk.v1.data import BaseRemittanceAdvice, NewRemittanceDocument
+
+remit = BaseRemittanceAdvice.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+claims = remit.claims.all()
+
+try:
+    # Presigned S3 URL to the remit file, or None if there is no file
+    url = remit.document.document_url
+except NewRemittanceDocument.DoesNotExist:
+    url = None
+```
 
 ## Attributes
 
@@ -60,6 +100,7 @@ Base model for aggregating multiple line item-level transactions (payments, adju
 | created                            | DateTime                                |                                          |
 | modified                           | DateTime                                |                                          |
 | correction\_postings               | QuerySet[[BasePosting](#baseposting)]   |                                          |
+| lineitemalloweds                   | QuerySet[[LineItemAllowed](#lineitemallowed)] | Allowed amounts per claim line item |
 | paid\_amount                       | Decimal (computed)                      | Total paid                               |
 | contractual\_adjusted\_amount      | Decimal (computed)                      | Adjustments marked as write-offs         |
 | non\_write\_off\_adjusted\_amount  | Decimal (computed)                      | Non-write-off adjustments                |
@@ -81,6 +122,7 @@ Represents an insurance payment or adjustment associated with a claim's coverage
 | crossover\_id      | String                                          |
 | payer\_icn         | String                                          |
 | position\_in\_era  | Integer                                         |
+| remark\_codes      | QuerySet[[RemarkCode](#remarkcode)]             |
 
 ### PatientPosting
 
@@ -127,8 +169,53 @@ Represents shared data for both electronic and manual remittance advice.
 | modified              | DateTime                                      |                           |
 | transactor            | [Transactor](/sdk/data-coverage/#transactor)  |                           |
 | era\_id               | String                                        |                           |
+| claims                | QuerySet[[Claim](/sdk/data-claim/#claim)]     | Claims the remit covers, including claims whose remit processing was skipped |
 | postings              | QuerySet[[CoveragePosting](#coverageposting)] |                           |
+| document              | [NewRemittanceDocument](#newremittancedocument) | File the remit was posted from |
 | total\_posted\_amount | Decimal (computed)                            | Sum of all posted amounts |
+
+### ElectronicRemittanceAdvice
+
+An electronic remit (ERA) received from a clearinghouse. It has every [BaseRemittanceAdvice](#baseremittanceadvice) field, plus:
+
+| Field Name     | Type     |
+|----------------|----------|
+| check\_type    | String   |
+| payer\_name    | String   |
+| provider\_name | String   |
+| provider\_npi  | String   |
+| download\_date | Date     |
+| received\_time | DateTime |
+
+### ManualRemittanceAdvice
+
+A remit posted by hand. It has the [BaseRemittanceAdvice](#baseremittanceadvice) fields and no others.
+
+### BaseRemittanceAdviceClaim
+
+Links a remit to a claim it covers. Read the link through `remit.claims` or `claim.remits` rather than querying this model.
+
+| Field Name | Type                                          |
+|------------|-----------------------------------------------|
+| dbid       | Integer                                       |
+| remittance | [BaseRemittanceAdvice](#baseremittanceadvice) |
+| claim      | [Claim](/sdk/data-claim/#claim)               |
+
+### NewRemittanceDocument
+
+The file a manual or electronic remit was posted from.
+
+| Field Name         | Type                                          | Description                                          |
+|--------------------|-----------------------------------------------|------------------------------------------------------|
+| dbid               | Integer                                       |                                                      |
+| remittance         | [BaseRemittanceAdvice](#baseremittanceadvice) |                                                      |
+| document           | File (S3 key)                                 |                                                      |
+| document\_url      | String (computed)                             | Presigned URL for the file, or `None` when unset     |
+| originator         | [CanvasUser](/sdk/data-canvasuser/)           |                                                      |
+| committer          | [CanvasUser](/sdk/data-canvasuser/)           |                                                      |
+| entered\_in\_error | [CanvasUser](/sdk/data-canvasuser/)           |                                                      |
+| created            | DateTime                                      |                                                      |
+| modified           | DateTime                                      |                                                      |
 
 ### PaymentCollection
 
@@ -203,6 +290,34 @@ Represents a transfer of a claim line item balance to another coverage or patien
 | entered\_in\_error               | [CanvasUser](/sdk/data-canvasuser/)             |
 | created                          | DateTime                                        |
 | modified                         | DateTime                                        |
+
+### LineItemAllowed
+
+Represents the amount a payer allowed on a claim line item. Call `active()` to leave out amounts entered in error.
+
+| Field Name          | Type                                            |
+|---------------------|-------------------------------------------------|
+| dbid                | Integer                                         |
+| posting             | [BasePosting](#baseposting)                     |
+| billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) (deprecated) |
+| claim\_line\_item   | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
+| amount              | Decimal                                         |
+| entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)             |
+| created             | DateTime                                        |
+| modified            | DateTime                                        |
+
+### RemarkCode
+
+Represents a remark code a payer sent in an 835 remit for a claim line item on a coverage posting.
+
+| Field Name        | Type                                            |
+|-------------------|-------------------------------------------------|
+| dbid              | Integer                                         |
+| posting           | [CoveragePosting](#coverageposting)             |
+| claim\_line\_item | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
+| remark\_code      | String                                          |
+| created           | DateTime                                        |
+| modified          | DateTime                                        |
 
 ### Discount
 
