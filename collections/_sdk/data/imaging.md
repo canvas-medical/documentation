@@ -193,6 +193,7 @@ document = DocumentReference.objects.filter(
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
 | note                | [Note](/sdk/data-note/#note)                                   |
 | assessment          | [Assessment](/sdk/data-assessment/#assessment) |
+| assessments         | [Assessment](/sdk/data-assessment/#assessment)[]               |
 | imaging             | String                                                         |
 | imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | note_to_radiologist | String                                                         |
@@ -207,6 +208,21 @@ document = DocumentReference.objects.filter(
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
 | action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
+
+An imaging order has two relations to assessments:
+
+- `assessment` is the assessment the order is linked to through its `assessment_id`. Its reverse is `linked_imaging_orders` on [Assessment](/sdk/data-assessment/#assessment).
+- `assessments` holds the assessments for the conditions selected as the order's indications. Its reverse is `imaging_orders` on [Assessment](/sdk/data-assessment/#assessment).
+
+### ImagingOrderAssessment
+
+The join behind `assessments`. Reach an order's assessments through its `assessments` attribute rather than querying this model.
+
+| Field Name    | Type                                           |
+|---------------|------------------------------------------------|
+| dbid          | Integer                                        |
+| imaging_order | [ImagingOrder](#imagingorder)                  |
+| assessment    | [Assessment](/sdk/data-assessment/#assessment) |
 
 ### ImagingReview
 

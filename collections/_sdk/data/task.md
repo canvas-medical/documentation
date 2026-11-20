@@ -180,6 +180,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | original_role     | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
 | original_due      | DateTime                                |
 | internal_comment  | String                                  |
+| labels            | [TaskLabel](#tasklabel)[]               |
 
 ### TaskComment
 
@@ -211,6 +212,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
 | appointments     | [Appointment](/sdk/data-appointment/)[]             |
+| note_tasks       | [NoteTask](#notetask)[]                             |
 
 ### TaskTaskLabel
 
@@ -220,6 +222,16 @@ The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a tas
 | ---------- | ----------------------- |
 | dbid       | Integer                 |
 | task       | [Task](#task)           |
+| task_label | [TaskLabel](#tasklabel) |
+
+### NoteTaskLabel
+
+The join between a note task and a [TaskLabel](#tasklabel). Reach the labels on a note task through its `labels` attribute rather than querying this model.
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| note_task  | [NoteTask](#notetask)   |
 | task_label | [TaskLabel](#tasklabel) |
 
 ### TaskMetadata
