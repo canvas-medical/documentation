@@ -26,7 +26,7 @@ Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_U
 
 | Attribute     | Type            | Description                                                                 | Required |
 |---------------|-----------------|-----------------------------------------------------------------------------|----------|
-| `id`          | `str` or `UUID` | ID of the refill request to update                                          | Yes      |
+| `id`          | `str` or `UUID` | ID of the [refill request](/sdk/data-refill-request/#refillrequest) to update                                          | Yes      |
 | `assignee_id` | `str`           | ID of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. | Unless `ignored` is set |
 | `ignored`     | `bool`          | Set to `True` to ignore the request. An ignored request can't be returned to the queue, so `True` is the only value this attribute accepts. | Unless `assignee_id` is set |
 
