@@ -138,7 +138,7 @@ note_events = fax.noteactionevents.all()
 
 ### Faxes Canvas receives
 
-Filter on `direction` to read received faxes. `success` is `False` when the faxing service reported a problem receiving the fax, such as a call that dropped partway through. Canvas still creates an integration task with the pages that arrived, so the document may be incomplete.
+Filter on `direction` to read received faxes. `success` is `False` when the faxing service reported a problem receiving the fax, such as a call that dropped partway through. When the faxing service has the pages that arrived, Canvas still creates an integration task with them, so the document may be incomplete. When it has none, the fax has no integration task, so [`DOCUMENT_RECEIVED`](/sdk/events/#clinical-documents) doesn't fire for it. To catch those faxes too, query received faxes with `success=False`:
 
 ```python?partial=true
 from canvas_sdk.v1.data import Fax, FaxDirection
