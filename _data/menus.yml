@@ -1195,6 +1195,9 @@ data_module:
   - title: "DME"
     url: /sdk/data-dme/
     description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
+  - title: "DocumentAnnotation"
+    url: /sdk/data-document-annotation/
+    description: Annotated and signed versions of lab, imaging, and referral reports and other documents.
   - title: "DocumentHistoryEvent"
     url: /sdk/data-document-history-event/
     description: An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review.
