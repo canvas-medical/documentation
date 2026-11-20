@@ -1,11 +1,11 @@
 ---
 title: "Refill Request"
 slug: "effect-update-refill-request"
-excerpt: "Assign a pending refill request to a staff member, ignore it, or both."
+excerpt: "Assign a pending refill request to a staff member, or ignore it."
 hidden: false
 ---
 
-The `UpdateRefillRequest` effect changes a [refill request](/sdk/data-refill-request/) that is still in the refill queue. Use it to assign the request to a staff member, to ignore it, or to do both in one effect.
+The `UpdateRefillRequest` effect changes a [refill request](/sdk/data-refill-request/) that is still in the refill queue. Use it to assign the request to a staff member, or to ignore it.
 
 Ignoring a request does the same thing as the **Ignore** button in the refill panel: the request leaves the queue, and nothing is sent to the pharmacy. Use it for a request that was already handled some other way. To send the pharmacy an answer, approve or deny the request instead.
 
@@ -18,7 +18,7 @@ Only pending requests can be updated: requests that aren't ignored and have no c
 Updates the refill request.
 
 - `id` must be the id of a [pending refill request](/sdk/data-refill-request/#pending-requests), one that `RefillRequest.objects.pending()` returns. A request that was already ignored or answered can't be updated, including to reassign it.
-- Set `assignee_id`, `ignored`, or both.
+- Set `assignee_id` to reassign the request, or `ignored=True` to take it out of the queue. One of them is required.
 
 Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_UPDATED`](/sdk/events/#refill-requests) event. It doesn't write a response to the request.
 
@@ -27,7 +27,7 @@ Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_U
 | Attribute     | Type            | Description                                                                 | Required |
 |---------------|-----------------|-----------------------------------------------------------------------------|----------|
 | `id`          | `str` or `UUID` | ID of the refill request to update                                          | Yes      |
-| `assignee_id` | `str`           | Key of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. | Unless `ignored` is set |
+| `assignee_id` | `str`           | ID of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. | Unless `ignored` is set |
 | `ignored`     | `bool`          | Set to `True` to ignore the request. An ignored request can't be returned to the queue, so `True` is the only value this attribute accepts. | Unless `assignee_id` is set |
 
 ## Example
