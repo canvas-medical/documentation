@@ -361,6 +361,7 @@ A group of items in a questionnaire. A group sits at the top level of the questi
 | assessment           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | questionnaires       | [Questionnaire](#questionnaire)[]                              |
 | progress_status      | String                                                         |
+| skipped_questions    | [Question](#question)[]                                        |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
