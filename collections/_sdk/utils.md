@@ -12,6 +12,45 @@ from canvas_sdk.utils import Http
 http = Http()
 ```
 
+**Parameters**:
+
+| Name          | Type     | Required | Description                                                                                       |
+| :------------ | :------- | :------- | :------------------------------------------------------------------------------------------------ |
+| `base_url`    | _string_ | `false`  | The URL that each request's path is joined to.                                                    |
+| `client_cert` | _string_ | `false`  | A PEM client certificate to present to `base_url` for mutual TLS. Requires `client_key`.          |
+| `client_key`  | _string_ | `false`  | The unencrypted PEM private key for `client_cert`. Requires `client_cert`.                        |
+
+With `base_url`, pass each method a path instead of a full URL. End `base_url` with `/` and leave the leading `/` off the path, so the path joins under the base URL rather than replacing its path.
+
+### Presenting a client certificate
+
+Some APIs authenticate callers with a client certificate instead of a token, which is called mutual TLS. To call one, pass the certificate and its private key to `Http` as PEM strings. Store them as [sensitive variables](/sdk/secrets/) so they stay out of your plugin package and repository.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils import Http
+
+
+class VendorSync(BaseHandler):
+    def compute(self) -> list[Effect]:
+        http = Http(
+            "https://api.vendor.example/v1/",
+            client_cert=self.secrets["VENDOR_CLIENT_CERT"],
+            client_key=self.secrets["VENDOR_CLIENT_KEY"],
+        )
+
+        # Sent to https://api.vendor.example/v1/patients with the client certificate.
+        response = http.get("patients")
+        ...
+        return []
+```
+
+The client presents the certificate only to the scheme, host, and port of `base_url`, and verifies the server against public certificate authorities. Batched requests from the same client present it too.
+
+- Pass `client_cert` and `client_key` together, with an `https` `base_url`. Otherwise, creating the client raises `ValueError`.
+- The key must be unencrypted and must match the certificate. A key that doesn't match raises `ssl.SSLError` when you create the client.
+
 ### get
 
 Sends a GET request.
