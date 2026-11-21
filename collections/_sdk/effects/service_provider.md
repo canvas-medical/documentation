@@ -19,7 +19,8 @@ Build a `ServiceProvider` with the [attributes](#attributes) you want to set, th
 
 Creates a service provider, or updates a matching one; see [Calling create more than once](#calling-create-more-than-once).
 
-- `first_name`, `specialty`, and `business_address` are required, and reject empty strings.
+- `specialty` and `business_address` are required, and reject empty strings.
+- For an individual, set `first_name` and usually `last_name`. For a practice or organization, leave both off and put its name in `practice_name`.
 - `id` must not be set.
 
 ### update() → Effect
@@ -27,7 +28,7 @@ Creates a service provider, or updates a matching one; see [Calling create more 
 Updates the provider with the given `id`.
 
 - `id` is required, and must be the id of an existing provider.
-- Only the attributes you set on the effect are changed, so an update never clears a field you did not mention. `first_name` and `specialty` cannot be set to `None`.
+- Only the attributes you set on the effect are changed, so an update never clears a field you did not mention. `specialty` cannot be set to `None`.
 - Set `is_active=True` to reactivate a deactivated provider. Nothing else reactivates one.
 
 ### deactivate() → Effect
@@ -41,10 +42,10 @@ Deactivates a provider without deleting it, so anything referencing it keeps wor
 | Attribute          | Type            | Description                                     | Required |
 |--------------------|-----------------|-------------------------------------------------|----------|
 | `id`               | `str` or `UUID` | The id of the provider. Must not be set on create | For `update()` and `deactivate()` |
-| `first_name`       | `str`           | Provider name, or the organization name         | For `create()` |
 | `specialty`        | `str`           | Free text                                       | For `create()` |
 | `business_address` | `str`           | Business address                                | For `create()` |
-| `last_name`        | `str` or `None` | Omit for organizations                          | No       |
+| `first_name`       | `str` or `None` | The provider's first name. Omit for a practice  | No       |
+| `last_name`        | `str` or `None` | The provider's last name. Omit for a practice   | No       |
 | `practice_name`    | `str` or `None` | Practice or organization name                   | No       |
 | `business_phone`   | `str` or `None` | Business phone number                           | No       |
 | `business_fax`     | `str` or `None` | Business fax number                             | No       |
@@ -72,8 +73,12 @@ When an existing provider is matched:
 - a deactivated provider stays deactivated unless you send `is_active=True`
 
 Because of this, the same create is safe to run repeatedly — on a schedule, on every plugin install,
-or as a re-import of a directory you already loaded. An omitted or empty `last_name` is treated as
-the empty string when matching, so repeated creates for an organization resolve to the same record.
+or as a re-import of a directory you already loaded. An omitted or empty `first_name` or `last_name`
+is treated as the empty string when matching, so repeated creates for a practice resolve to the same
+record.
+
+`practice_name` is not one of the four fields. Two practices with no personal name that share a
+`specialty` and `business_address` resolve to the same record, whatever their `practice_name`.
 
 ## Example Usage
 
@@ -99,9 +104,9 @@ class ProviderLoader(BaseHandler):
                 npi="1234567890",
                 direct_address="jane.doe@direct.example.org",
             ).create(),
-            # An organization has no last name.
+            # A practice has no personal name, so its name goes in practice_name.
             ServiceProvider(
-                first_name="Acme Imaging Center",
+                practice_name="Acme Imaging Center",
                 specialty="Radiology",
                 business_address="1 Hospital Way",
             ).create(),
