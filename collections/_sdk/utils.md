@@ -681,12 +681,13 @@ Beyond medications and allergens, the ontologies service resolves coded concepts
 
 Search ICD-10 conditions by text, or resolve a specific code. This backs the condition/diagnosis autocompletes on commands such as [Diagnose](/sdk/commands/#diagnose), [Assess](/sdk/commands/#assess), and [Medical History](/sdk/commands/#medicalhistory). Query parameters:
 
-| Parameter    | Type   | Description                                                                        |
-|--------------|--------|-----------------------------------------------------------------------------------|
-| `search`     | string | Full-text search over ICD-10 conditions.                                          |
-| `icd10_code` | string | Resolve an exact ICD-10 code instead of searching. Dots optional (`E119` / `E11.9`). |
-| `date`       | string | Optional. `YYYY-MM-DD`; resolves codes as of that date.                           |
-| `limit`      | int    | Optional. Maximum number of results.                                              |
+| Parameter        | Type   | Description                                                                                          |
+|------------------|--------|------------------------------------------------------------------------------------------------------|
+| `search`         | string | Full-text search over ICD-10 conditions. A code or code prefix, with or without dots, matches by code. |
+| `icd10_code`     | string | Resolve one exact ICD-10 code instead of searching. Pass the code without dots (`E119`).              |
+| `icd10_code__in` | string | Resolve several exact ICD-10 codes in one request. Pass a comma-separated list without dots (`E784,E7841`). |
+| `date`           | string | Optional. `YYYY-MM-DD`; returns only codes effective on that date.                                   |
+| `limit`          | int    | Optional. Maximum number of results.                                                                 |
 
 ```python
 from urllib.parse import urlencode
@@ -701,6 +702,12 @@ response_json = ontologies_http.get_json(
 response_json = ontologies_http.get_json(
     f"/icd/condition/?{urlencode({'icd10_code': 'E119'})}"
 ).json()
+
+# resolve several codes in one request
+codes = ["E784", "E7841", "E119"]
+response_json = ontologies_http.get_json(
+    f"/icd/condition/?{urlencode({'icd10_code__in': ','.join(codes)})}"
+).json()
 ```
 
 Returns a `results` list of matching conditions:
@@ -709,14 +716,17 @@ Returns a `results` list of matching conditions:
 {
   "results": [
     {
-      "icd10_code": "E11.9",
+      "icd10_code": "E119",
       "icd10_text": "Type 2 diabetes mellitus without complications",
       "snomed_concept_id": "44054006",
-      "preferred_snomed_term": "Type 2 diabetes mellitus"
+      "preferred_snomed_term": "Type 2 diabetes mellitus",
+      "end_effective_date": null
     }
   ]
 }
 ```
+
+Each result's `end_effective_date` is the code's end date (`YYYY-MM-DD`) once the code is retired, and `null` while the code is valid. To find charted conditions that still carry a retired code, look up their codes with `icd10_code__in` and leave out `date`, which would drop retired codes from the results. A code that doesn't exist returns no result.
 
 #### `GET /cpt/immunization/` — search immunizations
 
