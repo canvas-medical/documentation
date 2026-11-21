@@ -97,6 +97,43 @@ staff.licenses.all()
 
 ```
 
+## Finding staff who can e-prescribe
+
+Canvas treats a staff member as able to e-prescribe when all three are true:
+
+- **Active:** `active` is `True`.
+- **Set up with Surescripts:** `spi_number` is set. This is the staff member's Surescripts prescriber ID.
+- **A prescriber role:** the `internal_code` of their [`top_clinical_role`](#staffrole) is one of your instance's prescriber roles. By default those are `MD`, `DO`, `NP`, and `PA`.
+
+The same rule decides who can be [assigned a refill request](/sdk/effect-update-refill-request/#choosing-an-assignee). To list these staff members:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+PRESCRIBER_ROLES = {"MD", "DO", "NP", "PA"}
+
+
+def can_eprescribe(staff: Staff) -> bool:
+    role = staff.top_clinical_role
+    return bool(
+        staff.active
+        and staff.spi_number
+        and role is not None
+        and role.internal_code in PRESCRIBER_ROLES
+    )
+
+
+prescribers = [
+    staff
+    for staff in Staff.objects.filter(active=True)
+    .exclude(spi_number="")
+    .prefetch_related("roles")
+    if can_eprescribe(staff)
+]
+```
+
+`prefetch_related("roles")` loads every staff member's roles in one query, since `top_clinical_role` reads them. If your instance uses different prescriber roles, change `PRESCRIBER_ROLES` to match.
+
 ## Accessing the staff signature
 
 The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
@@ -174,6 +211,7 @@ url = staff.signature_url
 | licenses                     | [StaffLicense](#stafflicense)[]                                                                 |                                                                                                                                                     |
 | letters                      | [Letter](/sdk/data-letter/#letter)[]                                                            |                                                                                                                                                     |
 | imaging_orders               | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                                               |                                                                                                                                                     |
+| service_requests             | [ServiceRequest](/sdk/data-service-request/#servicerequest)[]                                   | The service requests this staff member requested                                                                                                    |
 | dme_orders                   | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                                           |                                                                                                                                                     |
 | immunizations_given          | [Immunization](/sdk/data-immunization/#immunization)[]                                          |                                                                                                                                                     |
 | supervising_prescriptions    | [Prescription](/sdk/data-prescription/#prescription)[]                                          |                                                                                                                                                     |
