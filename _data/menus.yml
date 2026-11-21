@@ -1135,6 +1135,9 @@ data_module:
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
+  - title: "CarePlan"
+    url: /sdk/data-care-plan/
+    description: A patient's care plans, with their status, intent, and category.
   - title: "CareTeam"
     url: /sdk/data-care-team/
     description: Teams assigned for patient care.
