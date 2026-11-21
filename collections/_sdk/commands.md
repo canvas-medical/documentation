@@ -542,12 +542,13 @@ and committing it records nothing. When a plugin commits one, with `commit()` or
 
 The command's **Category Type** field is required and defaults to Problem List Item, so the condition
 is recorded as a problem list item unless a clinician sets it to Health Concern. Clinicians can also
-pick an optional **Category Domain**, or clear it to record no domain. `AddConditionCommand` has no
-parameters for either, so a plugin's AddCondition takes the defaults and records a problem list item
-with no domain. Plugins can read the choices in the command's data as
-`category_type`, which is `problem-list-item` or `health-concern`, and `category_domain`, which is
-`sdoh`, `functional-status`, `disability-status`, or `cognitive-status`, and is empty when no domain
-is set.
+pick an optional **Category Domain**, or clear it to record no domain.
+
+Plugins can read the choices in the command's data as `category_type`, which is `problem-list-item`
+or `health-concern`, and `category_domain`, which is `sdoh`, `functional-status`,
+`disability-status`, or `cognitive-status`, and is empty when no domain is set.
+
+{% include alert.html type="info" content="<code>AddConditionCommand</code> doesn't have parameters for the category type or domain yet, so a plugin's AddCondition records a problem list item with no domain. A future release will add parameters that let plugins set both." %}
 
 **Command-specific parameters**:
 
