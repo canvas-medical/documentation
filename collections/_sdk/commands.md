@@ -1291,10 +1291,10 @@ imaging_order = ImagingOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ImagingReport](/sdk/data-imaging/#imagingreport) IDs to review. Must be reports on that patient's chart.                                                                          |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).       |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -1587,10 +1587,10 @@ LabOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [LabReport](/sdk/data-labs/#labreport) IDs to review. Must be reports on that patient's chart.                                                                              |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).           |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -2741,10 +2741,10 @@ def compute():
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ReferralReport](/sdk/data-referral/#referralreport) IDs to review. Must be reports on that patient's chart.                                                                         |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).      |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -2966,7 +2966,7 @@ Records that a patient is stopping a medication, along with the reason. See [Rec
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
-| `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
+| `rationale`     | _string_ | `false`  | The reason for stopping the medication (max length: 1024 characters). |
 | `assessment_id` | _string_ | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
@@ -3081,10 +3081,10 @@ TaskCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument) ids to review. Must be documents already on that patient's chart.                                                                  |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).                            |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
