@@ -64,8 +64,9 @@ The same pattern works with any command class — `PlanCommand(note_uuid=...)`, 
 `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
 check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` works
-on any staged command except [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill), including
-[custom commands](/sdk/commands-custom-command/#collapsible-content).
+on any staged command except [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill).
+[Custom commands](/sdk/commands-custom-command/) are committed when originated, so it doesn't apply
+to them.
 
 To call these over HTTP rather than from a handler, see
 [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
