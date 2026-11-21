@@ -211,7 +211,7 @@ The state change effects below (push charges, lock, sign, unlock, check in, no s
 | `push_charges()` | `PSH` | `NEW`, `CVD`, `PSH`, `ULK`, `UND`. Billable encounter note types only, and only when the Push charges button is enabled. |
 | `lock()` | `LKD` | `NEW`, `CVD`, `ULK`, `UND`, and also `PSH` for encounter notes. Appointment notes lock only from `NSW`. |
 | `sign()` | `SGN` | `LKD`, or `SGN` to sign again. Note types with `is_sig_required` only. |
-| `unlock()` | `ULK` | `LKD`, and also `SGN` for note types with `is_sig_required`. On appointment notes, unlocking moves `LKD` back to `NSW`. |
+| `unlock()` | `ULK` | `LKD`, and also `SGN` for note types with `is_sig_required`. Appointment notes move from `LKD` or `SGN` back to `NSW` instead. This doesn't repeat the no-show's side effects, such as the no-show charge and the `APPOINTMENT_NO_SHOWED` event. |
 | `check_in()` | `CVD` | `BKD`, `RVT`, `NSW`. Appointment notes only. |
 | `no_show()` | `NSW` | `BKD`, `RVT`. Appointment notes only. |
 | `delete()` | `DLT` | `NEW`, `CVD`, `ULK`, `UND`, and also `PSH` for encounter notes. Appointment notes delete only from `SCH`. |

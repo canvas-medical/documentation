@@ -713,7 +713,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_NO_SHOWED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is marked as a no-show.</td></tr>
+    <tr><td colspan="2">Occurs when an appointment is marked as a no-show. Unlocking or amending a no-show appointment note moves it back to No show without firing this event again.</td></tr>
   </thead>
   <tbody>
     <tr>
