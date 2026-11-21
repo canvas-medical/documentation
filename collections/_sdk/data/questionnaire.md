@@ -116,7 +116,7 @@ interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
 for send_event in interview.send_events.all():
     log.info(f"email to {send_event.to_email} succeeded: {send_event.email_succeeded}")
 
-for finding in interview.visual_findings.committed():
+for finding in interview.visual_findings.all():
     log.info(f"media: {finding.media_url}")
 ```
 
@@ -469,7 +469,7 @@ One attempt to send an interview to the patient by email or text message.
 
 ### InterviewVisualFinding
 
-Media attached to an interview. Use `committed()` on the manager or on an interview's `visual_findings` to keep only committed findings that aren't entered in error.
+Media attached to an interview. A finding isn't committed separately from its interview, so its `committer` is empty. To keep only findings from committed interviews, filter on the interview, for example `InterviewVisualFinding.objects.filter(interview__committer__isnull=False, interview__entered_in_error__isnull=True)`.
 
 | Field Name       | Type                               |
 |------------------|------------------------------------|
