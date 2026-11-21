@@ -29,6 +29,8 @@ When an effect is prepared, the model validates inputs and returns structured er
 
 - **Contact Point Exists** — The effect verifies the provided `contact_point_id` maps to an existing `PatientContactPoint` record. If no matching record exists the effect will include an error detail with message: `Patient Contact Point does not exist`.
 
+Canvas sends the verification after your handler returns the effect, so a failed send doesn't reach the handler. If the email or text message can't be sent, for example because the email provider refuses it, the effect fails and the error appears in `canvas logs` as `Verification could not be sent to PatientContactPoint <contact_point_id>`. The contact point stays unverified. Emit the effect again once the cause is fixed.
+
 ## Caveats
 
 - Emitting this effect will trigger a save to the associated `PatientContactPoint`. If your plugin sends `SendContactVerification` in direct response to a `PATIENT_CONTACT_POINT_UPDATED` event, the save triggered by the effect can cause the same event to fire again, producing an infinite event loop. To avoid this, debounce or detect origin (for example, ignore updates originating from the plugin runner or set a transient flag on the model) before emitting the effect in response to contact point update events.
