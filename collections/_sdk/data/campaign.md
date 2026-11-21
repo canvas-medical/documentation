@@ -48,7 +48,7 @@ authored_interventions = staff.interventions.all()
 
 ## Patients in an intervention
 
-The patients an intervention targets can be accessed with the `patients` attribute on an `Intervention` object. From the other side, the interventions that target a patient can be accessed with the `intervention_set` attribute on a `Patient` object:
+The patients an intervention targets can be accessed with the `patients` attribute on an `Intervention` object. From the other side, the interventions that target a patient can be accessed with the `interventions` attribute on a `Patient` object:
 
 ```python
 from canvas_sdk.v1.data import Intervention, Patient
@@ -57,7 +57,7 @@ intervention = Intervention.objects.get(dbid=5678)
 patients = intervention.patients.all()
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
-patient_interventions = patient.intervention_set.all()
+patient_interventions = patient.interventions.all()
 ```
 
 Each patient in an intervention is an `InterventionPatient` row. Query it directly when you need the pairs themselves, for example to count the patients in each intervention.
