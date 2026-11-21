@@ -48,7 +48,6 @@ class CustomizePatientSection(BaseHandler):
             return [PanelConfiguration(sections=[
                 PanelConfiguration.PanelPatientSection.REFILL_REQUEST,
                 PanelConfiguration.PanelPatientSection.LAB_REPORT,
-                PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
                 PanelConfiguration.PanelPatientSection.TASK,
             ], page=PanelConfiguration.Page.PATIENT if patient else PanelConfiguration.Page.GLOBAL).apply()]
         else:
@@ -66,7 +65,6 @@ class CustomizeGlobalSection(BaseHandler):
             return [PanelConfiguration(sections=[
                 PanelConfiguration.PanelGlobalSection.LAB_REPORT,
                 PanelConfiguration.PanelGlobalSection.TASK,
-                PanelConfiguration.PanelGlobalSection.CHANGE_REQUEST,
             ], page=PanelConfiguration.Page.PATIENT if patient else PanelConfiguration.Page.GLOBAL).apply()]
         else:
             return []
