@@ -83,6 +83,8 @@ assess_event = AssessCodingGapEvent.objects.get(id="0b2f2f8c-3c2c-4d9e-9a1a-2b6a
 conditions = assess_event.conditions.all()
 ```
 
+An accepted coding gap's `conditions` are the conditions its Assess Coding Gap command assessed. For each picked ICD-10 code, that's the patient's charted condition with the code, or a new condition the command recorded when the chart had none. Entering the command in error enters in error the conditions it recorded. A charted condition it reused stays on the chart, with its earlier onset date and category put back, and one it made active again is resolved again unless a later committed assessment uses it.
+
 For a given condition, the assess events it was included in are reachable with the `assessed_coding_gaps` accessor on a `Condition` object:
 
 ```python
