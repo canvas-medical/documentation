@@ -559,6 +559,39 @@ The response is a dictionary keyed by NDC; each value is the full medication obj
 
 **Codes that resolve vs. free text.** A `med_medication_id` returned above resolves cleanly when passed as an `fdb_code` to a command. Some FDB entries — for example the `THSC …`-prefixed results the FHIR `/Medication` search can return — are not in this catalog and will render with a **blank medication name** if used. To record a historical or non-catalog medication as free text instead, pass a `Coding` with `system=CodeSystems.UNSTRUCTURED` (its `display` is used as-is) — see [MedicationStatement](/sdk/commands/#medicationstatement).
 
+#### `GET /fdb/routed-medication/` — search dose-agnostic medications
+
+A routed medication is a drug name and route with no strength or dose form, such as "warfarin oral". Search routed medications when you know what a patient takes but not the dose, for example to screen a medication reported on an intake form for drug–drug interactions. The search returns only active routed medications, shortest description first. Query parameters:
+
+| Parameter | Type   | Description                                              |
+|-----------|--------|----------------------------------------------------------|
+| `search`  | string | Full-text search over the routed medication description. |
+| `limit`   | int    | Optional. Maximum number of results.                     |
+
+```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
+response_json = ontologies_http.get_json(
+    f"/fdb/routed-medication/?{urlencode({'search': 'warfarin'})}"
+).json()
+```
+
+The response contains a `results` list:
+
+```json
+{
+  "results": [
+    {
+      "med_routed_medication_id": 3949,
+      "med_routed_medication_description": "warfarin oral"
+    }
+  ]
+}
+```
+
+A `med_routed_medication_id` is not a `med_medication_id`, so don't pass it as an `fdb_code` to a command. To screen a routed medication for drug–drug interactions, send its id with the `FDB_ROUTED_MED` coding type, as [Screening for drug–drug interactions](#screening-for-drugdrug-interactions) describes.
+
 ### Searching for allergens
 
 Plugin authors can search the allergen catalog — the same catalog behind the chart's allergen autocomplete — by full-text or by RxNorm code.
@@ -977,6 +1010,8 @@ The sibling `GET /fdb/medication-list-interaction/` endpoint checks a single can
 |------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `consideredMedication` | JSON string | The candidate drug's FDB codings as a flat list of `[code, "FDB"]` pairs, e.g. `[["217012", "FDB"]]`.                              |
 | `medicationList`       | JSON string | The patient's existing meds as a list of per-drug coding lists — **one inner list per drug**, e.g. `[[["155744", "FDB"]], [["261266", "FDB"]]]`. |
+
+To screen a [routed medication](#get-fdbrouted-medication--search-dose-agnostic-medications) in either parameter, give it as a `[med_routed_medication_id, "FDB_ROUTED_MED"]` pair, for example `[["3949", "FDB_ROUTED_MED"]]`. If a drug's codings also include an `FDB` or `RXNORM` code, the check uses that code instead. In the response, `existing_medication` or `considered_medication` then holds the routed medication id, and `existing_medication_description` holds its description, such as `warfarin oral`.
 
 > **Group `medicationList` one inner list per drug.** If you flatten it to one entry per coding row, a multi-coding drug can appear to interact with itself and produce false positives.
 
