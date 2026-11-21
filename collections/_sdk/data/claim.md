@@ -102,6 +102,53 @@ patient_allocated = claim.patient_balance + claim.total_patient_paid
 
 This holds for self-pay and insured claims alike, including a self-pay claim carrying no postings at all.
 
+## Claim history
+
+Canvas records an event each time a claim changes queue, has a coverage changed, is assigned, or is snoozed. Read these events to build an audit trail or to report on how claims move through your revenue workflow. Each event has a `created` timestamp, and each kind has its own relation on the claim:
+
+| Relation on the claim | Model | What it records |
+| --- | --- | --- |
+| `claim_state_change_events` | [ClaimStateChangeEvent](#claimstatechangeevent) | The queue the claim left and the queue it entered |
+| `claim_coverage_events` | [ClaimCoverageEvent](#claimcoverageevent) | A coverage activated, deactivated, made current, reordered, or edited |
+| `assignee_events` | [ClaimAssigneeEvent](#claimassigneeevent) | The staff member or team the claim was assigned to, or that it was unassigned |
+| `snooze_events` | [ClaimSnoozeEvent](#claimsnoozeevent) | A snooze set, cleared, or expired |
+
+To list a claim's queue moves in order:
+
+```python
+from canvas_sdk.v1.data import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+for event in claim.claim_state_change_events.select_related("queue_exited", "queue_entered").order_by("created"):
+    exited = event.queue_exited.display_name if event.queue_exited else None
+    entered = event.queue_entered.display_name if event.queue_entered else None
+    print(f"{event.created}: {exited} -> {entered}")
+```
+
+A [ClaimQueue](#claimqueue) lists the moves into it as `enter_events` and the moves out of it as `exit_events`, and a [ClaimCoverage](#claimcoverage) lists its own changes as `events`.
+
+## Claim responses
+
+When a clearinghouse or payer answers a submitted claim, Canvas stores the answer as a [ClaimResponse](#claimresponse) on the claim's `claim_responses`. Each message in the answer, such as a rejection reason, is a [ClaimResponseDetail](#claimresponsedetail) on the response's `responses`.
+
+`status` holds the code the clearinghouse sent. [ClaimResponseStatus](#claimresponsestatus) names the two codes Canvas acts on: `A` (accepted) and `R` (rejected). To read why a claim was rejected:
+
+```python
+from canvas_sdk.v1.data import Claim, ClaimResponseStatus
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+rejections = claim.claim_responses.committed().filter(status=ClaimResponseStatus.REJECTED)
+for claim_response in rejections:
+    for detail in claim_response.responses.all():
+        print(claim_response.response_time, detail.response_code, detail.response)
+```
+
+`committed()` keeps responses that were committed and not entered in error.
+
+To find the remits that paid a claim, read `claim.remits`. Each one is a [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice).
+
 ## Filtering
 
 ```python
@@ -158,6 +205,13 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | coverages                  | [ClaimCoverage](#claimcoverage)[]                     |                                           |
 | submissions                | [ClaimSubmission](#claimsubmission)[]                 |                                           |
 | postings                   | [BasePosting](/sdk/data-posting/#baseposting)[]       |                                           |
+| remits                     | [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice)[] | Remits that cover the claim   |
+| full_invoices              | [Invoice](/sdk/data-invoice/#invoice)[]               | Statements the claim appeared on          |
+| claim_responses            | [ClaimResponse](#claimresponse)[]                     |                                           |
+| claim_state_change_events  | [ClaimStateChangeEvent](#claimstatechangeevent)[]     |                                           |
+| claim_coverage_events      | [ClaimCoverageEvent](#claimcoverageevent)[]           |                                           |
+| assignee_events            | [ClaimAssigneeEvent](#claimassigneeevent)[]           |                                           |
+| snooze_events              | [ClaimSnoozeEvent](#claimsnoozeevent)[]               |                                           |
 | total_charges              | Decimal (computed)                                    | Total charges for active line items       |
 | total_paid                 | Decimal (computed)                                    | Sum of paid amounts from postings         |
 | total_adjusted             | Decimal (computed)                                    | Sum of adjustments and transfers          |
@@ -221,6 +275,8 @@ Represents individual billed procedures or services tied to a claim.
 | newlineitempayments    | QuerySet[[NewLineItemPayment](/sdk/data-posting/#newlineitempayment)]       |
 | newlineitemadjustments | QuerySet[[NewLineItemAdjustment](/sdk/data-posting/#newlineitemadjustment)] |
 | lineitemtransfers      | QuerySet[[LineItemTransfer](/sdk/data-posting/#lineitemtransfer)]           |
+| lineitemalloweds       | QuerySet[[LineItemAllowed](/sdk/data-posting/#lineitemallowed)]             |
+| remark_codes           | QuerySet[[RemarkCode](/sdk/data-posting/#remarkcode)]                       |
 
 ### ClaimLineItemDiagnosisCode
 
@@ -299,6 +355,7 @@ Links a claim to a specific insurance coverage.
 | payer_icn                          | String                                                                   |
 | created                            | DateTime                                                                 |
 | modified                           | DateTime                                                                 |
+| events                             | QuerySet[[ClaimCoverageEvent](#claimcoverageevent)]                      |
 
 ### ClaimComment
 
@@ -366,6 +423,8 @@ Defines the metadata for claim queues used in revenue workflows.
 | visible_columns     | Array\[[ClaimQueueColumns](#claimqueuecolumns)] |
 | created             | DateTime                                        |
 | modified            | DateTime                                        |
+| enter_events        | QuerySet[[ClaimStateChangeEvent](#claimstatechangeevent)] |
+| exit_events         | QuerySet[[ClaimStateChangeEvent](#claimstatechangeevent)] |
 
 ### ClaimPatient
 
@@ -507,7 +566,140 @@ Represents a payment plan between a patient and provider.
 | modified             | DateTime                                        |
 | claims               | [Claim](#claim)[]                               |
 
+### ClaimStateChangeEvent
+
+Records a claim leaving one queue and entering another.
+
+| Field Name    | Type                                | Description                         |
+|---------------|-------------------------------------|-------------------------------------|
+| dbid          | Integer                             |                                     |
+| claim         | [Claim](#claim)                     |                                     |
+| queue_exited  | [ClaimQueue](#claimqueue)           | Queue the claim left                |
+| queue_entered | [ClaimQueue](#claimqueue)           | Queue the claim entered             |
+| originator    | [CanvasUser](/sdk/data-canvasuser/) | User who moved the claim            |
+| created       | DateTime                            |                                     |
+| modified      | DateTime                            |                                     |
+
+### ClaimCoverageEvent
+
+Records a change to one of a claim's coverages.
+
+| Field Name     | Type                                                | Description                    |
+|----------------|-----------------------------------------------------|--------------------------------|
+| dbid           | Integer                                             |                                |
+| claim          | [Claim](#claim)                                     |                                |
+| claim_coverage | [ClaimCoverage](#claimcoverage)                     | Coverage that changed          |
+| event_type     | [ClaimCoverageEventType](#claimcoverageeventtype)   | What changed                   |
+| originator     | [CanvasUser](/sdk/data-canvasuser/)                 | User who made the change       |
+| created        | DateTime                                            |                                |
+| modified       | DateTime                                            |                                |
+
+### ClaimAssigneeEvent
+
+Records a change to who owns a claim: a staff member, a team, or nobody.
+
+| Field Name    | Type                                | Description                                                       |
+|---------------|-------------------------------------|-------------------------------------------------------------------|
+| dbid          | Integer                             |                                                                   |
+| claim         | [Claim](#claim)                     |                                                                   |
+| assignee      | [Staff](/sdk/data-staff/#staff)     | Staff member the claim was assigned to                            |
+| team          | [Team](/sdk/data-team/#team)        | Team the claim was assigned to                                    |
+| assignee_name | String                              | Staff member's name at the time of the change                     |
+| team_name     | String                              | Team's name at the time of the change                             |
+| originator    | [CanvasUser](/sdk/data-canvasuser/) | User who made the change, or `None` when a plugin made it         |
+| created       | DateTime                            |                                                                   |
+| modified      | DateTime                            |                                                                   |
+
+- When both `assignee` and `team` are `None`, the claim was unassigned.
+- `assignee_name` and `team_name` keep the owner's name after the staff member or team is deleted and `assignee` or `team` becomes `None`.
+
+### ClaimSnoozeEvent
+
+Records a claim's snooze being set, cleared, or expiring.
+
+| Field Name | Type                                  | Description                                        |
+|------------|---------------------------------------|----------------------------------------------------|
+| dbid       | Integer                               |                                                    |
+| claim      | [Claim](#claim)                       |                                                    |
+| state      | [ClaimSnoozeState](#claimsnoozestate) |                                                    |
+| date       | Date                                  | Date the claim is snoozed until, empty on a clear  |
+| originator | [CanvasUser](/sdk/data-canvasuser/)   | User who made the change                           |
+| created    | DateTime                              |                                                    |
+| modified   | DateTime                              |                                                    |
+
+### ClaimResponse
+
+A clearinghouse or payer response to a submitted claim.
+
+| Field Name              | Type                                | Description                                                  |
+|-------------------------|-------------------------------------|--------------------------------------------------------------|
+| dbid                    | Integer                             |                                                              |
+| claim                   | [Claim](#claim)                     |                                                              |
+| status                  | String                              | Code the clearinghouse sent; see [ClaimResponseStatus](#claimresponsestatus) |
+| response_time           | DateTime                            |                                                              |
+| clearinghouse_claim_id  | String                              |                                                              |
+| remote_claim_id         | String                              |                                                              |
+| batch_id                | String                              |                                                              |
+| file_id                 | String                              |                                                              |
+| file_name               | String                              |                                                              |
+| from_date               | Date                                |                                                              |
+| payer_id                | String                              |                                                              |
+| subscriber_number       | String                              |                                                              |
+| billing_provider_npi    | String                              |                                                              |
+| billing_provider_tax_id | String                              |                                                              |
+| sender_icn              | String                              |                                                              |
+| sender_name             | String                              |                                                              |
+| sender_id               | String                              |                                                              |
+| total_charge            | Decimal                             |                                                              |
+| originator              | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| committer               | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| entered_in_error        | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| created                 | DateTime                            |                                                              |
+| modified                | DateTime                            |                                                              |
+| responses               | QuerySet[[ClaimResponseDetail](#claimresponsedetail)] | Messages in the response                   |
+
+### ClaimResponseDetail
+
+One message within a claim response.
+
+| Field Name                | Type                            |
+|---------------------------|---------------------------------|
+| dbid                      | Integer                         |
+| claim_response            | [ClaimResponse](#claimresponse) |
+| clearinghouse_response_id | String                          |
+| response_code             | String                          |
+| response                  | String                          |
+| fields                    | String                          |
+| status                    | String                          |
+| created                   | DateTime                        |
+| modified                  | DateTime                        |
+
 ## Enumeration types
+
+### ClaimCoverageEventType
+
+| Value       | Label      |
+|-------------|------------|
+| activate    | Activate   |
+| deactivated | Deactivate |
+| current     | Current    |
+| reorder     | Reordered  |
+| edit        | Edited     |
+
+### ClaimSnoozeState
+
+| Value  | Label  |
+|--------|--------|
+| set    | set    |
+| clear  | clear  |
+| expire | expire |
+
+### ClaimResponseStatus
+
+| Value | Label    |
+|-------|----------|
+| A     | Accepted |
+| R     | Rejected |
 
 ### ClaimLineItemStatus
 
