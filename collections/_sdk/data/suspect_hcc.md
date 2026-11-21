@@ -1,0 +1,89 @@
+---
+title: "SuspectHCC"
+slug: "data-suspect-hcc"
+excerpt: "Canvas SDK SuspectHCC"
+hidden: false
+---
+
+## Introduction
+
+The `SuspectHCC` model is a Hierarchical Condition Category (HCC) suspected on a patient. Use it in risk adjustment reporting, or to find the suspected HCCs that are still open on a patient.
+
+Each suspected HCC has a `kind` that says why Canvas suspects it, and a list of `reasons` that explain it. When the `kind` is `previous_condition`, `previous_condition` holds the earlier diagnosis, such as `Bitten by orca, sequela (W56.21XS)`.
+
+## Basic usage
+
+A suspected HCC has no `id` attribute. To get one by its database identifier, use the `get` method on the `SuspectHCC` model manager:
+
+```python
+from canvas_sdk.v1.data import SuspectHCC
+
+suspect_hcc = SuspectHCC.objects.get(dbid=1234)
+```
+
+If you have a patient object, the patient's suspected HCCs can be accessed with the `suspect_hccs` attribute on a `Patient` object:
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+suspect_hccs = patient.suspect_hccs.all()
+```
+
+## Filtering
+
+Filter on `status` to get the suspected HCCs that are still open, and on `kind` to get the ones suspected for a given reason. The `SuspectHCCStatus` and `SuspectHCCKind` enumerations hold the values:
+
+```python
+from canvas_sdk.v1.data import Patient, SuspectHCCKind, SuspectHCCStatus
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+
+active_suspect_hccs = patient.suspect_hccs.filter(status=SuspectHCCStatus.ACTIVE)
+
+from_previous_conditions = patient.suspect_hccs.filter(
+    status=SuspectHCCStatus.ACTIVE,
+    kind=SuspectHCCKind.PREVIOUS_CONDITION,
+)
+
+for suspect_hcc in from_previous_conditions:
+    print(suspect_hcc.hcc_code, suspect_hcc.hcc_description, suspect_hcc.previous_condition)
+```
+
+## Attributes
+
+### SuspectHCC
+
+| Field Name         | Type                                    | Description |
+| ------------------ | --------------------------------------- | ----------- |
+| dbid               | Integer                                 | |
+| created            | DateTime                                | |
+| modified           | DateTime                                | |
+| patient            | [Patient](/sdk/data-patient/#patient)   | |
+| status             | [SuspectHCCStatus](#suspecthccstatus)   | Whether the suspected HCC is still open on the patient. |
+| hcc_code           | String                                  | The HCC code, such as `27`. |
+| hcc_description    | String                                  | The HCC's description, such as `End-stage liver disease`. |
+| kind               | [SuspectHCCKind](#suspecthcckind)       | Why the HCC is suspected. |
+| reasons            | String[]                                | The reasons the HCC is suspected, such as `Diagnosis: Coded last year`. |
+| previous_condition | String                                  | The earlier diagnosis the HCC is suspected from, when `kind` is `previous_condition`. Empty otherwise. |
+
+## Enumeration types
+
+### SuspectHCCStatus
+
+| Value      | Label    |
+| ---------- | -------- |
+| `active`   | Active   |
+| `inactive` | Inactive |
+
+### SuspectHCCKind
+
+| Value                      | Label                    |
+| -------------------------- | ------------------------ |
+| `implied_by_clinical_data` | Implied by Clinical Data |
+| `previous_condition`       | Previous Condition       |
+| `unknown`                  | Unknown                  |
+
+<br/>
+<br/>
+<br/>
