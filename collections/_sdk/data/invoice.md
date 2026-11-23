@@ -133,6 +133,16 @@ url = document.document_url if document else None
 
 Links an invoice to a claim it covers. Read the link through `invoice.claims` or `claim.full_invoices` rather than querying this model.
 
+```python
+from canvas_sdk.v1.data import Claim, Invoice
+
+invoice = Invoice.objects.get(dbid=42)
+claims = invoice.claims.all()
+
+claim = Claim.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+invoices = claim.full_invoices.all()
+```
+
 | Field Name | Type                            |
 |------------|---------------------------------|
 | dbid       | Integer                         |

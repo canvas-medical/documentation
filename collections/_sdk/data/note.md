@@ -628,6 +628,13 @@ A length of time offered when scheduling appointments or schedule events. Reach 
 
 The join between a [NoteType](#notetype) and a [ScheduleDuration](#scheduleduration). Reach the durations through the note type's `possible_durations` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.note import NoteType
+
+note_type = NoteType.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+durations = [option.duration for option in note_type.possible_durations.order_by("duration")]
+```
+
 | Field Name        | Type                                  |
 | ----------------- | ------------------------------------- |
 | dbid              | Integer                               |
