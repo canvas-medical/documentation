@@ -3315,7 +3315,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">NOTE_SUPERVISING_PROVIDER_CHANGED</th></tr>
-    <tr><td colspan="2">Occurs when a note's supervising provider is changed, whether in the note header's provider form or by a <a href="/sdk/effect-notes/#update-note">Note update effect</a>. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider. The event fires after the change is saved, and the note header's supervising provider list has no search hook, so a plugin can't filter that list or block the change. To keep notes to an approved set of supervisors, respond with a Note update effect that sets the value back; see <a href="/sdk/effect-notes/#restricting-a-notes-supervising-provider">Restricting a note's supervising provider</a>.</td></tr>
+    <tr><td colspan="2">Occurs when a note's supervising provider is changed, including changes made in the note header's provider form and by a <a href="/sdk/effect-notes/#update-note">Note update effect</a>. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider. The event fires after the change is saved, and the note header's supervising provider list has no search hook, so a plugin can't filter that list or block the change. To keep notes to an approved set of supervisors, respond with a Note update effect that sets the value back; see <a href="/sdk/effect-notes/#restricting-a-notes-supervising-provider">Restricting a note's supervising provider</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
