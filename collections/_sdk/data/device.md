@@ -28,6 +28,22 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 devices = patient.devices.all()
 ```
 
+## Codings
+
+The type codings for a device can be accessed with the `codings` attribute on a `Device` object:
+
+```python
+from canvas_sdk.v1.data.device import Device
+from logger import log
+
+device = Device.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for coding in device.codings.all():
+    log.info(f"system:  {coding.system}")
+    log.info(f"code:    {coding.code}")
+    log.info(f"display: {coding.display}")
+```
+
 ## Filtering
 
 Devices can be filtered by any attribute that exists on the model.
@@ -89,6 +105,21 @@ committed_devices = Device.objects.committed()
 | manufacturing_date          | Date                                  |
 | manufacturer                | String                                |
 | procedure_id                | Integer                               |
+| codings                     | [DeviceCoding](#devicecoding)[]       |
+
+### DeviceCoding
+
+| Field Name    | Type              |
+|---------------|-------------------|
+| dbid          | Integer           |
+| created       | DateTime          |
+| modified      | DateTime          |
+| system        | String            |
+| version       | String            |
+| code          | String            |
+| display       | String            |
+| user_selected | Boolean           |
+| device        | [Device](#device) |
 
 <br/>
 <br/>
