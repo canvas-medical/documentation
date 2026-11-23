@@ -369,7 +369,6 @@ A group of items in a questionnaire. A group sits at the top level of the questi
 | questionnaire_results | [QuestionnaireResult](#questionnaireresult)[]                 |
 | send_events          | [InterviewSendEvent](#interviewsendevent)[]                    |
 | visual_findings      | [InterviewVisualFinding](#interviewvisualfinding)[]            |
-| skipped_questions    | [Question](#question)[]                                        |
 
 An interview has two relations to assessments:
 
