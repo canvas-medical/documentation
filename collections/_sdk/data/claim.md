@@ -147,6 +147,47 @@ for claim_response in rejections:
 
 `committed()` keeps responses that were committed and not entered in error.
 
+### What a claim response detail holds
+
+Canvas stores each message from Claim.MD's status report as one `ClaimResponseDetail`. Most of them acknowledge the claim. A typical accepted claim gets an `Acknowledged` from the clearinghouse, then a `Code 19` or `Code 20` message from the payer.
+
+A detail's `status` is a one-letter code:
+
+| `status` | Meaning     | Example `response`                                                     |
+| -------- | ----------- | ---------------------------------------------------------------------- |
+| `A`      | Accepted    | `Code 20 - Accepted for processing. - Payer`                           |
+| `R`      | Rejected    | `Atleast one diagnosis pointer required.`                              |
+| `W`      | Warning     | `Warning- This payer does not support electronic corrected claims.`    |
+| `I`      | Information |                                                                        |
+
+The details on one response can mix statuses. A rejected response (`R`) carries at least one `R` detail, and can also hold `A` and `W` details. An accepted response (`A`) can still carry `W` warnings and `I` messages, so read its details too. [ClaimResponseStatus](#claimresponsestatus) names only `A` and `R`, so compare `W` and `I` as strings.
+
+`response_code` is the message's ID, and its shape tells you where the message came from:
+
+| `response_code` | Source | Example `response` | `fields` |
+| --------------- | ------ | ------------------ | -------- |
+| `ACK` | The clearinghouse received the claim | `Acknowledged` | Empty |
+| `A`, a claim status category digit, a status code, and an optional entity suffix, such as `A119-41`, `A220-PR`, or `A321` | A payer or clearinghouse claim status (X12 277): category `A1` received, `A2` accepted into adjudication, `A3` returned as unprocessable. The suffix names who sent it, such as `PR` for the payer or `41` for the submitter. | `Code 19 - Entity acknowledges receipt of claim/encounter. - Submitter` | Empty |
+| A Claim.MD edit code, such as `DP01`, `PH-INSSX`, `PHTXNMY1`, or `CHGAMT` | Claim.MD checked the claim before sending it | `Invalid Insured Sex [UNK]` | The claim fields at fault, such as `ins_sex` |
+| A claim adjustment or remark code, such as `CO-45`, `CO-16`, or `N381` | The payer's remittance denied or adjusted a service | `ERA DENIAL - Claim / service lacks information which is needed for adjudication. Check Remittance Remark Codes` | Empty |
+
+`fields` holds a comma-separated list of Claim.MD field names, such as `diag_ref_1`, `charge_1`, `bill_taxonomy`, or `prov_npi`. It's empty for messages from the payer.
+
+Treat `response` as display text. The same code can come with different wording from different payers. The text can also quote a value from the claim in brackets, such as a taxonomy code or an NPI.
+
+To list the problems on a claim with the fields to fix:
+
+```python
+from canvas_sdk.v1.data import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+for claim_response in claim.claim_responses.committed():
+    for detail in claim_response.responses.filter(status__in=["R", "W"]):
+        fields_to_fix = detail.fields.split(",") if detail.fields else []
+        print(detail.status, detail.response_code, detail.response, fields_to_fix)
+```
+
 To find the remits that paid a claim, read `claim.remits`. Each one is a [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice).
 
 ## Filtering
@@ -661,19 +702,19 @@ A clearinghouse or payer response to a submitted claim.
 
 ### ClaimResponseDetail
 
-One message within a claim response.
+One message within a claim response. See [What a claim response detail holds](#what-a-claim-response-detail-holds).
 
-| Field Name                | Type                            |
-|---------------------------|---------------------------------|
-| dbid                      | Integer                         |
-| claim_response            | [ClaimResponse](#claimresponse) |
-| clearinghouse_response_id | String                          |
-| response_code             | String                          |
-| response                  | String                          |
-| fields                    | String                          |
-| status                    | String                          |
-| created                   | DateTime                        |
-| modified                  | DateTime                        |
+| Field Name                | Type                            | Description |
+|---------------------------|---------------------------------|-------------|
+| dbid                      | Integer                         | |
+| claim_response            | [ClaimResponse](#claimresponse) | |
+| clearinghouse_response_id | String                          | Claim.MD's ID for this message |
+| response_code             | String                          | The message's code, such as `ACK`, `A220-PR`, `DP01`, or `CO-45` |
+| response                  | String                          | The message text |
+| fields                    | String                          | Comma-separated Claim.MD field names the message is about, or empty |
+| status                    | String                          | `A` (accepted), `R` (rejected), `W` (warning), or `I` (information) |
+| created                   | DateTime                        | |
+| modified                  | DateTime                        | |
 
 ## Enumeration types
 
