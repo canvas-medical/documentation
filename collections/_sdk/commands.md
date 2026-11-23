@@ -2730,7 +2730,7 @@ Read the committed reference back with the [Reference](/sdk/data-reference/#refe
 
 | Name                  | Type                | Required to commit | Description                                                                                                                                   |
 |:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
-| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. It must match a diagnostic view on your instance. |
 
 **Example**:
 
