@@ -130,6 +130,39 @@ class MyHandler(BaseHandler):
         return [note_effect.update()]
 ```
 
+#### Restricting a note's supervising provider
+
+The supervising provider list in the note header's provider form shows all staff, and no plugin event can filter that list or stop the change from saving. The supervising provider search events (`PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH` and the matching Refill and Adjust Prescription events) apply only to those commands' fields.
+
+A plugin can still enforce an approved list after the fact. [`NOTE_SUPERVISING_PROVIDER_CHANGED`](/sdk/events/#notes) fires once the new value is saved, and its context carries the previous value. When the new supervising provider isn't approved, return an update that restores the previous one, or clears it if there was none. The update fires the event again, and because the restored value is approved, the handler returns nothing the second time.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.note import Note as NoteEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import Note, Staff
+
+
+class RestrictSupervisingProvider(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_SUPERVISING_PROVIDER_CHANGED)
+
+    def compute(self) -> list[Effect]:
+        note = Note.objects.select_related("supervising_provider").get(id=self.event.target.id)
+        current = note.supervising_provider
+        if current is None:
+            return []
+
+        # Approved: anyone who is some staff member's default supervising provider.
+        if Staff.objects.filter(id=current.id, supervising_team__isnull=False).exists():
+            return []
+
+        previous = self.event.context.get("previous")
+        note_effect = NoteEffect(instance_id=str(note.id))
+        note_effect.supervising_provider_id = previous["id"] if previous else None
+        return [note_effect.update()]
+```
+
 ### Fax Note
 
 `FaxNoteEffect.apply() → Effect`
