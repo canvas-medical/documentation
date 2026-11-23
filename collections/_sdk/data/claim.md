@@ -166,7 +166,7 @@ The details on one response can mix statuses. A rejected response (`R`) carries 
 
 | `response_code` | Source | Example `response` | `fields` |
 | --------------- | ------ | ------------------ | -------- |
-| `ACK` | The clearinghouse received the claim | `Acknowledged` | Empty |
+| `ACK` | An acknowledgment, usually from Claim.MD when it receives the claim. Payers can also send `ACK` messages, including payment status updates. | `Acknowledged` | Empty |
 | `A`, a claim status category digit, a status code, and an optional entity suffix, such as `A119-41`, `A220-PR`, or `A321` | A payer or clearinghouse claim status (X12 277): category `A1` received, `A2` accepted into adjudication, `A3` returned as unprocessable. The suffix names who sent it, such as `PR` for the payer or `41` for the submitter. | `Code 19 - Entity acknowledges receipt of claim/encounter. - Submitter` | Empty |
 | A Claim.MD edit code, such as `DP01`, `PH-INSSX`, `PHTXNMY1`, or `CHGAMT` | Claim.MD checked the claim before sending it | `Invalid Insured Sex [UNK]` | The claim fields at fault, such as `ins_sex` |
 | A claim adjustment or remark code, such as `CO-45`, `CO-16`, or `N381` | The payer's remittance denied or adjusted a service | `ERA DENIAL - Claim / service lacks information which is needed for adjudication. Check Remittance Remark Codes` | Empty |
