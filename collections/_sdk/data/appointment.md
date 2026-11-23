@@ -161,7 +161,9 @@ The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Re
 | appointment | [Appointment](#appointment)            |
 | task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
 
-`scheduled_together` holds the other appointments booked in the same request with the multi-provider scheduling workflow. Each appointment in the group lists all of the others, and it's empty for an appointment booked on its own:
+### AppointmentScheduledTogether
+
+An appointment's `scheduled_together` attribute holds the other appointments booked in the same request with the multi-provider scheduling workflow. Each appointment in the group lists all of the others, and it's empty for an appointment booked on its own:
 
 ```python
 from canvas_sdk.v1.data.appointment import Appointment
@@ -170,9 +172,7 @@ appointment = Appointment.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
 booked_with = appointment.scheduled_together.select_related("provider")
 ```
 
-### AppointmentScheduledTogether
-
-The join behind `scheduled_together`. Each row links one appointment to another appointment booked in the same request. Reach the group through the appointment's `scheduled_together` attribute rather than querying this model.
+`AppointmentScheduledTogether` is the join behind it. Each row links one appointment to another appointment booked in the same request. Reach the group through the appointment's `scheduled_together` attribute rather than querying this model.
 
 | Field Name       | Type                        |
 |------------------|-----------------------------|
