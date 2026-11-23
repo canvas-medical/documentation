@@ -520,6 +520,29 @@ To answer a refill request a pharmacy sent, use [ApproveRefill](#approverefill) 
 [DenyRefill](#denyrefill). A plugin starts the response in a note, and the provider sends it to the
 pharmacy from the command.
 
+## Linked item URNs
+
+Imaging Order, Refer, Task, and the review commands take `linked_items_urns`, the records to link to the command, such as a note or a report. These are the same items staff pick in the command's **Linked items** field.
+
+Canvas identifies a linked record by a URN: the base64 encoding of `<model>:<content type dbid>:<record dbid>`, where `<model>` and `<content type dbid>` come from the record's [ContentType](/sdk/data-content-type/). Resolve the content type at runtime from its stable `app_label` and `model`, never a hardcoded `dbid`, which differs between instances:
+
+```python
+import base64
+
+from canvas_sdk.v1.data import ContentType, Note
+
+
+def linked_item_urn(record, app_label: str, model: str) -> str:
+    """Build the URN Canvas uses to link a record to a command."""
+    content_type = ContentType.objects.get(app_label=app_label, model=model)
+    token = f"{content_type.model}:{content_type.dbid}:{record.dbid}"
+    return base64.b64encode(token.encode("ascii")).decode("ascii")
+
+
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+note_urn = linked_item_urn(note, app_label="api", model="note")
+```
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -1248,7 +1271,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
 | `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
-| `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
+| `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`         | _string_          | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
@@ -1312,7 +1335,7 @@ imaging_order = ImagingOrderCommand(
 | `report_ids`             | _list[string]_                           | `true`   | List of [ImagingReport](/sdk/data-imaging/#imagingreport) IDs to review. Must be reports on that patient's chart.                                                                          |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).       |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
@@ -1608,7 +1631,7 @@ LabOrderCommand(
 | `report_ids`             | _list[string]_                           | `true`   | List of [LabReport](/sdk/data-labs/#labreport) IDs to review. Must be reports on that patient's chart.                                                                              |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).           |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
@@ -2649,7 +2672,7 @@ unstructured_rfv = ReasonForVisitCommand(
 | `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  |
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
-| `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+| `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`       | _string_                | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
@@ -2762,7 +2785,7 @@ def compute():
 | `report_ids`             | _list[string]_                           | `true`   | List of [ReferralReport](/sdk/data-referral/#referralreport) IDs to review. Must be reports on that patient's chart.                                                                         |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).      |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
@@ -3039,7 +3062,7 @@ questionnaire = StructuredAssessmentCommand(
 | `priority`          | _[TaskPriority](#taskpriority) enum_ | `false` | Priority of the task. Must be one of [`TaskPriority`](#taskpriority). |
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
-| `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
+| `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`     | _string_       | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Enums and Types**:
@@ -3074,10 +3097,20 @@ questionnaire = StructuredAssessmentCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import TaskCommand
-from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
-from canvas_sdk.v1.data.task import TaskPriority
+import base64
 from datetime import date
+
+from canvas_sdk.commands import TaskCommand
+from canvas_sdk.commands.commands.task import AssigneeType, TaskAssigner
+from canvas_sdk.v1.data import ContentType, Note
+from canvas_sdk.v1.data.task import TaskPriority
+
+# Link the visit note to the task. See "Linked item URNs" above.
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+content_type = ContentType.objects.get(app_label="api", model="note")
+note_urn = base64.b64encode(
+    f"{content_type.model}:{content_type.dbid}:{note.dbid}".encode("ascii")
+).decode("ascii")
 
 TaskCommand(
     title="Follow-up appointment scheduling",
@@ -3086,7 +3119,7 @@ TaskCommand(
     priority=TaskPriority.URGENT,
     comment="Ensure the patient schedules a follow-up within 30 days.",
     labels=["Urgent"],
-    linked_items_urns=["urn:task:123", "urn:note:456"]
+    linked_items_urns=[note_urn],
 )
 ```
 
@@ -3102,7 +3135,7 @@ TaskCommand(
 | `report_ids`             | _list[string]_                           | `true`   | List of [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument) ids to review. Must be documents already on that patient's chart.                                                                  |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).                            |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
