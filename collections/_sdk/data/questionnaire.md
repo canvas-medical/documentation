@@ -285,11 +285,24 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
 | assessments          | [Assessment](/sdk/data-assessment/#assessment)[]               |
+| skipped_questions    | [Question](#question)[]                                        |
 
 An interview has two relations to assessments:
 
 - `assessment` is the assessment in the same note that a [Structured Assessment](/sdk/commands/#structuredassessment) is linked to through its `assessment_id`. It's `None` when the interview isn't linked. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment).
 - `assessments` holds the assessments that a Structured Assessment produces when it's committed.
+
+`skipped_questions` holds the questions of the interview's questionnaire that were skipped, so they have no response.
+
+### InterviewSkippedQuestion
+
+The join between an interview and a [Question](#question) skipped in it. Reach the skipped questions through the interview's `skipped_questions` attribute rather than querying this model.
+
+| Field Name | Type                    |
+|------------|-------------------------|
+| dbid       | Integer                 |
+| interview  | [Interview](#interview) |
+| question   | [Question](#question)   |
 
 ### InterviewQuestionnaireMap
 

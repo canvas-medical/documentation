@@ -36,7 +36,7 @@ Displays the form fields with the command.
 | `required` | `bool`      | Whether the input is required. Defaults to `False`.          |
 | `editable` | `bool`      | Whether the input can be edited. Defaults to `True`.         |
 | `options`  | `list[str]` | Possible options when the input type is `SELECT`. Only allowed on `SELECT` fields. |
-| `value`    | `str`       | Default value used only when no command metadata row exists for this key. If the user has previously saved a value (including a cleared or empty value), the stored row wins and this field is ignored. |
+| `value`    | `str`       | Default value for the field. See [Default values](#default-values). |
 
 ## Example
 
@@ -84,6 +84,12 @@ class PlanCommandAdditionalFields(BaseHandler):
 
 Once the user fills out these fields, their values are persisted as command metadata and can be read back through the SDK [command metadata](/sdk/data-command/#commandmetadata) table.
 
+## Default values
+
+Set `value` on a `FormField` to give the field a default. When a command is originated, Canvas sends your handler a `COMMAND__FORM__GET_ADDITIONAL_FIELDS` event with the `purpose` `"form"` and saves each non-empty `value` in its response as command metadata for that key. The save happens before Canvas sends the `POST_COMMAND_ORIGINATE` event, so a handler for that event can read the defaults as [CommandMetadata](/sdk/data-command/#commandmetadata).
+
+Once a key has a stored row, the stored value wins and `value` is ignored. This includes a value the user saves, even a cleared or empty one. If two plugins declare a default for the same key, Canvas saves only the first one it receives.
+
 ## Rendering on the printed note
 
 The same `COMMAND__FORM__GET_ADDITIONAL_FIELDS` event fires when a command is rendered for printing (single-command print URL or full note printout). The platform uses the response to label and order the fields shown beneath each command in the printed output.
@@ -91,7 +97,7 @@ The same `COMMAND__FORM__GET_ADDITIONAL_FIELDS` event fires when a command is re
 Two things differ from the chart-form render path:
 
 - **Values come from stored command metadata, not from `FormField.value`.** The platform pairs each field declared in your effect with the matching `CommandMetadata` row by `key`. Whatever value is on `FormField` is ignored during print rendering. You do not need to populate `value` for print.
-- **Fields with no stored value or a blank value are skipped.** Only fields the user actually filled in will appear in the printout.
+- **Fields with no stored value or a blank value are skipped.** Only fields with a stored value appear in the printout, including [defaults](#default-values) saved when the command was originated.
 - **Fields you do not declare are hidden.** A `CommandMetadata` row whose `key` is not in your response will not print, even if it exists in the database. This matches the chart UI: removing or renaming a key in your effect makes the prior data invisible.
 
 ### Branching on `purpose`

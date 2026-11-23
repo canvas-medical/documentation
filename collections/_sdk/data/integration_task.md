@@ -42,7 +42,7 @@ task = IntegrationTask.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 url = task.document_url
 ```
 
-{% include alert.html type="info" content="<code>document_url</code> always points to the original file. Canvas saves staff annotations as separate files that the SDK doesn't expose, so the URL doesn't reflect them." %}
+{% include alert.html type="info" content="<code>document_url</code> always points to the original file. Canvas saves staff annotations as separate files, so the URL doesn't reflect them. To read an annotated version, use the task's <code>document_annotations</code> or the filed document's <a href=\"/sdk/data-document-annotation/\">DocumentAnnotation</a> records." %}
 
 ## Filtering
 
@@ -129,6 +129,7 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |                                      |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |                                      |
 | action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)[] | Faxes of this task, with their [delivery status](/sdk/data-fax/#delivery-status) |
+| document_annotations | [DocumentAnnotation](/sdk/data-document-annotation/#documentannotation)[] | Annotations saved on the document before it was filed |
 | document_url     | String (computed)                                              | Presigned S3 URL for `document`, or `None` if unset |
 | is_fax           | Boolean (computed)                                             | Whether this is a fax task           |
 | is_pending       | Boolean (computed)                                             | Whether this task is pending review  |

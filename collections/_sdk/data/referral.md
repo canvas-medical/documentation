@@ -131,6 +131,22 @@ current = referral_report.active_delegation
 
 For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
+## Attached documents
+
+The documents sent with a referral are `ReferralDocument` records, available through the referral's `documents` attribute. `document_type` names the kind of document, such as `LAB REPORT`, `IMAGING REPORT`, `REFERRAL REPORT`, `UNCATEGORIZED DOCUMENT`, or `NOTE`, and `document_id` holds that record's `dbid`. For an uploaded file, `url` and `bucket` hold its S3 location instead.
+
+```python
+from canvas_sdk.v1.data import LabReport, Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+lab_report_ids = [
+    attachment.document_id
+    for attachment in referral.documents.filter(document_type="LAB REPORT")
+]
+lab_reports = LabReport.objects.filter(dbid__in=lab_report_ids)
+```
+
 ## The document reference
 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
@@ -198,6 +214,7 @@ url = review.task.document_url if review else None
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
 | action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
+| documents             | [ReferralDocument](#referraldocument)[]                        |
 
 ### ReferralReport
 
@@ -246,6 +263,20 @@ url = review.task.document_url if review else None
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
 | reports                       | [ReferralReport](#referralreport)[]    |
+
+### ReferralDocument
+
+| Field Name    | Type                  | Notes |
+|---------------|-----------------------|-------|
+| dbid          | Integer               |       |
+| created       | DateTime              |       |
+| modified      | DateTime              |       |
+| referral      | [Referral](#referral) | The referral the document was sent with |
+| document_type | String                | The kind of document, such as `LAB REPORT` or `NOTE` |
+| document_id   | Integer               | The `dbid` of the attached record, or `None` |
+| label         | String                | The name shown for the attachment |
+| url           | String                | The S3 location of an uploaded file, or `None` |
+| bucket        | String                | The S3 bucket of an uploaded file, or `None` |
 
 ### ReferralReportCoding
 

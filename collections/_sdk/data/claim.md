@@ -189,6 +189,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | aggregate_coverage_balance | Decimal                                               |                                           |
 | assignee                   | [Staff](/sdk/data-staff/#staff)                       | Staff member the claim is assigned to     |
 | team                       | [Team](/sdk/data-team/#team)                          | Team the claim is assigned to             |
+| authorization              | [Authorization](/sdk/data-authorization/#authorization) | The prior authorization the claim is billed under (nullable) |
 | created                    | DateTime                                              |                                           |
 | modified                   | DateTime                                              |                                           |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |
@@ -359,7 +360,7 @@ Links a claim to a specific insurance coverage.
 
 ### ClaimComment
 
-Represents a free-text comment made on a Claim.
+Represents a free-text comment made on a Claim. To read only committed comments, use the `committed` method, for example `claim.comments.committed()`.
 
 | Field Name       | Type                               |
 | ---------------- | ---------------------------------- |

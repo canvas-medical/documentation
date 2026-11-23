@@ -44,6 +44,22 @@ for coding in detected_issue.evidence.all():
     log.info(f"display: {coding.display}")
 ```
 
+## Mitigations
+
+The actions recorded against a detected issue, such as accepting or refuting it, are available through the `mitigations` attribute on a `DetectedIssue` object. Each mitigation records the action, when it was taken, and the staff member who took it:
+
+```python
+from canvas_sdk.v1.data.detected_issue import DetectedIssue
+from logger import log
+
+detected_issue = DetectedIssue.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for mitigation in detected_issue.mitigations.select_related("author").order_by("date"):
+    log.info(f"{mitigation.date}: {mitigation.action} by {mitigation.author}")
+```
+
+To find the mitigations a staff member recorded, use the `detected_issue_mitigations` attribute on a [Staff](/sdk/data-staff/#staff) object.
+
 ## Filtering
 
 Detected issues can be filtered by any attribute that exists on the model.
@@ -93,6 +109,7 @@ committed_detected_issues = DetectedIssue.objects.committed()
 | issue_identifier_system | String                                            |
 | detail                  | String                                            |
 | evidence                | [DetectedIssueEvidence](#detectedissueevidence)[] |
+| mitigations             | [DetectedIssueMitigation](#detectedissuemitigation)[] |
 | assessed_coding_gap_events  | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]     |
 | created_coding_gap_events   | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[]     |
 | deferred_coding_gap_events  | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]       |
@@ -112,6 +129,17 @@ committed_detected_issues = DetectedIssue.objects.committed()
 | display        | String                                                   |
 | user_selected  | Boolean                                                  |
 | detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
+
+### DetectedIssueMitigation
+
+| Field Name     | Type                                                         |
+| -------------- | ------------------------------------------------------------ |
+| id             | UUID                                                         |
+| dbid           | Integer                                                      |
+| action         | [DetectedIssueMitigationAction](#detectedissuemitigationaction) |
+| date           | DateTime                                                     |
+| author         | [Staff](/sdk/data-staff/#staff)                              |
+| detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)     |
 
 ### DetectedIssueStatus
 
@@ -138,6 +166,20 @@ severity holds an empty string rather than `None`.
 | HIGH     | high     | High     |
 | MODERATE | moderate | Moderate |
 | LOW      | low      | Low      |
+
+### DetectedIssueMitigationAction
+
+Available on the model as `DetectedIssueMitigation.Action`, so a comparison reads
+`mitigation.action == DetectedIssueMitigation.Action.REFUTED`.
+
+| Enum      | Value     | Label     |
+| --------- | --------- | --------- |
+| ACCEPTED  | accepted  | Accepted  |
+| CORRECTED | corrected | Corrected |
+| REFUTED   | refuted   | Refuted   |
+| DEFERRED  | deferred  | Deferred  |
+| VALID     | valid     | Valid     |
+| INVALID   | invalid   | Invalid   |
 
 <br/>
 <br/>
