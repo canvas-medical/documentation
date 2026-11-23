@@ -114,12 +114,28 @@ for attachment in letter.documents.all():
     print(attachment.label, type(record).__name__ if record else None)
 ```
 
-A `PatientChartDocument` is a page of the patient's chart, such as a chart summary, that staff can attach to a letter. `PatientChartDocument.objects` lists the chart pages set up in the instance. Canvas offers only pages with `is_active` set to `True` as attachments. Its `url` is a path template with a `{key}` placeholder for the patient's key.
+A `PatientChartDocument` is a page of the patient's chart that staff can attach to a letter. Every instance has the same four pages, all active:
+
+| `name` | `url` |
+|--------|-------|
+| `Chart summary` | `api/Patient/{key}.html?&usage=chart_summary&audience=care_team` |
+| `Basic information` | `api/Patient/{key}.html?&usage=patient_basic_information&audience=care_team` |
+| `Medications and allergies` | `api/Patient/{key}.html?&usage=medication_allergy_list&audience=care_team` |
+| `Integrated care plan` | `api/CarePlan/{key}.html` |
+
+`{key}` in `url` is a placeholder for the patient's `id`. To find which chart page a letter attachment is, compare its `name`:
 
 ```python
-from canvas_sdk.v1.data import PatientChartDocument
+from canvas_sdk.v1.data import Letter, PatientChartDocument
 
-chart_pages = PatientChartDocument.objects.filter(is_active=True)
+letter = Letter.objects.prefetch_related("documents").get(
+    id="b5a0c1d2-e3f4-5678-9abc-def012345678"
+)
+
+for attachment in letter.documents.all():
+    record = attachment.related_object
+    if isinstance(record, PatientChartDocument) and record.name == "Chart summary":
+        print("The letter includes the chart summary")
 ```
 
 When an attached lab, imaging, or referral report, or an administrative or uncategorized clinical document, has been annotated, Canvas prints its newest [DocumentAnnotation](/sdk/data-document-annotation/) in place of the original file.
@@ -192,9 +208,9 @@ for template in templates:
 | dbid       | Integer  |       |
 | created    | DateTime |       |
 | modified   | DateTime |       |
-| name       | String   | The chart page's name, for example `Chart summary` |
-| url        | String   | A path template with a `{key}` placeholder for the patient's key |
-| is_active  | Boolean  | Whether staff can attach the page to a letter |
+| name       | String   | The chart page's name: `Chart summary`, `Basic information`, `Medications and allergies`, or `Integrated care plan` |
+| url        | String   | A path template with a `{key}` placeholder for the patient's `id`. See [Attached documents](#attached-documents). |
+| is_active  | Boolean  | Whether staff can attach the page to a letter. `True` for all four pages. |
 
 ### LetterTemplate
 
