@@ -667,7 +667,7 @@ $ canvas validate [OPTIONS] PLUGIN_NAME
 This command runs full pre-flight validation combining:
 
 1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
-2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes before any code runs.
+2. **Static lint** — Scans the plugin's source before any code runs for sandbox-forbidden constructs, Custom Data mistakes, and code that runs but makes the plugin less secure, less reliable, or slower.
 3. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
 
 #### Static lint
@@ -712,6 +712,14 @@ These issues will fail on the instance (sandbox / Custom Data):
 | --- | --- |
 | `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
 | `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
+
+**Queries (warnings).** A query inside a loop returns correct results, but each item of the loop costs a database round trip, so the handler slows as the data grows:
+
+| Rule code | Flags |
+| --- | --- |
+| `query-in-loop` | A database query inside a `for` loop or comprehension whose items come from a queryset (a `.objects` chain, or a local variable assigned from one) or from an HTTP response's `.json()`. It flags a `<Model>.objects` read and, in a loop over a queryset, a read through a relation of the loop variable, such as `patient.conditions.filter(...)`. Writes such as `create()`, `update()`, and `delete()` aren't flagged, and neither are `all()`, `count()`, and `exists()` on a relation the loop's queryset names in `prefetch_related(...)`. Fetch the rows before the loop, with `prefetch_related(...)` or one `filter(<field>__in=[...])` read into a dict, and look them up inside it. |
+
+The rule checks one function at a time. It doesn't follow a query into a helper function that the loop calls, and it doesn't check a loop over a function parameter.
 
 #### Sandbox-load validation
 
