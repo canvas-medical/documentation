@@ -1538,6 +1538,8 @@ MedicalHistoryCommand(
 )
 ```
 
+{% include alert.html type="info" content="Once another command, such as an Assess, has a committed assessment of the condition this command recorded, the command can no longer be entered in error. This holds for plugins as well as for the note: an <code>ENTER_IN_ERROR</code> effect against such a command is rejected with <em>Command could not be entered in error due to command-specific business logic</em>. It can be entered in error again once that assessment is entered in error." %}
+
 ---
 
 ### MedicationStatement
