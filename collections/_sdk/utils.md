@@ -561,7 +561,7 @@ The response is a dictionary keyed by NDC; each value is the full medication obj
 
 #### `GET /fdb/routed-medication/` — search dose-agnostic medications
 
-A routed medication is a drug name and route with no strength or dose form, such as "warfarin oral". Search routed medications when you know what a patient takes but not the dose, for example to screen a medication reported on an intake form for drug–drug interactions. The search returns only active routed medications, shortest description first. Query parameters:
+A routed medication is a drug name and route with no strength or dose form, such as "warfarin oral". Search routed medications when you know what a patient takes but not the dose, for example to screen a medication reported on an intake form for drug–drug and drug–allergy interactions. The search returns only active routed medications, shortest description first. Query parameters:
 
 | Parameter | Type   | Description                                              |
 |-----------|--------|----------------------------------------------------------|
@@ -590,7 +590,7 @@ The response contains a `results` list:
 }
 ```
 
-A `med_routed_medication_id` is not a `med_medication_id`, so don't pass it as an `fdb_code` to a command. To screen a routed medication for drug–drug interactions, send its id with the `FDB_ROUTED_MED` coding type, as [Screening for drug–drug interactions](#screening-for-drugdrug-interactions) describes.
+A `med_routed_medication_id` is not a `med_medication_id`, so don't pass it as an `fdb_code` to a command. To screen a routed medication, send its id with the `FDB_ROUTED_MED` coding type, as [Screening for drug–allergy interactions](#screening-for-drugallergy-interactions) and [Screening for drug–drug interactions](#screening-for-drugdrug-interactions) describe.
 
 ### Searching for allergens
 
@@ -996,6 +996,15 @@ The response is a list of interaction objects — one per matched allergy, disti
     "cross_sensitive_ingredients": []
   }
 ]
+```
+
+To screen a [routed medication](#get-fdbrouted-medication--search-dose-agnostic-medications), give it in `consideredMedication` as a `[med_routed_medication_id, "FDB_ROUTED_MED"]` pair, for example `[["3949", "FDB_ROUTED_MED"]]`. If the codings also include an `FDB` or `RXNORM` code, the check uses that code instead. In the response, `drug` then holds only the routed medication's id and description:
+
+```json
+"drug": {
+  "med_routed_medication_id": 3949,
+  "med_routed_medication_description": "warfarin oral"
+}
 ```
 
 ### Screening for drug–drug interactions
