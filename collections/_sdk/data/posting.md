@@ -317,6 +317,8 @@ Represents the amount a payer allowed on a claim line item. Call `active()` to l
 
 Represents a remark code a payer sent in an 835 remit for a claim line item on a coverage posting.
 
+`remark_code` holds the code exactly as the payer sent it. Payers send codes from the X12 [Remittance Advice Remark Codes](https://x12.org/codes/remittance-advice-remark-codes) list, such as `N381` or `M15`, which X12 updates several times a year, so look up a code's meaning there rather than hardcoding a list.
+
 | Field Name        | Type                                            |
 |-------------------|-------------------------------------------------|
 | dbid              | Integer                                         |
