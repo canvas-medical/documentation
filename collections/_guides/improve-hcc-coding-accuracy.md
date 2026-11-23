@@ -19,9 +19,9 @@ By surfacing relevant data when and where it's needed, you can eliminate unneces
 
 ## Create Coding Gaps via FHIR Detected Issue
 
-The [DetectedIssue FHIR resource](/api/detectedissue)) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc. 
+The [DetectedIssue FHIR resource](/api/detectedissue) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc. 
 
-A key use case is surfacing potential codings gaps that come from external sources.
+A key use case is surfacing potential coding gaps that come from external sources.
 
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
 
