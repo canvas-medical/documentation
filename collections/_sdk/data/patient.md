@@ -231,6 +231,7 @@ registered = patient.user.is_portal_registered
 | referral_reviews                        | [ReferralReview](/sdk/data-referral/#referralreview)[]                                                                  |                                                                                                |
 | referral_reports                        | [ReferralReport](/sdk/data-referral/#referralreport)[]                                                                  |                                                                                                |
 | invoices                                | Invoice[]                                                                                                               |                                                                                                |
+| collection_status_histories             | [CollectionStatusHistory](#collectionstatushistory)[]                                                                   | The patient's collection status over time                                                      |
 | suspect_hccs                            | [SuspectHCC](/sdk/data-suspect-hcc/#suspecthcc)[]                                                                       |                                                                                                |
 | interventions                           | [Intervention](/sdk/data-campaign/#intervention)[]                                                                      |                                                                                                |
 | education_material                      | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]                                            |                                                                                                |
@@ -558,6 +559,27 @@ for coding in ContactCategory.objects.order_by("code"):
     log.info(f"{coding.code} / {coding.system} — {coding.name}")  # EMC / INTERNAL — Emergency contact
 ```
 
+### CollectionStatusHistory
+
+Records where a patient's balance stood in collections as of a date. To find the patient's current status, take the entry with the latest `status_date`:
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+latest = patient.collection_status_histories.order_by("-status_date", "-created").first()
+status = latest.status if latest else None
+```
+
+| Field Name  | Type                                  |
+| ----------- | ------------------------------------- |
+| dbid        | Integer                               |
+| patient     | [Patient](#patient)                   |
+| status      | [CollectionStatus](#collectionstatus) |
+| status_date | Date                                  |
+| created     | DateTime                              |
+| modified    | DateTime                              |
+
 ### PatientKnownLocation
 
 A free-text place where the patient was last known to be. Use the `committed` method to read only committed locations:
@@ -644,6 +666,14 @@ for coding in patient.tribal_affiliation_coding.all():
 | user_selected | Boolean             |
 
 ## Enumeration types
+
+### CollectionStatus
+
+| Value    | Label    |
+| -------- | -------- |
+| none     | none     |
+| internal | internal |
+| external | external |
 
 ### SexAtBirth
 
