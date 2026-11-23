@@ -504,6 +504,36 @@ url = document.document_url if document else None
 
 {% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that has not been reviewed yet has no document reference, so handle <code>None</code>." %}
 
+## The latest annotated version
+
+When staff annotate or sign a lab report in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. The [document reference](#the-document-reference) keeps its stored file when the report is annotated, so look for an annotation first and fall back to the document reference when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the report's `dbid`. Annotations made in Data Integration before the report was filed are linked to the report when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, DocumentReference, LabReport
+
+report = LabReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="labreport").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=report.dbid)
+    .order_by("created")
+    .last()
+)
+
+if latest:
+    url = latest.document_url
+else:
+    document = DocumentReference.objects.filter(
+        content_type=content_type, object_id=report.dbid
+    ).first()
+    url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that no one has annotated has no annotations, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### LabReport
