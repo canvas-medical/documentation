@@ -102,7 +102,20 @@ for component in observation.components.all():
 
 ### Component codings
 
-Component codings can be accessed similarly to codings on the observation, by using the `codings` attribute on an `ObservationComponent` object.
+Component codings can be accessed similarly to codings on the observation, by using the `codings` attribute on an `ObservationComponent` object. A component's coded values can be accessed with the `value_codings` attribute:
+
+```python
+from canvas_sdk.v1.data.observation import Observation
+from logger import log
+
+observation = Observation.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for component in observation.components.all():
+    for value_coding in component.value_codings.all():
+        log.info(f"system:  {value_coding.system}")
+        log.info(f"code:    {value_coding.code}")
+        log.info(f"display: {value_coding.display}")
+```
 
 ## Filtering
 
@@ -152,6 +165,7 @@ observations = Observation.objects.find(Weight)
 | note_id            | Integer                                             |
 | name               | String                                              |
 | effective_datetime | DateTime                                            |
+| specimen           | [LabOrderSpecimen](/sdk/data-labs/#laborderspecimen) (nullable) |
 | codings            | [ObservationCoding](#observationcoding)[]           |
 | members            | [Observation](#observation)[]                       |
 | components         | [ObservationComponent](#observationcomponent)[]     |
@@ -183,6 +197,7 @@ observations = Observation.objects.find(Weight)
 | value_quantity_unit | String                                                      |
 | name                | String                                                      |
 | codings             | [ObservationComponentCoding](#observationcomponentcoding)[] |
+| value_codings       | [ObservationComponentValueCoding](#observationcomponentvaluecoding)[] |
 
 ### ObservationComponentCoding
 
@@ -197,6 +212,20 @@ observations = Observation.objects.find(Weight)
 | display               | String                              |
 | user_selected         | Boolean                             |
 | observation_component | [ObservationComponent](#observation) |
+
+### ObservationComponentValueCoding
+
+| Field Name            | Type                                          |
+|-----------------------|-----------------------------------------------|
+| dbid                  | Integer                                       |
+| created               | DateTime                                      |
+| modified              | DateTime                                      |
+| system                | String                                        |
+| version               | String                                        |
+| code                  | String                                        |
+| display               | String                                        |
+| user_selected         | Boolean                                       |
+| observation_component | [ObservationComponent](#observationcomponent) |
 
 ### ObservationValueCoding
 

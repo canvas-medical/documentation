@@ -19,6 +19,9 @@ from canvas_sdk.v1.data import Snapshot, SnapshotImage
 # Get all snapshots
 snapshots = Snapshot.objects.all()
 
+# Get only committed snapshots
+committed_snapshots = Snapshot.objects.committed()
+
 # Get a specific snapshot
 snapshot = Snapshot.objects.get(dbid=42)
 

@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ImagingOrder`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging results.
+The `ImagingOrder`, `ImagingCoding`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging orders and results.
 
 ## Basic Usage
 
@@ -74,6 +74,22 @@ from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview
 
 committed_orders = ImagingOrder.objects.committed()
 committed_reviews = ImagingReview.objects.committed()
+```
+
+## Imaging order codings
+
+The codings of the imaging ordered on an imaging order can be accessed with the `codings` attribute on an `ImagingOrder` object:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+from logger import log
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+for coding in imaging_order.codings.all():
+    log.info(f"system:  {coding.system}")
+    log.info(f"code:    {coding.code}")
+    log.info(f"display: {coding.display}")
 ```
 
 ## Related Tasks
@@ -193,6 +209,7 @@ document = DocumentReference.objects.filter(
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
 | note                | [Note](/sdk/data-note/#note)                                   |
 | assessment          | [Assessment](/sdk/data-assessment/#assessment) |
+| assessments         | [Assessment](/sdk/data-assessment/#assessment)[]               |
 | imaging             | String                                                         |
 | imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | note_to_radiologist | String                                                         |
@@ -207,6 +224,36 @@ document = DocumentReference.objects.filter(
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
 | action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
+| codings             | [ImagingCoding](#imagingcoding)[]                              |
+
+### ImagingCoding
+
+| Field Name    | Type                          |
+|---------------|-------------------------------|
+| dbid          | Integer                       |
+| created       | DateTime                      |
+| modified      | DateTime                      |
+| system        | String                        |
+| version       | String                        |
+| code          | String                        |
+| display       | String                        |
+| user_selected | Boolean                       |
+| imaging_order | [ImagingOrder](#imagingorder) |
+
+An imaging order has two relations to assessments:
+
+- `assessment` is the assessment the order is linked to through its `assessment_id`. Its reverse is `linked_imaging_orders` on [Assessment](/sdk/data-assessment/#assessment).
+- `assessments` holds the assessments for the conditions selected as the order's indications. Its reverse is `imaging_orders` on [Assessment](/sdk/data-assessment/#assessment).
+
+### ImagingOrderAssessment
+
+The join behind `assessments`. Reach an order's assessments through its `assessments` attribute rather than querying this model.
+
+| Field Name    | Type                                           |
+|---------------|------------------------------------------------|
+| dbid          | Integer                                        |
+| imaging_order | [ImagingOrder](#imagingorder)                  |
+| assessment    | [Assessment](/sdk/data-assessment/#assessment) |
 
 ### ImagingReview
 
