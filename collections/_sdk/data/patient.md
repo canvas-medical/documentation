@@ -639,7 +639,7 @@ if guardian:
 
 ### PatientTribalAffiliationCoding
 
-A coding of the patient's tribal affiliation. A patient's codings are available through `tribal_affiliation_coding`:
+A coding of the patient's tribal affiliation. Its `system` is `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`, and its `code` and `display` come from the HL7 [TribalEntityUS](https://terminology.hl7.org/CodeSystem-v3-TribalEntityUS.html) code system, which lists the Indian entities recognized by the U.S. Bureau of Indian Affairs, for example `40` (Cherokee Nation). A patient's codings are available through `tribal_affiliation_coding`:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
