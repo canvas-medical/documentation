@@ -11,7 +11,7 @@ The `CarePlan` model represents a patient's care plan: who started it, its statu
 
 Canvas creates a patient's care plan when the first goal is recorded for that patient, for example with the [Goal](/sdk/commands/#goal) command. A patient has at most one care plan, and later goals belong to the same plan. The care plan's `originator` is the originator of the note the first goal was recorded in.
 
-Every care plan has the same values:
+Canvas creates every care plan with the same values:
 
 - `status` is `active`.
 - `intent` is `plan`.
