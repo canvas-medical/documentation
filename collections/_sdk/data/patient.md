@@ -582,7 +582,7 @@ status = latest.status if latest else None
 
 ### PatientKnownLocation
 
-A free-text place where the patient was last known to be. Staff add and remove known locations on the patient's profile. A location isn't committed, so its `committer` and `entered_in_error` are always empty and `committed()` returns nothing. Removed locations aren't returned, so read the patient's `known_locations` directly:
+A free-text place where the patient was last known to be. Staff add and remove known locations on the patient's profile, and removed locations aren't returned:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -601,8 +601,6 @@ for location in patient.known_locations.order_by("-created"):
 | created          | DateTime                           |
 | modified         | DateTime                           |
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
-| committer        | [CanvasUser](/sdk/data-canvasuser) |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | patient          | [Patient](#patient)                |
 | known_location   | String                             |
 
