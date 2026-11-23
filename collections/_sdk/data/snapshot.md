@@ -19,9 +19,6 @@ from canvas_sdk.v1.data import Snapshot, SnapshotImage
 # Get all snapshots
 snapshots = Snapshot.objects.all()
 
-# Get only committed snapshots
-committed_snapshots = Snapshot.objects.committed()
-
 # Get a specific snapshot
 snapshot = Snapshot.objects.get(dbid=42)
 
@@ -64,8 +61,6 @@ url = image.image_url
 | created          | DateTime                           |
 | modified         | DateTime                           |
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
-| committer        | [CanvasUser](/sdk/data-canvasuser) |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | title            | String                             |
 | description      | String                             |
 | coverage         | [Coverage](/sdk/data-coverage/#coverage) |

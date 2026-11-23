@@ -302,7 +302,7 @@ else:
 | created       | DateTime              |       |
 | modified      | DateTime              |       |
 | referral      | [Referral](#referral) | The referral the document was sent with |
-| document_type | String                | The kind of document, such as `LAB REPORT` or `NOTE` |
+| document_type | String                | The kind of document: `NOTE`, `LAB REPORT`, `IMAGING REPORT`, `REFERRAL REPORT`, or `UNCATEGORIZED DOCUMENT` |
 | document_id   | Integer               | The `dbid` of the attached record, or `None` |
 | label         | String                | The name shown for the attachment |
 | url           | String                | The S3 location of an uploaded file, or `None` |
