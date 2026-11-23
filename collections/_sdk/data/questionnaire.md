@@ -94,36 +94,6 @@ for result in results:
     log.info(f"{result.questionnaire.name}: {result.narrative} (abnormal: {result.abnormal})")
 ```
 
-## Interview templates
-
-An `InterviewTemplate` is a reusable set of questionnaires that an interview can start from. Get a template's questionnaires through its `questionnaires` attribute:
-
-```python
-from canvas_sdk.v1.data.questionnaire import InterviewTemplate, QuestionnaireStatus
-from logger import log
-
-for template in InterviewTemplate.objects.filter(status=QuestionnaireStatus.ACTIVE):
-    names = [questionnaire.name for questionnaire in template.questionnaires.all()]
-    log.info(f"{template.name}: {names}")
-```
-
-## Interview send events and visual findings
-
-When an interview is sent to the patient by email or text message, each attempt is recorded as an `InterviewSendEvent`, available through the interview's `send_events` attribute. Media attached to an interview, such as an image captured during a physical exam, is available through its `visual_findings` attribute:
-
-```python
-from canvas_sdk.v1.data.questionnaire import Interview
-from logger import log
-
-interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
-
-for send_event in interview.send_events.all():
-    log.info(f"email to {send_event.to_email} succeeded: {send_event.email_succeeded}")
-
-for finding in interview.visual_findings.all():
-    log.info(f"media: {finding.media_url}")
-```
-
 ## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
@@ -228,7 +198,7 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | value                 | String                                                         |
 | response_option_set   | [ResponseOptionSet](#responseoptionset)                        |
 | ordering              | Integer                                                        |
-| interview_responses   | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses   | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | enablement_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 
 `enablement_conditions` holds the conditions that test for this response option, which is how you find the questions a given answer unlocks.
@@ -249,7 +219,7 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | code_system          | String                                                         |
 | code                 | String                                                         |
 | enable_behavior      | String — `all` or `any`                                        |
-| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | dependent_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 | triggers_condition   | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 
@@ -302,16 +272,15 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | questions                 | [Question](#question)[]                                        |
 | use_in_shx                | Boolean                                                        |
 | carry_forward             | String                                                         |
-| interview_responses       | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses       | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | item_groups               | [QuestionnaireItemGroup](#questionnaireitemgroup)[]            |
 | questionnaire_results     | [QuestionnaireResult](#questionnaireresult)[]                  |
-| interview_templates       | [InterviewTemplate](#interviewtemplate)[]                      |
 
 <a id="use-cases-in-charting"></a>
 
 #### Use cases in charting
 
-`use_case_in_charting` on a questionnaire, an interview, or an interview template holds a code from `QuestionnaireUseCase`:
+`use_case_in_charting` on a questionnaire or an interview holds a code from `QuestionnaireUseCase`:
 
 | `use_case_in_charting` | `QuestionnaireUseCase` member | Used as |
 |:-----------------------|:------------------------------|:--------|
@@ -368,11 +337,9 @@ A group of items in a questionnaire. A group sits at the top level of the questi
 | skipped_questions    | [Question](#question)[]                                        |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
-| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | assessments          | [Assessment](/sdk/data-assessment/#assessment)[]               |
 | questionnaire_results | [QuestionnaireResult](#questionnaireresult)[]                 |
-| send_events          | [InterviewSendEvent](#interviewsendevent)[]                    |
-| visual_findings      | [InterviewVisualFinding](#interviewvisualfinding)[]            |
 
 An interview has two relations to assessments:
 
@@ -439,66 +406,6 @@ The score a questionnaire produced in an interview. Use `QuestionnaireResult.obj
 | narrative     | String                                |
 | code_system   | String                                |
 | code          | String                                |
-
-### InterviewTemplate
-
-A reusable set of questionnaires an interview can start from.
-
-| Field Name           | Type                                                    |
-|----------------------|---------------------------------------------------------|
-| dbid                 | Integer                                                 |
-| created              | DateTime                                                |
-| modified             | DateTime                                                |
-| status               | String — `AC` (`QuestionnaireStatus.ACTIVE`) or `IN` (`QuestionnaireStatus.INACTIVE`) |
-| name                 | String                                                  |
-| language_id          | Integer                                                 |
-| use_case_in_charting | String — one of the [use cases](#use-cases-in-charting) |
-| questionnaires       | [Questionnaire](#questionnaire)[]                       |
-
-### InterviewTemplateQuestionnaireMap
-
-The join between an [InterviewTemplate](#interviewtemplate) and its questionnaires. Its `status` shows whether a questionnaire is active in the template. To read a template's questionnaires, use the template's `questionnaires` attribute.
-
-| Field Name         | Type                                                   |
-|--------------------|--------------------------------------------------------|
-| dbid               | Integer                                                |
-| created            | DateTime                                               |
-| modified           | DateTime                                               |
-| status             | String — `AC` (`QuestionnaireStatus.ACTIVE`) or `IN` (`QuestionnaireStatus.INACTIVE`) |
-| interview_template | [InterviewTemplate](#interviewtemplate)                |
-| questionnaire      | [Questionnaire](#questionnaire)                        |
-
-### InterviewSendEvent
-
-One attempt to send an interview to the patient by email or text message.
-
-| Field Name             | Type                    |
-|------------------------|-------------------------|
-| dbid                   | Integer                 |
-| created                | DateTime                |
-| modified               | DateTime                |
-| interview              | [Interview](#interview) |
-| consent_remark         | String                  |
-| to_email               | String                  |
-| email_succeeded        | Boolean                 |
-| to_phone               | String                  |
-| text_message_succeeded | Boolean                 |
-
-### InterviewVisualFinding
-
-Media attached to an interview. Deleted findings aren't returned, either from `InterviewVisualFinding.objects` or from an interview's `visual_findings`. A finding isn't committed separately from its interview, so its `committer` is empty and the model has no `committed()` method. To keep only findings from committed interviews, filter on the interview, for example `InterviewVisualFinding.objects.filter(interview__committer__isnull=False, interview__entered_in_error__isnull=True)`.
-
-| Field Name       | Type                               |
-|------------------|------------------------------------|
-| dbid             | Integer                            |
-| created          | DateTime                           |
-| modified         | DateTime                           |
-| originator       | [CanvasUser](/sdk/data-canvasuser) |
-| committer        | [CanvasUser](/sdk/data-canvasuser) |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
-| deleted          | Boolean                            |
-| interview        | [Interview](#interview)            |
-| media_url        | String, or `None` when no media is uploaded |
 
 <br/>
 <br/>
