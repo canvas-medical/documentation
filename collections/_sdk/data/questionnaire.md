@@ -74,9 +74,13 @@ for interview_response in interview.interview_responses.all():
 
 ## Questionnaire results
 
-A `QuestionnaireResult` holds the score a questionnaire produced in an interview, with its narrative, its code, and whether the score is abnormal. Reach results from an interview, a questionnaire, or a patient through their `questionnaire_results` attribute.
+A `QuestionnaireResult` holds what a questionnaire produced in an interview: its narrative, its score, its code, and whether it's abnormal. Reach results from an interview, a questionnaire, or a patient through their `questionnaire_results` attribute.
 
-A result is recorded whether or not its interview has been committed. To read only the results that count, the same ones Canvas shows on the chart, use `committed()`. It returns the results whose interview is committed and not entered in error:
+An interview typically has one result. Canvas records it when the interview's command is committed, by scoring the patient's answers. A plugin can also record a result with the [CreateQuestionnaireResult](/sdk/effect-questionnaires/#creating-a-questionnaire-result) effect.
+
+The `narrative` is the text Canvas displays to users as the interview's result in its command, for example `Score of 7`. Nearly every result has one. `score` is `None` for questionnaires that aren't scored, so read `narrative` when you want what the provider saw.
+
+To read the results that count, the same ones Canvas shows on the chart, use `committed()`. It returns the results whose interview is committed and not entered in error:
 
 ```python
 from canvas_sdk.v1.data.questionnaire import QuestionnaireResult
@@ -87,7 +91,7 @@ results = QuestionnaireResult.objects.committed().filter(
 )
 
 for result in results:
-    log.info(f"{result.questionnaire.name}: {result.score} (abnormal: {result.abnormal})")
+    log.info(f"{result.questionnaire.name}: {result.narrative} (abnormal: {result.abnormal})")
 ```
 
 ## Interview templates
