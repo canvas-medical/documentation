@@ -732,7 +732,7 @@ $ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patie
 - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
 - `--help`: Show this message and exit.
 
-> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag of a declared variable.
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`); `canvas config set` does not change the sensitive flag of a declared variable.
 
 ### `canvas config unset`
 

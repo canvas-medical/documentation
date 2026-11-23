@@ -26,7 +26,7 @@ Together, Claude Code with CPA lets developers go from an idea to a working, dep
 - Python 3.12+ installed
 - A Canvas instance with admin access
 - The Canvas CLI signed in to Canvas Platform with `canvas login`. See [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform)
-- Instance API credentials in `~/.canvas/credentials.ini`, which `/cpa:deploy` uses to install the plugin and stream its logs. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated); this method is deprecated, and support ends on December 14, 2026
+- At least one test instance in your organization on Canvas Platform, where work in progress deploys. A Deploy manager or Organization admin designates one on the instance's Plugin management tab; see [Designating test instances](https://help.canvasmedical.com/articles/4724162094-designating-test-instances)
 - [Claude Code installed](https://docs.anthropic.com/en/docs/claude-code/overview)
 
 ## 1. Install the Canvas Plugin Assistant and Set Up Your Environment
@@ -41,11 +41,11 @@ Run `/cpa:new-plugin` to start building. CPA will ask clarifying questions via a
 
 Here's what happens next:
 
-1. **Brainstorm** — CPA asks follow-up questions to refine your requirements
-2. **Specification** — CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
-3. **Scaffold** — CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files
-4. **Implement** — CPA writes the protocol/handler code based on the spec
-5. **Test** — CPA generates and runs tests to verify the plugin works correctly
+1. **Brainstorm**: CPA asks follow-up questions to refine your requirements
+2. **Specification**: CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
+3. **Scaffold**: CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files. Plugins are named `<your org prefix>__<name>`, such as `acme__vitals_alert`; see [Rename the plugin with the prefix](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix)
+4. **Implement**: CPA writes the protocol/handler code based on the spec
+5. **Test**: CPA generates and runs tests to verify the plugin works correctly
 
 At any point, if you have more detail and direction to give, in any format (other markdown files, PDF files, images), you can simply instruct Claude to read those files and use them in formulating the plan.
 
@@ -57,7 +57,9 @@ When you're at the point of completion where you need to try the plugin yourself
 /cpa:deploy
 ```
 
-CPA validates the plugin, bumps the version, deploys it to your Canvas instance, and starts log monitoring so you can see output in real time.
+CPA validates the plugin, bumps the version, commits your changes, and runs `canvas deploy --branch` to the test instance you pick by its slug, such as `acme-staging`. Work in progress deploys as a branch, and only to test instances; `main` on Canvas Platform is the release, which `/cpa:wrap-up` publishes. Variables from your secrets file are set with `canvas config set`, and when you have the Plugin developer or Deploy manager role on the instance, log monitoring starts so you can see output in real time.
+
+When the plugin reads another plugin's custom data, Canvas Platform asks for consent. Claude shows the consent request and asks you to run the deploy command in your own terminal to approve it.
 
 To test our example first plugin, open a patient chart in your Canvas instance, create a new note, and click the button in the note header. You should see a Reason for Visit command appear with the text "hello world".
 
@@ -79,15 +81,15 @@ Ask CPA to handle the case where the note already has a Reason for Visit command
 
 ### Ask Claude to check logs and troubleshoot
 
-The `/cpa:deploy` command will start a subagent called `deploy-uat`, which runs a background task to access the `canvas logs` stream. Ask Claude to look at them anytime you need help troubleshooting. You can also of course view logs in the shell manually with:
+The `/cpa:deploy` command runs `canvas logs --host` as a background task, signed in through Canvas Platform, when you have the Plugin developer or Deploy manager role on the instance. Ask Claude to look at them anytime you need help troubleshooting. You can also of course view logs in the shell manually with:
 
 ```bash
-uv run canvas logs <your-instance>
+uv run canvas logs --host <your-instance>
 ```
 
 ### Keep going
 
-Continue exploring the [SDK documentation](/sdk/) and browse other [guides](/guides/) to see what's possible with Canvas plugins. When you're ready to harden your plugin for production, run `/cpa:coverage` to check test coverage and improve tests, `/cpa:security-review` to audit for common security issues, and `/cpa:database-performance-review` to ensure efficient data retrieval. When you feel everything is ready to finalize, use the `/cpa:wrap-up` command.
+Continue exploring the [SDK documentation](/sdk/) and browse other [guides](/guides/) to see what's possible with Canvas plugins. When you're ready to harden your plugin for production, run `/cpa:coverage` to check test coverage and improve tests, `/cpa:security-review` to audit for common security issues, and `/cpa:database-performance-review` to ensure efficient data retrieval. When you feel everything is ready to finalize, use the `/cpa:wrap-up` command. It runs the final checks, then publishes `main` on Canvas Platform as the release and deploys it to the instance you choose, asking for confirmation first when that is a production instance.
 
 <br/>
 <br/>
