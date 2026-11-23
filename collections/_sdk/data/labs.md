@@ -413,7 +413,7 @@ committed_order_reasons = LabOrderReason.objects.committed()
 
 ### Ask-at-order-entry answers
 
-Some lab tests require answers to ask-at-order-entry (AOE) questions when they're ordered. Each answer is a `LabTestAOE` record on the test. The answer is held in `boolean_value`, `date_value`, or `text_value`, depending on its `aoe_type`. A date answer that couldn't be parsed is kept in `text_value`:
+Some lab tests require answers to ask-at-order-entry (AOE) questions when they're ordered. Each answer is a [LabTestAOE](#labtestaoe) record on the test. The answer is held in `boolean_value`, `date_value`, or `text_value`, depending on its `aoe_type`, one of the [LabTestAOEAnswerType](#labtestaoeanswertype) values. A date answer that couldn't be parsed is kept in `text_value`:
 
 ```python
 from canvas_sdk.v1.data.lab import LabOrder
