@@ -1135,6 +1135,9 @@ data_module:
   - title: "Calendar"
     url: /sdk/data-calendar/
     description: Calendars associated with providers.
+  - title: "Campaign"
+    url: /sdk/data-campaign/
+    description: Outreach campaigns built on a protocol, with their interventions.
   - title: "CancelPrescription"
     url: /sdk/data-cancel-prescription/
     description: A request to cancel a patient's prescription (the CancelPrescription command).
@@ -1288,6 +1291,9 @@ data_module:
   - title: "IntegrationTaskActionEvent"
     url: /sdk/data-fax/#integrationtaskactionevent
     description: Faxes of an integration task, with their delivery status.
+  - title: "Intervention"
+    url: /sdk/data-campaign/#intervention
+    description: One outreach step of a campaign, sent to its patients with a letter template.
   - title: "Invoice"
     url: /sdk/data-invoice/
     description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
@@ -1450,6 +1456,9 @@ data_module:
   - title: "Stop Medication Event"
     url: /sdk/data-stop-medication-event/
     description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
+  - title: "SuspectHCC"
+    url: /sdk/data-suspect-hcc/
+    description: Hierarchical Condition Categories (HCCs) suspected on a patient.
   - title: "Task"
     url: /sdk/data-task/
     description: Data associated with Tasks.
