@@ -352,6 +352,13 @@ An interview has two relations to assessments:
 
 The join between an interview and a [Question](#question) skipped in it. Reach the skipped questions through the interview's `skipped_questions` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+
+interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
+skipped = [question.name for question in interview.skipped_questions.all()]
+```
+
 | Field Name | Type                    |
 |------------|-------------------------|
 | dbid       | Integer                 |
@@ -361,6 +368,13 @@ The join between an interview and a [Question](#question) skipped in it. Reach t
 ### InterviewQuestionnaireMap
 
 The join between an [Interview](#interview) and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+
+interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
+questionnaire_names = [questionnaire.name for questionnaire in interview.questionnaires.all()]
+```
 
 | Field Name    | Type                            |
 |---------------|---------------------------------|

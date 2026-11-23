@@ -195,6 +195,13 @@ A remit posted by hand. It has the [BaseRemittanceAdvice](#baseremittanceadvice)
 
 Links a remit to a claim it covers. Read the link through `remit.claims` or `claim.remits` rather than querying this model.
 
+```python
+from canvas_sdk.v1.data import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+remits = claim.remits.all()
+```
+
 | Field Name | Type                                          |
 |------------|-----------------------------------------------|
 | dbid       | Integer                                       |

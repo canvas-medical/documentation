@@ -274,6 +274,13 @@ An imaging order has two relations to assessments:
 
 The join behind `assessments`. Reach an order's assessments through its `assessments` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+assessments = imaging_order.assessments.all()
+```
+
 | Field Name    | Type                                           |
 |---------------|------------------------------------------------|
 | dbid          | Integer                                        |
