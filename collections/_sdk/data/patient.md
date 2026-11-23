@@ -582,7 +582,7 @@ status = latest.status if latest else None
 
 ### PatientKnownLocation
 
-A free-text place where the patient was last known to be. Use the `committed` method to read only committed locations:
+A free-text place where the patient was last known to be. Staff add and remove known locations on the patient's profile. A location isn't committed, so its `committer` and `entered_in_error` are always empty and `committed()` returns nothing. Removed locations aren't returned, so read the patient's `known_locations` directly:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -590,7 +590,7 @@ from logger import log
 
 patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
 
-for location in patient.known_locations.committed().order_by("-created"):
+for location in patient.known_locations.order_by("-created"):
     log.info(f"Known location: {location.known_location}")
 ```
 
