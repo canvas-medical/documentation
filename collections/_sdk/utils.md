@@ -726,7 +726,7 @@ Returns a `results` list of matching conditions:
 }
 ```
 
-Each result's `end_effective_date` is the code's end date (`YYYY-MM-DD`) once the code is retired, and `null` while the code is valid. To find charted conditions that still carry a retired code, look up their codes with `icd10_code__in` and leave out `date`, which would drop retired codes from the results. A code that doesn't exist returns no result.
+Each result's `end_effective_date` is that result's end date (`YYYY-MM-DD`), or `null` while the result is current. One code can return several results: one for each SNOMED mapping, plus an end-dated result for each earlier description when an ICD-10 release changed the code's description. A code is retired only when every result for it has an end date. To find charted conditions that still carry a retired code, look up their codes with `icd10_code__in` and leave out `date`, which would drop retired codes from the results. A code that doesn't exist returns no result.
 
 #### `GET /cpt/immunization/` — search immunizations
 
