@@ -828,6 +828,8 @@ Canvas checks `icd10_code` against the ICD-10 terminology when it applies the ef
 
 Committing the command checks `condition_id` again. If the condition was entered in error after it was picked, or isn't on the patient's chart, the commit fails with the error `The condition picked in this Assess was entered in error or is not on this patient's chart. Pick the condition again.`
 
+Committing the command also checks the condition's ICD-10 code against the note's date of service. An ICD-10 code is retired when the ICD-10 terminology stops using it, and Canvas records the date each charted condition's code was retired. If the code was retired on or before the date of service, the commit fails with the error `This condition's ICD-10 code was retired on <MM/DD/YYYY>. Use Change Diagnosis to recode it before assessing it.` This applies whether `condition_id` or `icd10_code` names the condition, and whether a clinician or a plugin commits the command. A condition with several ICD-10 codes fails the check when any of them is retired. To assess the condition, first recode it with an [UpdateDiagnosis](#updatediagnosis) command, which Canvas shows as Change Diagnosis. The condition picker in the note also leaves out these conditions.
+
 ---
 
 ### ChangeMedication
