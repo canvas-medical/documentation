@@ -3032,6 +3032,65 @@ These events don't form one sequence that every prescription passes through. Whi
   </tbody>
 </table>
 
+#### Refill requests
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas receives a refill request from a pharmacy.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is updated, such as when it's reassigned or ignored.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_ASSIGNEE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is assigned to a different staff member, including through the <a href="/sdk/effect-update-refill-request/"><code>UpdateRefillRequest</code></a> effect. It fires only when the assignee changes, not when a request is first received. The context holds the assignee from before the change. Its <code>id</code> is <code>null</code> when the request had no assignee. To read the new assignee, get the refill request and check its <a href="/sdk/data-refill-request/#refillrequest"><code>staff</code></a> attribute.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"previous":
+  "id": <a href='/sdk/data-staff/#staff'>staff_id</a> | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Surescripts
 
 Surescripts response events fire when the platform receives a response from Surescripts after a corresponding request effect is executed. These events let plugins react to insurance eligibility checks and other Surescripts services.
@@ -4506,6 +4565,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4533,6 +4594,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4560,6 +4623,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4608,6 +4673,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4635,6 +4702,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4662,6 +4731,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4689,6 +4760,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4716,6 +4789,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4743,6 +4818,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4770,6 +4847,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4797,6 +4876,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4824,6 +4905,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4851,6 +4934,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4878,6 +4963,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":

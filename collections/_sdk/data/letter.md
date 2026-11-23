@@ -124,6 +124,33 @@ chart_pages = PatientChartDocument.objects.filter(is_active=True)
 
 When an attached lab, imaging, or referral report, or an administrative or uncategorized clinical document, has been annotated, Canvas prints its newest [DocumentAnnotation](/sdk/data-document-annotation/) in place of the original file.
 
+## Letter templates
+
+A letter written from a template points to it through `template`. That's a `LetterLanguageTemplate`: the header, content, and footer of a [LetterTemplate](#lettertemplate) in one language. `template` is `None` for a letter that wasn't written from a template. A [Message](/sdk/data-message/#message) written from a template points to one the same way.
+
+```python
+from canvas_sdk.v1.data import Letter
+
+letter = Letter.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+
+if letter.template:
+    template_name = letter.template.template.name
+    language_code = letter.template.language.code
+```
+
+A `LetterTemplate` holds one `LetterLanguageTemplate` per language in `template_languages`. `template_type` lists the kinds of document the template is for, as [LetterTemplateType](#lettertemplatetype) values. `locations` lists the `dbid` values, as strings, of the [practice locations](/sdk/data-practicelocation/#practicelocation) the template is limited to. An empty list means the template is available at every active practice location.
+
+```python
+from canvas_sdk.v1.data import LetterTemplate, LetterTemplateType
+
+templates = LetterTemplate.objects.filter(
+    active=True, template_type__contains=[LetterTemplateType.LETTER]
+)
+
+for template in templates:
+    english = template.template_languages.filter(language__code="en").first()
+```
+
 ## Attributes
 
 ### Letter
@@ -140,6 +167,7 @@ When an attached lab, imaging, or referral report, or an administrative or uncat
 | printed_document_url | String (computed)     | Presigned S3 URL for `printed_document`, or `None` if unset |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
+| template   | [LetterLanguageTemplate](#letterlanguagetemplate) | The template the letter was written from (nullable) |
 | letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |
 | documents  | [LetterDocument](#letterdocument)[] | The documents attached to the letter |
 
@@ -167,3 +195,44 @@ When an attached lab, imaging, or referral report, or an administrative or uncat
 | name       | String   | The chart page's name, for example `Chart summary` |
 | url        | String   | A path template with a `{key}` placeholder for the patient's key |
 | is_active  | Boolean  | Whether staff can attach the page to a letter |
+
+### LetterTemplate
+
+| Field Name         | Type                                                        | Notes |
+|--------------------|-------------------------------------------------------------|-------|
+| id                 | UUID                                                        |       |
+| dbid               | Integer                                                     |       |
+| created            | DateTime                                                    |       |
+| modified           | DateTime                                                    |       |
+| name               | String                                                      |       |
+| active             | Boolean                                                     |       |
+| restrict_editing   | Boolean                                                     | When `True`, users can't change the template's text in a letter written from it |
+| template_type      | [LetterTemplateType](#lettertemplatetype)[]                 | The kinds of document the template is for |
+| locations          | String[]                                                    | `dbid` values of the practice locations the template is limited to. Empty means every active practice location. |
+| template_languages | QuerySet[[LetterLanguageTemplate](#letterlanguagetemplate)] | The template's content in each language |
+
+### LetterLanguageTemplate
+
+| Field Name | Type                              | Notes |
+|------------|-----------------------------------|-------|
+| id         | UUID                              |       |
+| dbid       | Integer                           |       |
+| created    | DateTime                          |       |
+| modified   | DateTime                          |       |
+| template   | [LetterTemplate](#lettertemplate) |       |
+| language   | Language                          | Has a `code`, such as `en`, and a `description` |
+| header     | String                            |       |
+| content    | String                            |       |
+| footer     | String                            |       |
+| letters    | QuerySet[[Letter](#letter)]       | Letters written from this template |
+| messages   | QuerySet[[Message](/sdk/data-message/#message)] | Messages written from this template |
+
+## Enumeration types
+
+### LetterTemplateType
+
+| Value          | Label        |
+|----------------|--------------|
+| `intervention` | Intervention |
+| `letter`       | Letter       |
+| `message`      | Message      |

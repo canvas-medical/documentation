@@ -573,6 +573,15 @@ Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
 | SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. See [Medication History](/sdk/effect-surescripts/#medication-history). |
 
 
+### Refill Requests
+
+Check out the [Refill Request Effect](/sdk/effect-update-refill-request/) documentation.
+
+| Effect | Description |
+|---|---|
+| UPDATE_REFILL_REQUEST | Assign a [pending refill request](/sdk/data-refill-request/#pending-requests) to a staff member who can e-prescribe, or ignore it the same as the refill panel's **Ignore** button (`UpdateRefillRequest` class). |
+
+
 ### Data Integration
 
 Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
