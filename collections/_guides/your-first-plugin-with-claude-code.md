@@ -41,11 +41,11 @@ Run `/cpa:new-plugin` to start building. CPA will ask clarifying questions via a
 
 Here's what happens next:
 
-1. **Brainstorm** — CPA asks follow-up questions to refine your requirements
-2. **Specification** — CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
-3. **Scaffold** — CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files. Plugins are named `<your org prefix>__<name>`, such as `acme__vitals_alert`; see [Rename the plugin with the prefix](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix)
-4. **Implement** — CPA writes the protocol/handler code based on the spec
-5. **Test** — CPA generates and runs tests to verify the plugin works correctly
+1. **Brainstorm**: CPA asks follow-up questions to refine your requirements
+2. **Specification**: CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
+3. **Scaffold**: CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files. Plugins are named `<your org prefix>__<name>`, such as `acme__vitals_alert`; see [Rename the plugin with the prefix](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix)
+4. **Implement**: CPA writes the protocol/handler code based on the spec
+5. **Test**: CPA generates and runs tests to verify the plugin works correctly
 
 At any point, if you have more detail and direction to give, in any format (other markdown files, PDF files, images), you can simply instruct Claude to read those files and use them in formulating the plan.
 
