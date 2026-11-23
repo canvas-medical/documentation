@@ -11,8 +11,10 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 
 - **`LabOrder`**: Represents a lab order placed for a patient, including order details, transmission type, and associated tests
 - **`LabTest`**: Individual tests within a lab order, tracking status from creation through processing
+- **`LabTestAOE`**: Ask-at-order-entry (AOE) answers recorded on a lab test, accessible via `LabTest.aoes`
 - **`LabReport`**: Contains the results returned from the lab, including all values and associated metadata
 - **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
+- **`LabReportProducer`**: A facility or person involved in performing the tests on a lab report, as the lab sent it, accessible via `LabReport.producers`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
 - **`DiagnosticReport`**: The `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
@@ -409,6 +411,27 @@ committed_orders = LabOrder.objects.committed()
 committed_order_reasons = LabOrderReason.objects.committed()
 ```
 
+### Ask-at-order-entry answers
+
+Some lab tests require answers to ask-at-order-entry (AOE) questions when they're ordered. Each answer is a `LabTestAOE` record on the test. The answer is held in `boolean_value`, `date_value`, or `text_value`, depending on its `aoe_type`. A date answer that couldn't be parsed is kept in `text_value`:
+
+```python
+from canvas_sdk.v1.data.lab import LabOrder
+from logger import log
+
+lab_order = LabOrder.objects.get(id="9e4c0c35-4b8c-4f6b-9a0c-3f0b6d1c2a71")
+
+for test in lab_order.tests.prefetch_related("aoes"):
+    for aoe in test.aoes.all():
+        if aoe.aoe_type == "boolean":
+            answer = aoe.boolean_value
+        elif aoe.aoe_type == "date":
+            answer = aoe.date_value or aoe.text_value
+        else:
+            answer = aoe.text_value
+        log.info(f"{test.ontology_test_name} {aoe.code} ({aoe.display}): {answer}")
+```
+
 <!-- source: discussion #472 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
 ### POC (point-of-care) Lab Test results
@@ -517,6 +540,7 @@ url = document.document_url if document else None
 | ordered_tests        | [LabTest](#labtest)[]                 |
 | result_tests         | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
+| producers            | [LabReportProducer](#labreportproducer)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
 | laborder_set         | [LabOrder](#laborder)[]               |
 | delegations          | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first) |
@@ -531,6 +555,20 @@ url = document.document_url if document else None
 | modified   | DateTime                |
 | report     | [LabReport](#labreport) |
 | comment    | String                  |
+
+### LabReportProducer
+
+A facility or person involved in performing the tests on a lab report. The name and address are free text, as the lab sent them.
+
+| Field Name           | Type                    |
+|----------------------|-------------------------|
+| id                   | UUID                    |
+| dbid                 | Integer                 |
+| created              | DateTime                |
+| modified             | DateTime                |
+| report               | [LabReport](#labreport) |
+| unstructured_name    | String                  |
+| unstructured_address | String                  |
 
 ### DiagnosticReport
 
@@ -759,6 +797,25 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | aoe_code                    | String                                    |
 | procedure_class             | String                                    |
 | values                      | [LabValue](#labvalue)[]                   |
+| aoes                        | [LabTestAOE](#labtestaoe)[]               |
+
+### LabTestAOE
+
+An ask-at-order-entry (AOE) answer on a lab test.
+
+| Field Name    | Type                                        | Description |
+|---------------|---------------------------------------------|-------------|
+| id            | UUID                                        |             |
+| dbid          | Integer                                     |             |
+| created       | DateTime                                    |             |
+| modified      | DateTime                                    |             |
+| test          | [LabTest](#labtest)                         |             |
+| code          | String                                      | The AOE question's code |
+| display       | String                                      |             |
+| aoe_type      | [LabTestAOEAnswerType](#labtestaoeanswertype) | Which field holds the answer |
+| boolean_value | Boolean                                     | The answer when `aoe_type` is `boolean` |
+| date_value    | Date                                        | The answer when `aoe_type` is `date` |
+| text_value    | String                                      | The answer for other types, or a date answer that couldn't be parsed |
 
 ## Enumeration types
 
@@ -818,6 +875,16 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | IN    | investigate |
 | SF    | screen for  |
 | UNK   | unknown     |
+
+### LabTestAOEAnswerType
+
+| Value         | Label         |
+|---------------|---------------|
+| `string`      | string        |
+| `date`        | date          |
+| `choice`      | choice        |
+| `boolean`     | boolean       |
+| `open-choice` | open-choice   |
 
 ### LabTestOrderStatus
 

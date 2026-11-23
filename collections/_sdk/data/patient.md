@@ -212,6 +212,11 @@ registered = patient.user.is_portal_registered
 | banner_alerts                           | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                                                                    |                                                                                                |
 | immunizations                           | [Immunization](/sdk/data-immunization/#immunization)[]                                                                  |                                                                                                |
 | immunization_statements                 | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]                                                |                                                                                                |
+| consolidated_immunizations              | [ConsolidatedImmunization](/sdk/data-immunization/#consolidatedimmunization)[]                                          | Immunizations and immunization statements in one list                                          |
+| known_locations                         | [PatientKnownLocation](#patientknownlocation)[]                                                                         |                                                                                                |
+| parent_guardian                         | [PatientParentGuardian](#patientparentguardian)                                                                         |                                                                                                |
+| tribal_affiliation_coding               | [PatientTribalAffiliationCoding](#patienttribalaffiliationcoding)[]                                                     |                                                                                                |
+| provenance_set                          | [Provenance](/sdk/data-provenance/#provenance)[]                                                                        | Provenance records for this patient's data                                                     |
 | integration_tasks                       | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]                                                        |                                                                                                |
 | installment_plans                       | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]                                                                   |                                                                                                |
 | uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |                                                                                                |
@@ -497,6 +502,7 @@ A contact's relationship to the patient is held in its `categories`: the ones wh
 | related_patient | [Patient](#patient)                                                  |
 | categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
 | portal_grants   | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
+| noteparticipant_set | [NoteParticipant](/sdk/data-note/#noteparticipant)[]             |
 
 ```python
 from canvas_sdk.v1.data import PatientContactPerson
@@ -551,6 +557,91 @@ from logger import log
 for coding in ContactCategory.objects.order_by("code"):
     log.info(f"{coding.code} / {coding.system} — {coding.name}")  # EMC / INTERNAL — Emergency contact
 ```
+
+### PatientKnownLocation
+
+A free-text place where the patient was last known to be. Use the `committed` method to read only committed locations:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for location in patient.known_locations.committed().order_by("-created"):
+    log.info(f"Known location: {location.known_location}")
+```
+
+| Field Name       | Type                               |
+| ---------------- | ---------------------------------- |
+| id               | UUID                               |
+| dbid             | Integer                            |
+| created          | DateTime                           |
+| modified         | DateTime                           |
+| originator       | [CanvasUser](/sdk/data-canvasuser) |
+| committer        | [CanvasUser](/sdk/data-canvasuser) |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
+| patient          | [Patient](#patient)                |
+| known_location   | String                             |
+
+### PatientParentGuardian
+
+The parent or guardian recorded on the patient's profile, typically for a minor. A patient has at most one. Reading `patient.parent_guardian` on a patient without one raises `PatientParentGuardian.DoesNotExist`, so query the model when the record may be missing:
+
+```python
+from canvas_sdk.v1.data.patient import PatientParentGuardian
+from logger import log
+
+guardian = PatientParentGuardian.objects.filter(
+    patient__id="d7af3e356368446c85b40a5d6ff7288e"
+).first()
+
+if guardian:
+    log.info(f"Parent or guardian: {guardian.first_name} {guardian.last_name}, {guardian.phone_number}")
+```
+
+| Field Name  | Type                |
+| ----------- | ------------------- |
+| id          | UUID                |
+| dbid        | Integer             |
+| created     | DateTime            |
+| modified    | DateTime            |
+| patient     | [Patient](#patient) |
+| first_name  | String              |
+| middle_name | String              |
+| last_name   | String              |
+| phone_number | String             |
+| line1       | String              |
+| line2       | String              |
+| city        | String              |
+| state_code  | String              |
+| postal_code | String              |
+
+### PatientTribalAffiliationCoding
+
+A coding of the patient's tribal affiliation. A patient's codings are available through `tribal_affiliation_coding`:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for coding in patient.tribal_affiliation_coding.all():
+    log.info(f"Tribal affiliation: {coding.display} ({coding.system}|{coding.code})")
+```
+
+| Field Name    | Type                |
+| ------------- | ------------------- |
+| dbid          | Integer             |
+| created       | DateTime            |
+| modified      | DateTime            |
+| patient       | [Patient](#patient) |
+| system        | String              |
+| version       | String              |
+| code          | String              |
+| display       | String              |
+| user_selected | Boolean             |
 
 ## Enumeration types
 
