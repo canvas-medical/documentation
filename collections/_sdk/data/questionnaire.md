@@ -470,7 +470,7 @@ One attempt to send an interview to the patient by email or text message.
 
 ### InterviewVisualFinding
 
-Media attached to an interview. A finding isn't committed separately from its interview, so its `committer` is empty. To keep only findings from committed interviews, filter on the interview, for example `InterviewVisualFinding.objects.filter(interview__committer__isnull=False, interview__entered_in_error__isnull=True)`.
+Media attached to an interview. Deleted findings aren't returned, either from `InterviewVisualFinding.objects` or from an interview's `visual_findings`. A finding isn't committed separately from its interview, so its `committer` is empty and the model has no `committed()` method. To keep only findings from committed interviews, filter on the interview, for example `InterviewVisualFinding.objects.filter(interview__committer__isnull=False, interview__entered_in_error__isnull=True)`.
 
 | Field Name       | Type                               |
 |------------------|------------------------------------|
@@ -480,6 +480,7 @@ Media attached to an interview. A finding isn't committed separately from its in
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
+| deleted          | Boolean                            |
 | interview        | [Interview](#interview)            |
 | media_url        | String, or `None` when no media is uploaded |
 
