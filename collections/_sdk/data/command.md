@@ -261,8 +261,28 @@ A committed command can't be deleted. Entering it in error keeps the `Command` r
 | anchor_object_dbid | Integer                               |
 | anchor_object      | Model (optional)                      |
 | metadata           | QuerySet[[CommandMetadata](/sdk/data-command/#commandmetadata)] |
+| edited_by          | QuerySet[[CanvasUser](/sdk/data-canvasuser)]                  |
 
 The `custom_html` field stores HTML content that is rendered alongside the command in the note. This field is optional and defaults to `None`. Use the [`set_custom_html`](/sdk/commands/#set_custom_html) method to set or clear this field on a staged command.
+
+`edited_by` holds the users who have edited the command. To find the commands a user has edited, use the `commands_edited` attribute on [CanvasUser](/sdk/data-canvasuser):
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+editors = command.edited_by.all()
+```
+
+### CommandEditedBy
+
+The join between a command and a [CanvasUser](/sdk/data-canvasuser) who edited it. Reach the editors through the command's `edited_by` attribute rather than querying this model.
+
+| Field Name | Type                                  |
+|------------|---------------------------------------|
+| dbid       | Integer                               |
+| command    | [Command](#command)                   |
+| user       | [CanvasUser](/sdk/data-canvasuser)    |
 
 ### CommandMetadata
 

@@ -9,7 +9,7 @@ hidden: false
 
 Canvas creates a `Fax` record for every fax it sends or receives. `direction` tells the two apart.
 
-- **Sent faxes:** when a user faxes a note, referral, imaging order, lab order, letter, or integration task, Canvas also records an action event on that document. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to.
+- **Sent faxes:** when a user faxes a note, referral, imaging order, lab order, DME order, letter, or integration task, Canvas also records an action event on that document. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to.
 - **Received faxes:** each one has a `Fax` record with the sender's number, the page count, and [whether it was received successfully](#faxes-canvas-receives).
 
 Each document type has its own action event model:
@@ -20,10 +20,11 @@ Each document type has its own action event model:
 | [Referral](/sdk/data-referral/#referral) | [ReferralActionEvent](#referralactionevent) | `action_events` |
 | [ImagingOrder](/sdk/data-imaging/#imagingorder) | [ImagingOrderActionEvent](#imagingorderactionevent) | `action_events` |
 | [LabOrder](/sdk/data-labs/#laborder) | [LabOrderActionEvent](#laborderactionevent) | `action_events` |
+| [DmeOrder](/sdk/data-dme/#dmeorder) | [DmeOrderActionEvent](#dmeorderactionevent) | `action_events` |
 | [IntegrationTask](/sdk/data-integration-task/#integrationtask) | [IntegrationTaskActionEvent](#integrationtaskactionevent) | `action_events` |
 | [Letter](/sdk/data-letter/) | [LetterActionEvent](/sdk/data-letter-action-event/) | `letter_action_events` |
 
-All six have the same [action event fields](#action-event-fields) and differ only in the document they point to.
+They all have the same [action event fields](#action-event-fields) and differ only in the document they point to.
 
 ## Delivery status
 
@@ -89,7 +90,7 @@ Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugi
 
 ### Reacting when a fax fails
 
-Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
+Each faxed document type in the table below has [plugin events](/sdk/events/#faxed-documents) that target its action event. DME orders have no action event plugin events, so read their faxes from `action_events` instead. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
 
 | Document | Fax submitted | Outcome reported | Target |
 | --- | --- | --- | --- |
@@ -127,7 +128,7 @@ class NoteFaxFailed(BaseHandler):
 
 ### From a fax
 
-A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
+A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `dmeorderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
 
 ```python?partial=true
 from canvas_sdk.v1.data import Fax
@@ -180,6 +181,7 @@ received_on_line = Fax.objects.filter(
 | referralactionevents        | QuerySet[[ReferralActionEvent](#referralactionevent)]              | The referral faxes sent as this fax            |
 | imagingorderactionevents    | QuerySet[[ImagingOrderActionEvent](#imagingorderactionevent)]      | The imaging order faxes sent as this fax       |
 | laborderactionevents        | QuerySet[[LabOrderActionEvent](#laborderactionevent)]              | The lab order faxes sent as this fax           |
+| dmeorderactionevents        | QuerySet[[DmeOrderActionEvent](#dmeorderactionevent)]              | The DME order faxes sent as this fax           |
 | letteractionevents          | QuerySet[[LetterActionEvent](/sdk/data-letter-action-event/)]      | The letter faxes sent as this fax              |
 | integrationtaskactionevents | QuerySet[[IntegrationTaskActionEvent](#integrationtaskactionevent)] | The integration task faxes sent as this fax    |
 | fax_statuses                | QuerySet[[FaxStatusModel](#faxstatusmodel)]                        | The status recorded when this fax was received |
@@ -199,7 +201,7 @@ Canvas records a status when it receives a fax: `Received`, or `Error` if the fa
 
 ### Action event fields
 
-These fields are on all six action event models.
+These fields are on every action event model.
 
 | Field Name       | Type                                | Notes                                                                 |
 |------------------|-------------------------------------|-----------------------------------------------------------------------|
@@ -246,6 +248,14 @@ The [action event fields](#action-event-fields), plus:
 | Field Name | Type                                  |
 |------------|---------------------------------------|
 | lab_order  | [LabOrder](/sdk/data-labs/#laborder) |
+
+### DmeOrderActionEvent
+
+The [action event fields](#action-event-fields), plus:
+
+| Field Name | Type                                |
+|------------|-------------------------------------|
+| dme_order  | [DmeOrder](/sdk/data-dme/#dmeorder) |
 
 ### IntegrationTaskActionEvent
 
