@@ -73,7 +73,7 @@ Appends a [recommendation](#recommendation) to the card's `recommendations`.
 ## Example
 
 To include a command recommendation you can:
-- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Any command can be inserted; see [Supported Commands](#supported-commands).
+- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Most commands can be inserted; see [Supported Commands](#supported-commands).
 - instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 
 </br>
@@ -181,7 +181,7 @@ class MyHandler(BaseHandler):
 
 ## Supported Commands
 
-Any command in the [commands module](/sdk/commands/) can be inserted from a protocol card recommendation.
+Any command in the [commands module](/sdk/commands/) can be inserted from a protocol card recommendation, except [ApproveRefill](/sdk/commands/#approverefill) and [DenyRefill](/sdk/commands/#denyrefill). Recommending either one raises a `ValueError`; a plugin starts them with `originate` instead.
 
 Validate Coding Gap has no class in the commands module. Recommend it with `add_recommendation(command="validateCodingGap", context={"detected_issue_id": ...})`, passing the coding gap's [DetectedIssue](/sdk/data-detected-issue/#detectedissue) `dbid`. The inserted command opens with that detected issue selected. See [Improve HCC Coding Accuracy](/guides/improve-hcc-coding-accuracy/) for a full plugin.
 

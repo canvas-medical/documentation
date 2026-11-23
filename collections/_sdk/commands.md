@@ -64,7 +64,8 @@ The same pattern works with any command class — `PlanCommand(note_uuid=...)`, 
 `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
 check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` works
-on any staged command, including [custom commands](/sdk/commands-custom-command/#collapsible-content).
+on any staged command except [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill), including
+[custom commands](/sdk/commands-custom-command/#collapsible-content).
 
 To call these over HTTP rather than from a handler, see
 [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
@@ -77,7 +78,7 @@ Returns an Effect that originates a new command in the note body.
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill) don't support `commit=True`. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
 | `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
 
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
@@ -289,9 +290,11 @@ def compute():
 
 #### set_custom_html
 
-Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
 
-The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
+The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state. Calling this method on a committed command raises a validation error.
+
+`set_custom_html` isn't available on [ApproveRefill](#approverefill) or [DenyRefill](#denyrefill) commands. Calling it on one raises a `ValueError`, because the provider sends the refill response from the command.
 
 | Parameter     | Type              | Description                                                      |
 |---------------|-------------------|------------------------------------------------------------------|
@@ -458,7 +461,7 @@ and whether it is surgical.
 |:--------|:------------|
 | [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
-| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, you are not assessing it, and the patient's chart doesn't have its code yet. For a code already on the chart, use Assess. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
 | [Diagnose](#diagnose) | Still available for a new active condition you are assessing for the first time, but planned for retirement in a future release. Use Assess with `icd10_code` instead. |
 
@@ -513,6 +516,10 @@ the note. There is no SDK command class for it, so a plugin cannot originate one
 resulting records are readable through the
 [CancelPrescription](/sdk/data-cancel-prescription/) data module.
 
+To answer a refill request a pharmacy sent, use [ApproveRefill](#approverefill) or
+[DenyRefill](#denyrefill). A plugin starts the response in a note, and the provider sends it to the
+pharmacy from the command.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -524,13 +531,32 @@ the note's History section, without opening an assessment for it. Reach for it w
 diagnosed previously and is still active. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess and MedicalHistory.
 
+AddCondition records a condition only when the patient's chart doesn't already have its ICD-10 code.
+For a code that's already on the chart, active or resolved, use [Assess](#assess) with `icd10_code`,
+which reuses that condition and makes a resolved one active again. Codes match regardless of dots
+and case, so `M54.50` and `M5450` name the same condition, and surgical history entries aren't
+checked. A staged AddCondition with a charted code shows
+`This condition is already on the patient's chart. Use Assess to update it, including reactivating a resolved condition.`,
+and committing it records nothing. When a plugin commits one, with `commit()` or by passing
+`commit=True` to `originate()`, the command stays staged in the note and the plugin gets no error.
+
+The command's **Category Type** field is required and defaults to Problem List Item, so the condition
+is recorded as a problem list item unless a clinician sets it to Health Concern. Clinicians can also
+pick an optional **Category Domain**, or clear it to record no domain.
+
+Plugins can read the choices in the command's data as `category_type`, which is `problem-list-item`
+or `health-concern`, and `category_domain`, which is `sdoh`, `functional-status`,
+`disability-status`, or `cognitive-status`, and is empty when no domain is set.
+
+{% include alert.html type="info" content="<code>AddConditionCommand</code> doesn't have parameters for the category type or domain yet, so a plugin's AddCondition records a problem list item with no domain. A future release will add parameters that let plugins set both." %}
+
 **Command-specific parameters**:
 
 | Name                        | Type     | Required to commit | Description                                                |
 |:----------------------------|:---------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `background`                | _string_ | `false`  | Background information about the condition.                |
-| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
 
 **Example**:
@@ -599,7 +625,7 @@ AdjustPrescriptionCommand(
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
 | `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
-| `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the allergy was identified. Send a year or a month when that's all you know. |
 
 **Enums and Types**:
 
@@ -648,6 +674,43 @@ allergy = AllergyCommand(
 
 ---
 
+### ApproveRefill
+
+Approves a pharmacy's refill request. A plugin starts the Approve Refill command in a note and can
+edit or delete it, and the provider sends the approval to the pharmacy from the command. To decline a
+request instead, use [DenyRefill](#denyrefill).
+
+The command takes its medication, quantity, sig, and pharmacy from the
+[RefillRequest](/sdk/data-refill-request/#refillrequest). The plugin names the request and can add a
+note to the pharmacist.
+
+Approve Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+approval from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ApproveRefillCommand
+
+approve_refill = ApproveRefillCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    refill_request_id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10",
+    note_to_pharmacist="OK to fill. Patient seen last month.",
+)
+
+effects = [approve_refill.originate()]
+```
+
+---
+
 ### Assess
 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
@@ -659,11 +722,37 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 {% include alert.html type="info" content="If your plugin relies on <a href='/sdk/events/#assess_command__condition_selected'><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a> or <a href='/sdk/events/#assess_command__icd10_code_selected'><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a>, set the condition with <code>edit()</code>. These events fire when an existing Assess command's condition changes, so originating an Assess with <code>condition_id</code> or <code>icd10_code</code> already set sends neither. To trigger them, originate the command without a condition, then <code>edit()</code> it to set one. An <code>edit()</code> with <code>icd10_code</code> sends <code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code> even when the patient already has that condition charted." %}
 
-Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
+**Problem list or encounter diagnosis**
 
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit:
 
-Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
+- `True`: the condition becomes a problem list item, whether it was an encounter diagnosis or a health concern.
+- `False`: the condition becomes an encounter diagnosis, such as a sore throat that doesn't need tracking.
+- Unset or `None`: an encounter diagnosis stays one, and any other condition goes on the problem list.
+
+The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `problem-list-item` or `encounter-diagnosis`. A commit that changes the category or domain sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+
+An encounter diagnosis is still one assessed condition, not a copy:
+
+- Plan commands and billing in the note can use it.
+- The chart's Conditions list shows it alongside problem list items.
+- Clinicians can pick it in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code.
+
+**Category domain**
+
+A problem list item can have a domain, such as `sdoh`. An encounter diagnosis has none.
+
+- Clinicians choose the domain in the Assess command's **Category Domain** field, which is filled in from the condition and can be set only while **Show in problem list** is on.
+- `AssessCommand` has no parameter for the domain. Committing a plugin's Assess with `show_in_problem_list` set to `True` or unset keeps the condition's current domain, and committing with `False` removes it.
+- Plugins can read the chosen domain as `category_domain` in the command's data: `sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+
+**Entering an Assess in error**
+
+You can always enter a committed Assess in error, even when other assessments use the condition it recorded.
+
+- **A condition the Assess recorded** is entered in error too, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. It stays on the chart while another committed assessment that isn't entered in error still uses it.
+- **A condition the Assess didn't record**, such as one already on the chart or one recorded by a Diagnose or AddCondition command, stays on the chart.
+- **Category and domain** the Assess changed go back to what the condition had before that commit, including a health concern category or a domain the commit removed. The condition keeps its current category and domain instead when another Assess of the condition was committed after this one and isn't entered in error, whether or not it changed them, or when something else has changed them since.
 
 **Command-specific parameters**:
 
@@ -671,8 +760,8 @@ Entering in error an Assess that changed the status resets the condition's statu
 |:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
-| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
-| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list. |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began, or only its year or month. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, an encounter diagnosis stays one, and any other condition goes on the problem list, including a health concern and a new condition. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
@@ -842,6 +931,65 @@ close_goal = CloseGoalCommand(
 )
 ```
 
+---
+
+### DenyRefill
+
+Denies a pharmacy's refill request with an NCPDP reason code. Like [ApproveRefill](#approverefill),
+a plugin starts the Deny Refill command in a note and can edit or delete it, and the provider sends
+the denial to the pharmacy from the command. The command takes its medication, quantity, sig, and
+pharmacy from the [RefillRequest](/sdk/data-refill-request/#refillrequest).
+
+Deny Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+denial from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `reason_code`        | _[Reason](#denyrefill-reason) enum_ | `false` | The reason for the denial. Must be one of [`DenyRefillCommand.Reason`](#denyrefill-reason). |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+**Enums and Types**:
+
+<a id="denyrefill-reason"></a>
+
+| Reason                                  | Value  | Description |
+|:----------------------------------------|:-------|:------------|
+| `PATIENT_UNKNOWN_TO_PRESCRIBER`         | `"AA"` | Patient unknown to the prescriber |
+| `PATIENT_NEVER_UNDER_PROVIDER_CARE`     | `"AB"` | Patient never under provider care |
+| `PATIENT_NO_LONGER_UNDER_PROVIDER_CARE` | `"AC"` | Patient no longer under provider care |
+| `REFILL_TOO_SOON`                       | `"AD"` | Refill too soon |
+| `MEDICATION_NEVER_PRESCRIBED`           | `"AE"` | Medication never prescribed for patient |
+| `PATIENT_SHOULD_CONTACT_PROVIDER`       | `"AF"` | Patient should contact provider |
+| `REFILL_NOT_APPROPRIATE`                | `"AG"` | Refill not appropriate |
+| `PATIENT_PICKED_UP_PRESCRIPTION`        | `"AH"` | Patient has picked up prescription |
+| `PATIENT_PICKED_UP_PARTIAL_FILL`        | `"AJ"` | Patient has picked up partial fill of prescription |
+| `NOT_PICKED_UP_RETURNED_TO_STOCK`       | `"AK"` | Patient has not picked up prescription, drug returned to stock |
+| `PATIENT_NEEDS_APPOINTMENT`             | `"AM"` | Patient needs appointment |
+| `PRESCRIBER_NOT_AT_PRACTICE`            | `"AN"` | Prescriber not associated with this practice or location |
+| `NO_PRIOR_AUTHORIZATION_ATTEMPT`        | `"AO"` | No attempt will be made to obtain prior authorization |
+| `RESPONDED_BY_OTHER_MEANS`              | `"AP"` | Request already responded to by other means, such as phone or fax |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import DenyRefillCommand
+
+deny_refill = DenyRefillCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    refill_request_id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10",
+    reason_code=DenyRefillCommand.Reason.PATIENT_NEEDS_APPOINTMENT,
+    note_to_pharmacist="Patient must schedule a visit first.",
+)
+
+effects = [deny_refill.originate()]
+```
+
+---
+
 ### Diagnose
 
 {% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now, and Canvas Support can record their Diagnose commands as Assess while you move off Diagnose (see <b>Recording Diagnose as Assess</b> below). See <a href='/product-updates/important-dates/'>Important Dates</a>." %}
@@ -880,7 +1028,7 @@ already in a note keep working when the setting is turned on or off.
 |:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
-| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
@@ -967,7 +1115,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | Name             | Type                     | Required to commit        | Description                                                                                                                                                                                                                |
 |:-----------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
-| `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
+| `requested_date` | _[ApproximateDate](#approximatedate)_ | `false`                   | The desired follow-up date. Send a year or a month when no specific day is wanted.                                                                                                                                                                                              |
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
@@ -1162,10 +1310,10 @@ imaging_order = ImagingOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ImagingReport](/sdk/data-imaging/#imagingreport) IDs to review. Must be reports on that patient's chart.                                                                          |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).       |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -1199,7 +1347,7 @@ imaging_review = ImagingReviewCommand(
 | `cpt_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations). |
 | `cvx_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations).   |
 | `unstructured`     | _[Coding](#coding)_             | `false`* | Free-text immunization description.                                                                                 |
-| `approximate_date` | _date_               | `false`  | The approximate date when the immunization was administered.                                                        |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date when the immunization was administered. Send a year or a month when that's all you know. |
 | `comments`         | _string_             | `false`  | Additional comments about the immunization (max 255 characters).                                                    |
 
 *Must provide either both `cpt_code` and `cvx_code` together, or `unstructured` alone (cannot mix structured and unstructured).
@@ -1458,10 +1606,10 @@ LabOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [LabReport](/sdk/data-labs/#labreport) IDs to review. Must be reports on that patient's chart.                                                                              |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).           |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -1508,8 +1656,8 @@ records no domain. Plugins can read the choice as `category_domain` in the comma
 | Name                     | Type      | Required to commit | Description                                                |
 |--------------------------|-----------|----------|------------------------------------------------------------|
 | `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
-| `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
-| `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
+| `approximate_start_date` | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate start date of the condition. Send a year or a month when that's all you know. |
+| `approximate_end_date`   | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate end date of the condition. Send a year or a month when that's all you know. |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
 
@@ -1700,7 +1848,7 @@ Records a past surgical procedure, coded in SNOMED. See [Recording a condition](
 | Name                    | Type                 | Required to commit | Description                                        |
 |-------------------------|----------------------|----------|----------------------------------------------------|
 | `past_surgical_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the past surgical procedure. Search with the [procedures endpoint](/sdk/utils/#get-snomedprocedures--surgical-history-procedures).      |
-| `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
+| `approximate_date`      | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate date of the surgery. Send a year or a month when that's all you know. |
 | `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
 
 **Coding Support**:
@@ -2596,7 +2744,7 @@ Read the committed reference back with the [Reference](/sdk/data-reference/#refe
 
 | Name                  | Type                | Required to commit | Description                                                                                                                                   |
 |:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
-| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. It must match a diagnostic view on your instance. |
 
 **Example**:
 
@@ -2626,10 +2774,10 @@ def compute():
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ReferralReport](/sdk/data-referral/#referralreport) IDs to review. Must be reports on that patient's chart.                                                                         |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).      |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -2851,7 +2999,7 @@ Records that a patient is stopping a medication, along with the reason. See [Rec
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
-| `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
+| `rationale`     | _string_ | `false`  | The reason for stopping the medication (max length: 1024 characters). |
 | `assessment_id` | _string_ | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
@@ -2966,10 +3114,10 @@ TaskCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument) ids to review. Must be documents already on that patient's chart.                                                                  |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).                            |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -3267,6 +3415,49 @@ VitalsCommand(
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
+
+### ApproximateDate
+
+`ApproximateDate` is the type of the command parameters Canvas records as approximate dates, such as the onset of a condition or the date of a past surgery. Use it when you know only the year or the month something happened: send `"2023"` rather than inventing January 1, 2023.
+
+A parameter of this type accepts:
+
+- A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. A one-digit month, as in `6/2025`, also works. These are the partial forms the chart's own date field takes.
+- Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, a Unix timestamp at midnight UTC, or a `YYYY-MM-DD` string.
+
+A year or a month stays the string you sent, and a full date becomes a `date`. Any other value raises a validation error when you create the command. For example, `"2026-09"` puts the year first, `"13/2026"` names a month that doesn't exist, and the number `2023` isn't a string.
+
+Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period.
+
+| Value sent     | Shown in the chart | Date recorded |
+|:---------------|:-------------------|:--------------|
+| `"2023"`       | 2023               | 2023-01-01    |
+| `"09/2026"`    | 09/2026            | 2026-09-01    |
+| `"6/2025"`     | 6/2025             | 2025-06-01    |
+| `"2026-09-14"` or `date(2026, 9, 14)` | 2026-09-14 | 2026-09-14 |
+
+The commands with `ApproximateDate` parameters are [AddCondition](#addcondition), [Allergy](#allergy), [Assess](#assess), [Diagnose](#diagnose), [FollowUp](#followup), [ImmunizationStatement](#immunizationstatement), [MedicalHistory](#medicalhistory), and [SurgicalHistory](#surgicalhistory). Other date parameters, such as those on Goal, Task, and Immunize, take a full `date`. To annotate your own values with this type, import it from `canvas_sdk.commands.constants`.
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import MedicalHistoryCommand, PastSurgicalHistoryCommand
+
+# Only the year of the surgery is known
+surgical_history = PastSurgicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_surgical_history="Appendectomy",
+    approximate_date="2023"
+)
+
+# The condition started in September 2026 and ended on a known day
+medical_history = MedicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_medical_history="J0390",
+    approximate_start_date="09/2026",
+    approximate_end_date="2026-10-02"
+)
+```
 
 ### ClinicalQuantity
 

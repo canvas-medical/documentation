@@ -131,6 +131,22 @@ current = referral_report.active_delegation
 
 For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
+## Attached documents
+
+The documents sent with a referral are `ReferralDocument` records, available through the referral's `documents` attribute. `document_type` names the kind of document, such as `LAB REPORT`, `IMAGING REPORT`, `REFERRAL REPORT`, `UNCATEGORIZED DOCUMENT`, or `NOTE`, and `document_id` holds that record's `dbid`. For an uploaded file, `url` and `bucket` hold its S3 location instead.
+
+```python
+from canvas_sdk.v1.data import LabReport, Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+lab_report_ids = [
+    attachment.document_id
+    for attachment in referral.documents.filter(document_type="LAB REPORT")
+]
+lab_reports = LabReport.objects.filter(dbid__in=lab_report_ids)
+```
+
 ## The document reference
 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
@@ -152,6 +168,21 @@ url = document.document_url if document else None
 ```
 
 {% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>." %}
+
+### The incoming fax or upload
+
+A report filed from an incoming fax or upload links to it through `integration_task_review`, the [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) of the document. The review's `task` is the [IntegrationTask](/sdk/data-integration-task/#accessing-the-document-file), whose `document_url` points to the file as Canvas received it. The field can be `None`, so check it before reading the task.
+
+```python
+from canvas_sdk.v1.data import ReferralReport
+
+report = ReferralReport.objects.select_related("integration_task_review__task").get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+review = report.integration_task_review
+url = review.task.document_url if review else None
+```
 
 ## Attributes
 
@@ -183,6 +214,7 @@ url = document.document_url if document else None
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
 | action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
+| documents             | [ReferralDocument](#referraldocument)[]                        |
 
 ### ReferralReport
 
@@ -203,6 +235,7 @@ url = document.document_url if document else None
 | reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |
 | patient            | [Patient](/sdk/data-patient/#patient)                                 |
 | referral           | [Referral](#referral)                                                 |
+| integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |
 | specialty          | String                                                                |
 | comment            | String                                                                |
 | priority           | Boolean                                                               |
@@ -230,6 +263,20 @@ url = document.document_url if document else None
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
 | reports                       | [ReferralReport](#referralreport)[]    |
+
+### ReferralDocument
+
+| Field Name    | Type                  | Notes |
+|---------------|-----------------------|-------|
+| dbid          | Integer               |       |
+| created       | DateTime              |       |
+| modified      | DateTime              |       |
+| referral      | [Referral](#referral) | The referral the document was sent with |
+| document_type | String                | The kind of document, such as `LAB REPORT` or `NOTE` |
+| document_id   | Integer               | The `dbid` of the attached record, or `None` |
+| label         | String                | The name shown for the attachment |
+| url           | String                | The S3 location of an uploaded file, or `None` |
+| bucket        | String                | The S3 bucket of an uploaded file, or `None` |
 
 ### ReferralReportCoding
 

@@ -146,6 +146,7 @@ This is opt-in: only add it if your workflow charts medications programmatically
 - **Match the UI's scoping.** If a field references something on the chart, query it `for_patient(...)` so you don't attach another patient's record.
 - **Handle "no match."** A search or query can come back empty. Decide what your plugin should do (skip the field, raise, or fall back) rather than passing a guess.
 - **Don't hard-code codes you can't verify.** Terminologies change; look values up so you stay in sync with what the chart would offer.
+- **Send only the date you know.** Fields such as a condition's onset or a history item's date take an [approximate date](/sdk/commands/#approximatedate), so pass a year (`"2023"`) or a month (`"06/2025"`) instead of inventing a day. Canvas records it the same way as one typed into the chart.
 
 <br/>
 <br/>

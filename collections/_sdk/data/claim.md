@@ -59,6 +59,14 @@ expects_claim = note.note_type_version.is_billable
 claim = note.get_claim()
 ```
 
+## How diagnosis codes are ranked
+
+A claim lists its diagnosis codes in `rank` order, and rank 1 is the primary diagnosis. Each time Canvas syncs a claim with its note, such as when the note is locked or its charges are pushed, the sync adds each ICD-10 code on the note that the claim doesn't have yet. It adds each code once, even when two of the note's conditions share it.
+
+A note in the revamped format, on an instance in the [revamped note beta program](/product-updates/note-revamp/), also sets the order of the claim's codes. The sync ranks the note's codes first, in the order their commands appear in the note body. Codes that were added only on the claim follow, in their current order. A condition takes the position of the topmost command that records or assesses it, such as Diagnose, Assess, or Update Diagnosis. Conditions with no command of their own, such as an order's indication, come after those, in the order they were added. When a provider moves commands in the note, the next sync re-ranks the claim to match, including a claim that has already been filed, and adds a comment to the claim listing the new order.
+
+For other notes, the sync adds new codes after the existing ones and leaves the existing ranks unchanged.
+
 <!-- source: discussion #1642 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
 ## Claim balances and totals
@@ -134,6 +142,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | aggregate_coverage_balance | Decimal                                               |                                           |
 | assignee                   | [Staff](/sdk/data-staff/#staff)                       | Staff member the claim is assigned to     |
 | team                       | [Team](/sdk/data-team/#team)                          | Team the claim is assigned to             |
+| authorization              | [Authorization](/sdk/data-authorization/#authorization) | The prior authorization the claim is billed under (nullable) |
 | created                    | DateTime                                              |                                           |
 | modified                   | DateTime                                              |                                           |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |
@@ -328,7 +337,7 @@ Represents banner alerts associated with a claim. Banner alerts are displayed in
 
 ### ClaimDiagnosisCode
 
-Represents diagnosis codes associated with a claim, ordered by rank.
+Represents diagnosis codes associated with a claim, ordered by rank. See [How diagnosis codes are ranked](#how-diagnosis-codes-are-ranked).
 
 | Field Name                | Type                                                        |
 | ------------------------- | ----------------------------------------------------------- |

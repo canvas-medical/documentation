@@ -751,7 +751,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_ADDED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are added to an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is added to an appointment. Adding several labels at once fires one event per label. <strong>Note:</strong> the target of this event is the <code>TaskLabel</code> that was added, <em>not</em> the appointment. Read the appointment's ID from the context object as <code>appointment.id</code> (for example, <code>Appointment.objects.get(id=self.event.context["appointment"]["id"])</code>). The <code>appointment</code> and <code>patient</code> keys are present only when the appointment has a patient.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -759,11 +759,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -771,7 +773,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_REMOVED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are removed from an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is removed from an appointment. Removing several labels at once fires one event per label. As with <code>APPOINTMENT_LABEL_ADDED</code>, the target is the <code>TaskLabel</code> that was removed, and the appointment's ID is in the context object as <code>appointment.id</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -779,11 +781,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1496,7 +1500,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <!-- source: discussion #1662 -->
 Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
 
-- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"], timeout=30)`, and check `document["channel"]` first if you only want one channel.
 - **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
 - **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 
@@ -3028,6 +3032,65 @@ These events don't form one sequence that every prescription passes through. Whi
   </tbody>
 </table>
 
+#### Refill requests
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas receives a refill request from a pharmacy.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is updated, such as when it's reassigned or ignored.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_ASSIGNEE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is assigned to a different staff member, including through the <a href="/sdk/effect-update-refill-request/"><code>UpdateRefillRequest</code></a> effect. It fires only when the assignee changes, not when a request is first received. The context holds the assignee from before the change. Its <code>id</code> is <code>null</code> when the request had no assignee. To read the new assignee, get the refill request and check its <a href="/sdk/data-refill-request/#refillrequest"><code>staff</code></a> attribute.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"previous":
+  "id": <a href='/sdk/data-staff/#staff'>staff_id</a> | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Surescripts
 
 Surescripts response events fire when the platform receives a response from Surescripts after a corresponding request effect is executed. These events let plugins react to insurance eligibility checks and other Surescripts services.
@@ -4502,6 +4565,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4529,6 +4594,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4556,6 +4623,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4604,6 +4673,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4631,6 +4702,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4658,6 +4731,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4685,6 +4760,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4712,6 +4789,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4739,6 +4818,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4766,6 +4847,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4793,6 +4876,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4820,6 +4905,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4847,6 +4934,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4874,6 +4963,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -6117,6 +6208,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6155,6 +6247,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6189,6 +6282,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6218,6 +6312,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6247,6 +6342,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6297,6 +6393,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6326,6 +6423,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6355,6 +6453,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6384,6 +6483,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6413,6 +6513,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6442,6 +6543,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6471,6 +6573,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6500,6 +6603,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6529,6 +6633,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6558,6 +6663,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6587,6 +6693,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
