@@ -278,7 +278,13 @@ The join behind `assessments`. Reach an order's assessments through its `assessm
 from canvas_sdk.v1.data.imaging import ImagingOrder
 
 imaging_order = ImagingOrder.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
-assessments = imaging_order.assessments.all()
+
+# The conditions selected as the order's indications
+indications = [
+    assessment.condition
+    for assessment in imaging_order.assessments.select_related("condition")
+    if assessment.condition
+]
 ```
 
 | Field Name    | Type                                           |
