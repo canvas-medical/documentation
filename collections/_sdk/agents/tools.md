@@ -932,7 +932,7 @@ originate-command tool).
 
 **Category:** `@clinical_reads`
 
-Search the patient's medications with optional filters. Returns each matching medication as an object with `name` (display from the first coding, typically RxNorm), `status` ("active" or "inactive"), `start_date` (ISO 8601 or null), and `end_date` (ISO 8601 or null). Patient scope is enforced — the tool only returns records for the current agent's patient. If no filters are supplied, returns the most recent records by start_date.
+Search the patient's medications with optional filters. Returns each matching medication as an object with `name` (display from the first coding, typically RxNorm), `fdb_code` (its FDB code, the one the prescription commands take, or null for one charted without it), `status` ("active" or "inactive"), `start_date` (ISO 8601 or null), and `end_date` (ISO 8601 or null). Patient scope is enforced — the tool only returns records for the current agent's patient. If no filters are supplied, returns the most recent records by start_date.
 
 **Arguments:**
 
@@ -943,7 +943,7 @@ Search the patient's medications with optional filters. Returns each matching me
 | `started_on_or_after` | string (date) | no | ISO 8601 date (YYYY-MM-DD). When supplied, only return medications with start_date >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `name`, `status` (active|inactive), `start_date` (ISO 8601 or null), `end_date` (ISO 8601 or null).
+**Returns:** Array of objects with `id`, `name`, `fdb_code` (or null), `status` (active|inactive), `start_date` (ISO 8601 or null), `end_date` (ISO 8601 or null).
 
 **Backing data model:** `Medication`.
 
@@ -1394,7 +1394,7 @@ Search a lab partner's compendium of orderable tests. Returns each test with `id
 
 **Category:** `@clinical_reads`
 
-Search the patient's recorded medication statements — patient-reported or self-administered medications (distinct from active prescriptions which `find_medications` covers). Returns each statement with `medication_name`, `start_date` (ISO 8601 or null), `end_date` (ISO 8601 or null), `dose_form`, `dose_route`, `dose_frequency_interval`, and `sig_original_input` (the patient's verbatim sig).
+Search the patient's recorded medication statements — patient-reported or self-administered medications (distinct from active prescriptions which `find_medications` covers). Returns each statement with `medication_name`, `fdb_code` (the medication's FDB code, or null), `start_date` (ISO 8601 or null), `end_date` (ISO 8601 or null), `dose_form`, `dose_route`, `dose_frequency_interval`, and `sig_original_input` (the patient's verbatim sig).
 
 **Arguments:**
 
@@ -1404,7 +1404,7 @@ Search the patient's recorded medication statements — patient-reported or self
 | `started_on_or_after` | string (date) | no | ISO 8601 date. Only return statements with start_date >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `medication_name`, `start_date`, `end_date`, `dose_form`, `dose_route`, `dose_frequency_interval`, `sig_original_input`.
+**Returns:** Array of objects with `id`, `medication_name`, `fdb_code`, `start_date`, `end_date`, `dose_form`, `dose_route`, `dose_frequency_interval`, `sig_original_input`.
 
 **Backing data model:** `MedicationStatement`.
 
@@ -1430,7 +1430,7 @@ Search external healthcare events recorded for the patient — typically HL7 fee
 
 **Category:** `@clinical_reads`
 
-Search the prescriptions written for the patient here (actual Rx events, distinct from `find_medications`, which is the medication list, and from `find_pharmacy_fills`, which is what pharmacies dispensed). Each result has `medication_name`, `status` (where the prescription stands on its way to the pharmacy), `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills` (refills allowed), `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response` (set when the prescription answers a pharmacy's refill request: Approved, Denied, ...), and `error` (why sending failed, when `status` is error). Patient scope is enforced. Defaults to committed prescriptions ordered most-recent first.
+Search the prescriptions written for the patient here (actual Rx events, distinct from `find_medications`, which is the medication list, and from `find_pharmacy_fills`, which is what pharmacies dispensed). Each result has `medication_name`, `fdb_code` (the medication's FDB code, or null for a compound or a medication without one), `status` (where the prescription stands on its way to the pharmacy), `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills` (refills allowed), `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response` (set when the prescription answers a pharmacy's refill request: Approved, Denied, ...), and `error` (why sending failed, when `status` is error). Patient scope is enforced. Defaults to committed prescriptions ordered most-recent first.
 
 **Arguments:**
 
@@ -1441,7 +1441,7 @@ Search the prescriptions written for the patient here (actual Rx events, distinc
 | `written_on_or_after` | string (date) | no | ISO 8601 date. Only return prescriptions with written_date >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `medication_name`, `status`, `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills`, `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response`, `error`, `note_dbid`.
+**Returns:** Array of objects with `id`, `medication_name`, `fdb_code`, `status`, `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills`, `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response`, `error`, `note_dbid`.
 
 **Backing data model:** `Prescription`.
 
@@ -1667,7 +1667,7 @@ Find active staff members and teams a claim can be assigned to, by name. assign_
 
 **Category:** `@config_reads`
 
-Look up the codes a history or order command needs, by name, from Canvas's own vocabularies, as the chart's pickers do. `kind` is what to look up: `medical_history` (past conditions, for `originate_medical_history`), `condition` (ICD-10 diagnoses), `medication` (FDB, for `originate_medication_statement`), `allergen` (for `originate_allergy`), `family_history` and `surgical_history` (SNOMED, for the history tools), `immunization` (CVX and CPT, for `originate_immunization_statement`), or `imaging_study` (for `originate_imaging_order`). Use the codes it returns exactly; never write a code from memory. When several candidates fit, ask the clinician which one they mean.
+Look up the codes a history or order command needs, by name, from Canvas's own vocabularies, as the chart's pickers do. `kind` is what to look up: `medical_history` (past conditions, for `originate_medical_history`), `condition` (ICD-10 diagnoses), `medication` (FDB, for `originate_medication_statement` and `originate_prescribe_medication`, with the units each is dispensed in), `allergen` (for `originate_allergy`), `family_history` and `surgical_history` (SNOMED, for the history tools), `immunization` (CVX and CPT, for `originate_immunization_statement`), or `imaging_study` (for `originate_imaging_order`). Use the codes it returns exactly; never write a code from memory. When several candidates fit, ask the clinician which one they mean.
 
 **Arguments:**
 
@@ -1676,7 +1676,7 @@ Look up the codes a history or order command needs, by name, from Canvas's own v
 | `kind` | string (enum) | yes |  One of: `condition`, `medical_history`, `medication`, `allergen`, `family_history`, `surgical_history`, `immunization`, `imaging_study`. |
 | `query` | string | yes | The name to search for, e.g. 'penicillin' or 'appendectomy'. |
 
-**Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), `cvx_code` and `cpt_code` (immunization), or `image_code` (imaging_study).
+**Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code`, `rxnorm_rxcui` and `dispense_units` (medication: each unit with `representative_ndc`, which `originate_prescribe_medication` takes, `description`, `unit_quantity` (the size of one unit, not an amount to dispense), `ncpdp_quantity_qualifier_code` and `ncpdp_quantity_qualifier_description`), `concept_id` and `concept_type` (allergen), `cvx_code` and `cpt_code` (immunization), or `image_code` (imaging_study).
 
 #### `find_service_providers`
 
@@ -1987,13 +1987,16 @@ Stage a draft Plan command on the patient's current open note for the clinician 
 
 **Category:** `@clinical_writes`
 
-Stage a draft Prescribe command on the patient's current open note for the clinician to review, edit, and commit. NEVER commits — the clinician sees the draft in the chart and decides whether to send it. Use only when the clinician explicitly asks to prescribe.
+Stage a draft Prescribe command on the patient's current open note for the clinician to review, edit, and commit. NEVER commits — the clinician sees the draft in the chart and decides whether to send it. Use only when the clinician explicitly asks to prescribe. Look the medication up with `find_clinical_codes` (kind 'medication') and pass its `fdb_code`, and the `representative_ndc` of the dispense unit with `quantity_to_dispense` counted in that unit. A unit the medication does not have is refused.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `fdb_code` | string | no | FDB code identifying the medication. If unknown, omit; the clinician will fill it in when reviewing the draft. |
+| `representative_ndc` | string | no | The dispense unit: the `representative_ndc` of one of the medication's `dispense_units` from find_clinical_codes. Needs `fdb_code`. Optional. |
+| `quantity_to_dispense` | number | no | How many of the dispense unit to dispense (e.g. 30 tablets), more than 0. Optional; set it only with `representative_ndc`. |
+| `substitutions` | string (enum) | no | Whether the pharmacy may substitute a generic. Defaults to allowed. One of: `allowed`, `not_allowed`. |
 | `sig` | string | yes | Patient instructions (e.g. 'Take 1 tablet by mouth daily'). |
 | `indications_icd10` | array of string | no | ICD-10 codes justifying the prescription (max 2). Optional. |
 | `days_supply` | integer | no | Days supply for the prescription. Optional. |
