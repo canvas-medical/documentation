@@ -385,64 +385,101 @@ The response contains a `results` list; each entry looks like:
         "Analgesic or Antipyretic Non-Opioid and Combinations",
         "Analgesic or Antipyretic Non-Opioid"
       ],
-      "rxnorm_rxcui": "313782"
+      "rxnorm_rxcui": "313782",
+      "standard_sig": "take 2 tablets (650 mg) by oral route every 6 hours as needed"
     }
   ]
 }
 ```
 
+`standard_sig` is FDB's standard sig for the medication: the directions FDB suggests for it, such as `"take 1 tablet (50 mg) by oral route once daily at bedtime"`. Use it to prefill the `sig` of a [Prescribe](/sdk/commands/#prescribe) command. It's `null` when FDB has no single standard sig for the medication.
+
 Each result's `clinical_quantities` array supplies the values for a [`ClinicalQuantity`](/sdk/commands/#clinicalquantity) on prescribe commands — `representative_ndc`, `erx_ncpdp_script_quantity_qualifier_code` → `ncpdp_quantity_qualifier_code`, and `clinical_quantity_description` → `description`.
 
 #### `GET /fdb/grouped-medication/{med_medication_id}/` — look up by FDB code
 
-Fetch one or more medications by FDB code. Pass a single `med_medication_id`, or a comma-separated list of ids, as the path segment.
+Fetch a medication by FDB code.
 
-| Parameter                   | Type                          | Description                        |
-|-----------------------------|-------------------------------|------------------------------------|
-| `med_medication_id` (path)  | int, or comma-separated ints  | One or more FDB medication ids.    |
+| Parameter                   | Type | Description             |
+|-----------------------------|------|-------------------------|
+| `med_medication_id` (path)  | int  | The FDB medication id.  |
 
 ```python
 from canvas_sdk.utils.http import ontologies_http
 
-# single FDB code
-response_json = ontologies_http.get_json("/fdb/grouped-medication/123456/").json()
-
-# multiple FDB codes
-med_medication_ids = ["123456", "123457"]
-response_json = ontologies_http.get_json(
-    f"/fdb/grouped-medication/{','.join(med_medication_ids)}/"
-).json()
+response_json = ontologies_http.get_json("/fdb/grouped-medication/436095/").json()
 ```
 
-Returns the same full `results` shape as the text/RxNorm search above — each entry includes every field, including `clinical_quantities`:
+Returns a single medication object with the same fields as a search result, including `clinical_quantities` and `standard_sig`, but without `search_rank`:
 
 ```json
 {
-  "results": [
+  "description_and_quantity": "Athenol 325 mg tablet",
+  "med_medication_id": 436095,
+  "search_terms": "Athenol 325 mg tablet|ACETAMINOPHEN ORAL|...|TYLENOL|...",
+  "med_medication_description": "Athenol 325 mg tablet",
+  "clinical_quantities": [
     {
-      "description_and_quantity": "Athenol 325 mg tablet",
-      "med_medication_id": 123456,
-      "search_terms": "Athenol 325 mg tablet|ACETAMINOPHEN ORAL|...|TYLENOL|...",
-      "med_medication_description": "Athenol 325 mg tablet",
-      "clinical_quantities": [
-        {
-          "erx_quantity": "1.0000000",
-          "representative_ndc": "11822317640",
-          "clinical_quantity_description": "tablet",
-          "erx_ncpdp_script_quantity_qualifier_code": "C48542",
-          "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
-        }
-      ],
-      "etc_path_id": [3645, 574, 578, 577],
-      "etc_path_name": [
-        "Analgesic, Anti-inflammatory or Antipyretic",
-        "Analgesic, Anti-inflammatory or Antipyretic - Non-Opioid",
-        "Analgesic or Antipyretic Non-Opioid and Combinations",
-        "Analgesic or Antipyretic Non-Opioid"
-      ],
-      "rxnorm_rxcui": "313782"
+      "erx_quantity": "1.0000000",
+      "representative_ndc": "11822317640",
+      "clinical_quantity_description": "tablet",
+      "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+      "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
     }
-  ]
+  ],
+  "etc_path_id": [3645, 574, 578, 577],
+  "etc_path_name": [
+    "Analgesic, Anti-inflammatory or Antipyretic",
+    "Analgesic, Anti-inflammatory or Antipyretic - Non-Opioid",
+    "Analgesic or Antipyretic Non-Opioid and Combinations",
+    "Analgesic or Antipyretic Non-Opioid"
+  ],
+  "rxnorm_rxcui": "313782",
+  "standard_sig": "take 2 tablets (650 mg) by oral route every 6 hours as needed"
+}
+```
+
+An id that doesn't match a medication returns a `404` status code.
+
+#### `GET /fdb/multi-grouped-medication/{med_medication_ids}/` — look up by multiple FDB codes
+
+Fetch several medications by FDB code in one request.
+
+| Parameter                    | Type                 | Description                              |
+|------------------------------|----------------------|------------------------------------------|
+| `med_medication_ids` (path)  | comma-separated ints | The FDB medication ids to look up.       |
+
+```python
+from canvas_sdk.utils.http import ontologies_http
+
+med_medication_ids = ["436095", "169434"]
+response_json = ontologies_http.get_json(
+    f"/fdb/multi-grouped-medication/{','.join(med_medication_ids)}/"
+).json()
+```
+
+Returns a list of medication objects shaped like the single lookup above. The list leaves out ids that don't match a medication, and its order can differ from the order of the ids you pass, so match results to your ids by `med_medication_id`.
+
+#### `GET /fdb/standard-sig/{med_medication_id}/` — get a medication's standard sig
+
+Fetch only FDB's standard sig for a medication, without the rest of its details. The search and lookup endpoints above return the same value as `standard_sig`.
+
+| Parameter                   | Type | Description             |
+|-----------------------------|------|-------------------------|
+| `med_medication_id` (path)  | int  | The FDB medication id.  |
+
+```python
+from canvas_sdk.utils.http import ontologies_http
+
+response_json = ontologies_http.get_json("/fdb/standard-sig/169434/").json()
+```
+
+The response gives the id you passed and its sig. `sig` is `null` when FDB has no standard sig for the medication.
+
+```json
+{
+  "med_medication_id": 169434,
+  "sig": "take 1 tablet (50 mg) by oral route once daily at bedtime"
 }
 ```
 
