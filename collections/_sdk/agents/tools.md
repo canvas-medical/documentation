@@ -906,8 +906,8 @@ list to opt out of specific tools within a granted category:
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (24 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `originate_imaging_order`, `originate_refer`, `originate_reason_for_visit`, `originate_hpi`, `edit_staged_command`, `delete_staged_command`
-- **`@config_reads`** (7 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`, `find_reason_for_visit_codes`
+- **`@clinical_writes`** (25 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `originate_imaging_order`, `originate_refer`, `originate_questionnaire`, `originate_reason_for_visit`, `originate_hpi`, `edit_staged_command`, `delete_staged_command`
+- **`@config_reads`** (8 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`, `get_questionnaire`, `find_reason_for_visit_codes`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@intake_reads`** (4 tools): `read_incoming_document`, `match_patient`, `find_document_types`, `find_report_templates`
 - **`@intake_writes`** (4 tools): `suggest_patient`, `categorize_document`, `prefill_document_fields`, `assign_document_reviewer`
@@ -1695,6 +1695,21 @@ Search the practice's directory of outside providers and facilities, the list th
 **Returns:** Array of objects with `id`, `name`, `specialty`, `practice_name`, `business_phone`, `business_fax`, and `business_address`.
 
 **Backing data model:** `ServiceProvider`.
+
+#### `get_questionnaire`
+
+**Category:** `@config_reads`
+
+Read one questionnaire the chart's Questionnaire command offers, by `questionnaire_id` or by exact `name`. Returns its questions in order, each with `id`, `text`, `type` (text, integer, date, single_choice, multiple_choice), its `options`, and `enabled_when`: the answers to other questions it applies after (null when it always applies). Read it before `originate_questionnaire`. Practice-level config, not patient-scoped.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `questionnaire_id` | string | no | The questionnaire's id. |
+| `name` | string | no | The questionnaire's exact name. |
+
+**Returns:** `{id, name, questions: [{id, text, code, type, acknowledge_only, options: [{id, name, code, value}], enabled_when: {behavior: 'all'|'any', conditions: [{question_id, operator, option_id, value}]} | null}]}`.
 
 #### `find_reason_for_visit_codes`
 
@@ -2512,6 +2527,23 @@ Stage a draft Referral on the patient's open note for the clinician to review an
 **Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `ReferCommand`.
+
+#### `originate_questionnaire`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Questionnaire on the patient's open note with the answers given. NEVER commits. Read the questionnaire with `get_questionnaire` first. Answer each question with the one key its type takes: `text`, `integer`, `date`, `option_id`, or `selections`. Answer only what the patient or clinician said; leave out a question that was not answered or that does not apply given the other answers.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `questionnaire_id` | string | yes | The questionnaire's `id` from get_questionnaire. |
+| `answers` | array of object | no | One answer per answered question. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `QuestionnaireCommand`.
 
 #### `originate_reason_for_visit`
 
