@@ -19586,6 +19586,8 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+The `PRESCRIBE__INDICATIONS__*` events fire each time a user changes the search term in the **Indications** field, with that term in `search_term`. Canvas runs the search on the server for every term, so a `POST_SEARCH` handler sees the results for the current term. The search returns the patient's active conditions that match the term, each with the condition's id as its `value`. A user can pick up to two indications. The **Indications** fields of Refill and Adjust Prescription work the same way and fire the `REFILL__INDICATIONS__*` and `ADJUST_PRESCRIPTION__INDICATIONS__*` events.
+
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIBE__PHARMACY__POST_SEARCH</th></tr>
