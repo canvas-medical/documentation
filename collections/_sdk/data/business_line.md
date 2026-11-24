@@ -88,6 +88,40 @@ The `filter` method can be used to filter by desired attributes. The following e
 | logo         | File (S3 key)                           |
 | logo_url     | String (computed)                       |
 | patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
+| settings     | QuerySet[[BusinessLineSetting](#businesslinesetting)] |
+
+### BusinessLineSetting
+
+A business line's appointment reminder configuration. Each setting has a `name`, either `appointmentReminders` or `appointmentReminderCustomization`, and a JSON `value` in the same shape as the matching [OrganizationSetting](/sdk/data-organization/#organizationsetting).
+
+Canvas uses a business line's `appointmentReminderCustomization` in place of the organization's when all of these are true:
+
+- Business lines are enabled on the instance.
+- The business line is active.
+- The reminder is for one of the business line's patients.
+- The business line's value isn't empty.
+
+Otherwise, Canvas uses the organization's text. The reminder schedule always comes from the organization's `appointmentReminders`.
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+
+if patient.business_line:
+    customization = patient.business_line.settings.filter(
+        name="appointmentReminderCustomization"
+    ).first()
+```
+
+| Field Name    | Type                          |
+| ------------- | ----------------------------- |
+| dbid          | Integer                       |
+| created       | DateTime                      |
+| modified      | DateTime                      |
+| business_line | [BusinessLine](#businessline) |
+| name          | String                        |
+| value         | JSON                          |
 
 ## Enumeration types
 

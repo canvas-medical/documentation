@@ -53,6 +53,7 @@ organization = Organization.objects.first()
 | addresses             | QuerySet[[OrganizationAddress](#organizationaddress)]                       |
 | telecom               | QuerySet[[OrganizationContactPoint](#organizationcontactpoint)]             |
 | business_lines        | QuerySet[[BusinessLine](/sdk/data-business-line/#businessline)]             |
+| settings              | QuerySet[[OrganizationSetting](#organizationsetting)]                       |
 
 ## OrganizationAddress
 
@@ -102,6 +103,39 @@ The `OrganizationContactPoint` model represents a contact method (such as phone,
 | use_notes    | String                                                                |
 | rank         | Integer                                                               |
 | state        | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+
+## OrganizationSetting
+
+The `OrganizationSetting` model holds the organization's appointment reminder configuration. Each setting has a `name` and a JSON `value`:
+
+| Name                               | Value                                                                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appointmentReminders`             | The reminder schedule, as `{"daysAhead": int, "hourOfDay": int}`. Canvas sends reminders for appointments from tomorrow through `daysAhead` days ahead, starting at `hourOfDay` in the instance's time zone. |
+| `appointmentReminderCustomization` | The text Canvas adds to reminder messages. It can contain `{{...}}` template variables, which Canvas fills in when it sends the reminder.          |
+
+The reminder schedule always comes from the organization. A [business line](/sdk/data-business-line/#businesslinesetting) can replace the organization's `appointmentReminderCustomization` for its own patients.
+
+```python
+from canvas_sdk.v1.data.organization import Organization
+
+organization = Organization.objects.first()
+schedule = organization.settings.filter(name="appointmentReminders").first()
+
+if schedule:
+    days_ahead = schedule.value.get("daysAhead")
+    hour_of_day = schedule.value.get("hourOfDay")
+```
+
+### Attributes
+
+| Field Name   | Type                          |
+| ------------ | ----------------------------- |
+| dbid         | Integer                       |
+| created      | DateTime                      |
+| modified     | DateTime                      |
+| organization | [Organization](#organization) |
+| name         | String                        |
+| value        | JSON                          |
 
 <br/>
 <br/>
