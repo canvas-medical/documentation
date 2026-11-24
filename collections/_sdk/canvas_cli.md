@@ -678,7 +678,7 @@ Before it loads any handlers, `canvas validate` scans every `.py` file in the pl
 $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
-These issues will fail on the instance (sandbox / Custom Data):
+These issues must be fixed before the plugin can be installed:
   ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
