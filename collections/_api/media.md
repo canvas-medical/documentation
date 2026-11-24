@@ -68,6 +68,9 @@ sections:
             description: >-
               The person who generated the image.<br><br>
               The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
+              <br><br>
+              Canvas reads this attribute on create only. Read and search responses leave it out for every Media, including ones created with a Patient or Practitioner operator. If your application needs to know which Media it created, keep the `id` from the create response's `Location` header.
+            exclude_in: read, search
             type: json
             attributes:
               - name: reference
@@ -267,9 +270,6 @@ print(response.text)
     "encounter": {
         "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
     },
-    "operator": {
-        "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-    },
     "content": {
         "contentType": "image/jpeg",
         "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
@@ -388,9 +388,6 @@ print(response.text)
                 },
                 "encounter": {
                     "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
-                },
-                "operator": {
-                    "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                 },
                 "content": {
                     "contentType": "image/jpeg",
