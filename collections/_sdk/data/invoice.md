@@ -39,6 +39,18 @@ claim = Claim.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 invoice = claim.latest_invoice
 ```
 
+An invoice lists every claim it covers in `claims`, and a claim lists every statement it appeared on in `full_invoices`:
+
+```python
+from canvas_sdk.v1.data import Claim, Invoice
+
+invoice = Invoice.objects.get(dbid=42)
+claims = invoice.claims.all()
+
+claim = Claim.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+statements = claim.full_invoices.order_by("-created")
+```
+
 ## Filtering
 
 ```python
@@ -113,8 +125,29 @@ url = document.document_url if document else None
 | workflow       | [InvoiceWorkflow](#invoiceworkflow)               |
 | error_message  | String                                            |
 | sent_mean      | [InvoiceSentMeans](#invoicesentmeans)             |
+| claims         | QuerySet[[Claim](/sdk/data-claim/#claim)]         |
 
 `error_message` carries the reason a statement failed to go out, and is empty for statements that did not fail.
+
+### InvoiceClaim
+
+Links an invoice to a claim it covers. Read the link through `invoice.claims` or `claim.full_invoices` rather than querying this model.
+
+```python
+from canvas_sdk.v1.data import Claim, Invoice
+
+invoice = Invoice.objects.get(dbid=42)
+claims = invoice.claims.all()
+
+claim = Claim.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+invoices = claim.full_invoices.all()
+```
+
+| Field Name | Type                            |
+|------------|---------------------------------|
+| dbid       | Integer                         |
+| invoice    | [Invoice](#invoice)             |
+| claim      | [Claim](/sdk/data-claim/#claim) |
 
 ## Enumeration types
 

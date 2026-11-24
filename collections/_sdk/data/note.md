@@ -445,6 +445,20 @@ note_type_code = note.note_type_version.code
 note_type_system = note.note_type_version.system
 ```
 
+### Find the contacts who took part in a note
+
+A note's `participants` are the patient's contacts who took part in it. Each `NoteParticipant` links to one of the patient's current [contacts](/sdk/data-patient/#patientcontactperson):
+
+```python
+from canvas_sdk.v1.data.note import Note
+from logger import log
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+for participant in note.participants.select_related("patient_contact_person"):
+    log.info(f"Participant: {participant.patient_contact_person.name}")
+```
+
 ## Filtering
 
 ### By attribute
@@ -519,6 +533,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |
 | updategoals         | QuerySet[[UpdateGoal](/sdk/data-goal/#updategoal)] | All goal updates and closures recorded on this note                                                                                                                          |
 | instructions        | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note                                                                                                                              |
+| consolidated_immunizations | QuerySet[[ConsolidatedImmunization](/sdk/data-immunization/#consolidatedimmunization)] | All immunizations and immunization statements recorded on this note, in one list |
+| participants        | QuerySet[[NoteParticipant](#noteparticipant)] | The patient's contacts who took part in this note |
 | immunizations       | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note                                                                                                                           |
 | claims              | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)                                                                                                                       |
 | letter              | [Letter](/sdk/data-letter/#letter) | The letter associated with this note, if any                                                                                                                                                        |
@@ -581,6 +597,49 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | is_sig_required                             | Boolean                                            |
 | notes                                       | QuerySet[[Note](#note)]                            |
 | appointments                                | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] |
+| possible_durations                          | QuerySet[[ScheduleDuration](#scheduleduration)]    |
+
+`possible_durations` holds the durations an administrator configured for this note type. Canvas offers them as options when a user selects the note type while scheduling. Each `duration` is a `datetime.timedelta`:
+
+```python
+from canvas_sdk.v1.data import NoteType
+
+note_type = NoteType.objects.get(id="5f8d3c2a-1b4e-4a7f-9c6d-2e8b0a1f3d57")
+minutes = [
+    int(option.duration.total_seconds() // 60)
+    for option in note_type.possible_durations.order_by("duration")
+]
+```
+
+### ScheduleDuration
+
+A length of time offered when scheduling appointments or schedule events. Reach the note types that offer a duration through its `note_types` attribute.
+
+| Field Name                     | Type                                  |
+| ------------------------------ | ------------------------------------- |
+| dbid                           | Integer                               |
+| created                        | DateTime                              |
+| modified                       | DateTime                              |
+| duration                       | Duration (`datetime.timedelta`)       |
+| is_appointment_duration_option | Boolean                               |
+| note_types                     | QuerySet[[NoteType](#notetype)]       |
+
+### NoteTypePossibleDuration
+
+The join between a [NoteType](#notetype) and a [ScheduleDuration](#scheduleduration). Reach the durations through the note type's `possible_durations` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.note import NoteType
+
+note_type = NoteType.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+durations = [option.duration for option in note_type.possible_durations.order_by("duration")]
+```
+
+| Field Name        | Type                                  |
+| ----------------- | ------------------------------------- |
+| dbid              | Integer                               |
+| note_type         | [NoteType](#notetype)                 |
+| schedule_duration | [ScheduleDuration](#scheduleduration) |
 
 ### NoteMetadata
 
@@ -630,6 +689,15 @@ for metadata in note_metadata:
 | dbid       | Integer                                 |
 | state      | [NoteState](/sdk/data-note/#notestates) |
 | note       | [Note](/sdk/data-note/)                 |
+
+### NoteParticipant
+
+| Field Name             | Type                                                          |
+| ---------------------- | ------------------------------------------------------------- |
+| id                     | UUID                                                          |
+| dbid                   | Integer                                                       |
+| note                   | [Note](#note)                                                 |
+| patient_contact_person | [PatientContactPerson](/sdk/data-patient/#patientcontactperson) |
 
 ## Enumeration types
 

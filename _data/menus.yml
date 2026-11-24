@@ -1135,6 +1135,9 @@ data_module:
   - title: "Calendar"
     url: /sdk/data-calendar/
     description: Calendars associated with providers.
+  - title: "Campaign"
+    url: /sdk/data-campaign/
+    description: Outreach campaigns built on a protocol, with their interventions.
   - title: "CancelPrescription"
     url: /sdk/data-cancel-prescription/
     description: A request to cancel a patient's prescription (the CancelPrescription command).
@@ -1144,6 +1147,9 @@ data_module:
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
+  - title: "CarePlan"
+    url: /sdk/data-care-plan/
+    description: A patient's care plans, with their status, intent, and category.
   - title: "CareTeam"
     url: /sdk/data-care-team/
     description: Teams assigned for patient care.
@@ -1204,6 +1210,9 @@ data_module:
   - title: "DME"
     url: /sdk/data-dme/
     description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
+  - title: "DocumentAnnotation"
+    url: /sdk/data-document-annotation/
+    description: Annotated and signed versions of lab, imaging, and referral reports and other documents.
   - title: "DocumentHistoryEvent"
     url: /sdk/data-document-history-event/
     description: An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review.
@@ -1282,6 +1291,9 @@ data_module:
   - title: "IntegrationTaskActionEvent"
     url: /sdk/data-fax/#integrationtaskactionevent
     description: Faxes of an integration task, with their delivery status.
+  - title: "Intervention"
+    url: /sdk/data-campaign/#intervention
+    description: One outreach step of a campaign, sent to its patients with a letter template.
   - title: "Invoice"
     url: /sdk/data-invoice/
     description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
@@ -1396,6 +1408,9 @@ data_module:
   - title: "ProtocolOverride"
     url: /sdk/data-protocol-override/
     description: A record of a protocol being snoozed for a patient.
+  - title: "Provenance"
+    url: /sdk/data-provenance/
+    description: Who created or updated a clinical record, and when.
   - title: "Questionnaire"
     url: /sdk/data-questionnaire/
     description: Groups of coded questions and the coded patient responses.
