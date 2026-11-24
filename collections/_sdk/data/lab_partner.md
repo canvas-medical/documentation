@@ -1,13 +1,13 @@
 ---
 title: "LabPartner, LabPartnerTest & AOE Questions"
 slug: "data-lab-partner-and-test"
-excerpt: "Canvas SDK LabPartner, LabPartnerTest, LabPartnerTestQuestion, and LabPartnerTestQuestionChoice models"
+excerpt: "Canvas SDK LabPartner, LabPartnerTest, LabPartnerTestQuestion, LabPartnerTestQuestionChoice, and lab account number models"
 hidden: false
 ---
 
 ## Introduction
 
-The **LabPartner**, **LabPartnerTest**, **LabPartnerTestQuestion**, and **LabPartnerTestQuestionChoice** models represent external lab partners, the tests they offer, and the ask-at-order-entry (AOE) questions associated with each test within Canvas.
+The **LabPartner**, **LabPartnerTest**, **LabPartnerTestQuestion**, and **LabPartnerTestQuestionChoice** models represent external lab partners, the tests they offer, and the ask-at-order-entry (AOE) questions associated with each test within Canvas. The [lab account number](#lab-account-numbers) models hold the Health Gorilla account numbers configured for each practice location and staff member.
 
 ---
 
@@ -73,6 +73,7 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 | keywords                    | Text    | Keywords associated with the lab partner.                           |
 | default_lab_account_number  | String  | The default lab account number used for orders.                     |
 | available_tests             | [LabPartnerTest](#labpartnertest)[] | The tests offered by this lab partner (reverse relation, accessible via `available_tests`). |
+| location_account_numbers    | [PracticeLocationLabAccountNumber](#practicelocationlabaccountnumber)[] | The practice location account numbers configured for this lab partner. |
 
 ### LabPartnerTest Attributes
 
@@ -175,6 +176,103 @@ for question in test.questions.all():
 | value                      | String     | The value submitted when this choice is selected.                                                  |
 | created                    | DateTime   | When the record was created.                                                                       |
 | modified                   | DateTime   | When the record was last modified.                                                                 |
+
+---
+
+## Lab account numbers
+
+Each practice location can have its own account number with a lab partner, and staff at that location can have their own account numbers under it. When Canvas sends an electronic lab order to Health Gorilla, it fills in two account numbers from these records:
+
+- **Organization account number:** the account number for the lab partner and the note's practice location. If the location has none, Canvas uses the lab partner's `default_lab_account_number`.
+- **Practitioner account number:** a staff account number under that location account that applies to all staff at the location or to the ordering provider. If none applies, Canvas uses the organization account number.
+
+A plugin can read these records to choose the account numbers it returns in a [`HealthGorillaLabOrderOverride`](/sdk/effect-health-gorilla-lab-order-override/) effect, which takes precedence over these defaults.
+
+Three models hold these account numbers:
+
+- `PracticeLocationLabAccountNumber`: a practice location's account number with a lab partner. A location has at most one per lab partner.
+- `StaffLabAccountNumber`: a staff account number under a practice location's account. It applies to every staff member at the location when `use_for_all_staff_at_location` is `True`, and otherwise to the staff members linked to it.
+- `StaffLabAccountNumberStaff`: the link between a `StaffLabAccountNumber` and each staff member it's assigned to.
+
+### Basic usage
+
+To list a practice location's account numbers, with the lab partner each one is for:
+
+```python
+from canvas_sdk.v1.data.practicelocation import PracticeLocation
+from logger import log
+
+practice_location = PracticeLocation.objects.get(id="your-uuid-here")
+
+for location_account in practice_location.lab_account_numbers.select_related("lab_partner"):
+    log.info(f"{location_account.lab_partner.name}: {location_account.account_number}")
+```
+
+To find the account number a practice location uses with a lab partner, and the staff account numbers under it:
+
+```python
+from canvas_sdk.v1.data.lab import PracticeLocationLabAccountNumber
+from logger import log
+
+location_account = PracticeLocationLabAccountNumber.objects.filter(
+    lab_partner__name="Quest Diagnostics",
+    practice_location__id="your-uuid-here",
+).first()
+
+if location_account:
+    for staff_account in location_account.staff_account_numbers.all():
+        if staff_account.use_for_all_staff_at_location:
+            log.info(f"{staff_account.account_number}: all staff at the location")
+        else:
+            names = [staff.full_name for staff in staff_account.staff.all()]
+            log.info(f"{staff_account.account_number}: {', '.join(names)}")
+```
+
+`staff.lab_account_numbers` returns only the staff account numbers linked to that staff member. A staff account number with `use_for_all_staff_at_location` set to `True` also applies to staff members it isn't linked to. To find every staff account number that applies to a staff member at a practice location:
+
+```python
+from django.db.models import Q
+
+from canvas_sdk.v1.data.lab import StaffLabAccountNumber
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="your-staff-key-here")
+
+staff_accounts = StaffLabAccountNumber.objects.filter(
+    Q(use_for_all_staff_at_location=True) | Q(staff=staff),
+    practice_location_lab_account__practice_location__id="your-uuid-here",
+).distinct()
+```
+
+### PracticeLocationLabAccountNumber
+
+| Field Name            | Type                                                    | Description                                                                         |
+| --------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| id                    | UUID                                                    | The universally unique identifier for the account number record.                    |
+| dbid                  | Integer                                                 | The internal database identifier (primary key) for the account number record.      |
+| lab_partner           | [LabPartner](#labpartner)                               | The lab partner the account is with (related name `location_account_numbers`).     |
+| practice_location     | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location the account number belongs to (related name `lab_account_numbers`). |
+| account_number        | String                                                  | The practice location's account number with the lab partner.                        |
+| staff_account_numbers | [StaffLabAccountNumber](#stafflabaccountnumber)[]       | The staff account numbers under this account.                                       |
+
+### StaffLabAccountNumber
+
+| Field Name                    | Type                                                                    | Description                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| id                            | UUID                                                                    | The universally unique identifier for the staff account number record.                            |
+| dbid                          | Integer                                                                 | The internal database identifier (primary key) for the staff account number record.              |
+| practice_location_lab_account | [PracticeLocationLabAccountNumber](#practicelocationlabaccountnumber)   | The practice location account this staff account number belongs to (related name `staff_account_numbers`). |
+| account_number                | String                                                                  | The staff account number.                                                                         |
+| use_for_all_staff_at_location | Boolean                                                                 | `True` when the account number applies to every staff member at the practice location.            |
+| staff                         | [Staff](/sdk/data-staff/#staff)[]                                       | The staff members linked to this account number (related name `lab_account_numbers`).            |
+
+### StaffLabAccountNumberStaff
+
+| Field Name               | Type                                            | Description                                                          |
+| ------------------------ | ----------------------------------------------- | -------------------------------------------------------------------- |
+| dbid                     | Integer                                         | The internal database identifier (primary key) for the link record. |
+| staff_lab_account_number | [StaffLabAccountNumber](#stafflabaccountnumber) | The staff account number.                                            |
+| staff                    | [Staff](/sdk/data-staff/#staff)                 | The staff member the account number is linked to.                    |
 
 <br/>
 <br/>

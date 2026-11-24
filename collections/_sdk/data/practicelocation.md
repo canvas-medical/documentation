@@ -86,6 +86,7 @@ Please note that the content of each `value` field can contain any value that is
 | addresses                 | [PracticeLocationAddress](#practicelocationaddress[]) |
 | settings                  | [PracticeLocationSetting](#practicelocationsetting[]) |
 | telecom                   | [PracticeLocationContactPoint](#practicelocationcontactpoint[]) |
+| lab_account_numbers       | [PracticeLocationLabAccountNumber](/sdk/data-lab-partner-and-test/#practicelocationlabaccountnumber)[] |
 
 ### PracticeLocationAddress
 

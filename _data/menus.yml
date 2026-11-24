@@ -1378,6 +1378,9 @@ data_module:
   - title: "PracticeLocation"
     url: /sdk/data-practicelocation/
     description: The practice locations present in the Canvas EMR.
+  - title: "PracticeLocationLabAccountNumber"
+    url: /sdk/data-lab-partner-and-test/#practicelocationlabaccountnumber
+    description: A practice location's Health Gorilla account number with a lab partner.
   - title: "Prescription"
     url: /sdk/data-prescription/
     description: The practice locations present in the Canvas EMR.
@@ -1441,6 +1444,9 @@ data_module:
   - title: "Staff"
     url: /sdk/data-staff/
     description: Data associated with Staff members.
+  - title: "StaffLabAccountNumber"
+    url: /sdk/data-lab-partner-and-test/#stafflabaccountnumber
+    description: A staff account number under a practice location's lab account.
   - title: "Stop Medication Event"
     url: /sdk/data-stop-medication-event/
     description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
