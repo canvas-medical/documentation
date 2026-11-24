@@ -3306,6 +3306,7 @@ Surescripts response events fire when the platform receives a response from Sure
   </tbody>
 </table>
 
+<a id="note_updated"></a>
 <table>
   <thead>
     <tr><th colspan="2">NOTE_UPDATED</th></tr>
