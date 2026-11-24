@@ -218,6 +218,13 @@ committed_note_tasks = NoteTask.objects.committed()
 
 The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a task through its `labels` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.task import Task
+
+task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
+label_names = [label.name for label in task.labels.all()]
+```
+
 | Field Name | Type                    |
 | ---------- | ----------------------- |
 | dbid       | Integer                 |
@@ -227,6 +234,13 @@ The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a tas
 ### NoteTaskLabel
 
 The join between a note task and a [TaskLabel](#tasklabel). Reach the labels on a note task through its `labels` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.task import NoteTask
+
+note_task = NoteTask.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+label_names = [label.name for label in note_task.labels.all()]
+```
 
 | Field Name | Type                    |
 | ---------- | ----------------------- |

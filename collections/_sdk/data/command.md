@@ -278,6 +278,16 @@ editors = command.edited_by.all()
 
 The join between a command and a [CanvasUser](/sdk/data-canvasuser) who edited it. Reach the editors through the command's `edited_by` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# The staff members who edited the command
+editors = Staff.objects.filter(user__in=command.edited_by.all())
+```
+
 | Field Name | Type                                  |
 |------------|---------------------------------------|
 | dbid       | Integer                               |

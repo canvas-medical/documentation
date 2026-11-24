@@ -9,7 +9,7 @@ hidden: false
 
 The `DocumentAnnotation` model holds the annotated versions of a document. When staff annotate or sign a document in Canvas, Canvas saves the result as a new PDF and records it as a `DocumentAnnotation`, leaving the original file unchanged. Each save adds another annotation, so a document can have several. The newest one is the current version of the document, and it's the version Canvas uses when it prints the document as a letter attachment.
 
-An annotation links to the document it was made on: a [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/). An annotation saved before the document was filed links to its [IntegrationTask](/sdk/data-integration-task/#integrationtask) instead.
+An annotation links to the document it was made on: a [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/). An annotation saved before the document was filed links to its [IntegrationTask](/sdk/data-integration-task/#integrationtask), and Canvas links it to the document as well when the document is filed.
 
 ## Basic usage
 

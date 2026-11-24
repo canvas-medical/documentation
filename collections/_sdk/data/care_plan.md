@@ -7,9 +7,17 @@ hidden: false
 
 ## Introduction
 
-The `CarePlan` model represents a patient's care plan: who started it, its status, its intent, and its category. Read it when your plugin needs to know whether a patient has an active plan of care, or to branch on what kind of plan it is. The FHIR API serves the same records as the [CarePlan](/api/careplan/) resource.
+The `CarePlan` model represents a patient's care plan: who started it, its status, its intent, and its category. Read it when your plugin needs to know whether a patient has a plan of care. The FHIR API serves the same records as the [CarePlan](/api/careplan/) resource.
 
-Each care plan's category is a `CarePlanCoding`, a coding from a terminology system such as SNOMED CT.
+Canvas creates a patient's care plan when the first goal is recorded for that patient, for example with the [Goal](/sdk/commands/#goal) command. A patient has at most one care plan, and later goals belong to the same plan. The care plan's `originator` is the originator of the note the first goal was recorded in.
+
+Canvas creates every care plan with the same values:
+
+- `status` is `active`.
+- `intent` is `plan`.
+- `category` is the SNOMED CT code `734163000` (Care plan), stored as a `CarePlanCoding`.
+
+The care plan doesn't link to goals. Read the patient's goals with the [Goal](/sdk/data-goal/) model.
 
 ## Basic usage
 
@@ -41,7 +49,7 @@ care_plans = CarePlan.objects.for_patient(patient_id)
 
 ## Categories
 
-A care plan's `category` attribute holds its `CarePlanCoding`, or `None` when the plan has no category. Read the coding's `system`, `code`, and `display` to tell plans apart:
+A care plan's `category` attribute holds its `CarePlanCoding`, or `None` when the plan has no category. Read the coding's `system`, `code`, and `display`:
 
 ```python
 from canvas_sdk.v1.data import CarePlan

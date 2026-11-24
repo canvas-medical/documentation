@@ -11,7 +11,7 @@ The `Campaign` model is an outreach campaign built on a protocol. Each `Interven
 
 A campaign is open until it's closed. When a campaign closes, `closed_at` is set, and `total_patients_on_closure` and `satisfied_patients_on_closure` record how many patients the campaign's first intervention targeted and how many of them had satisfied the protocol.
 
-`Campaign.protocol_id` is the database identifier of the protocol the campaign is built on. It's an integer, not a related object, because the protocol record isn't in the data module.
+`Campaign.protocol_id` is the database identifier of the protocol the campaign is built on. It's an integer, not a related object, because the protocol record isn't in the data module yet. A future release will link it to the protocol model once that model is added to the data module.
 
 ## Basic usage
 
@@ -91,7 +91,7 @@ upcoming_interventions = Intervention.objects.filter(
 | title                         | String                            | |
 | description                   | String                            | Up to 512 characters. Can be `None`. |
 | closed_at                     | DateTime                          | When the campaign was closed. `None` while the campaign is open. |
-| protocol_id                   | Integer                           | The database identifier of the protocol the campaign is built on. |
+| protocol_id                   | Integer                           | The database identifier of the protocol the campaign is built on. A future release will link it to the protocol model. |
 | work_list                     | Boolean                           | Whether the campaign is a work list. |
 | total_patients_on_closure     | Integer                           | The number of patients the campaign's first intervention targeted when the campaign closed. `0` while the campaign is open. |
 | satisfied_patients_on_closure | Integer                           | The number of those patients who had satisfied the protocol when the campaign closed. `0` while the campaign is open. |

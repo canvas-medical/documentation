@@ -124,6 +124,31 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## The latest annotated version
+
+When staff annotate or sign an imaging report in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. `document_url` returns the original report file, so look for an annotation first and fall back to `document_url` when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the report's `dbid`. Annotations made in Data Integration before the report was filed are linked to the report when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, ImagingReport
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+content_type = ContentType.objects.filter(app_label="api", model="imagingreport").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=imaging_report.dbid)
+    .order_by("created")
+    .last()
+)
+
+# The version Canvas shows: the newest annotation, else the original report file
+url = latest.document_url if latest else imaging_report.document_url
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that no one has annotated has no annotations, so handle <code>None</code>." %}
+
 ## Accessing the imaging order PDF
 
 The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is faxed. Printing the order doesn't save it, so an order that has never been faxed has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
@@ -248,6 +273,19 @@ An imaging order has two relations to assessments:
 ### ImagingOrderAssessment
 
 The join behind `assessments`. Reach an order's assessments through its `assessments` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The conditions selected as the order's indications
+indications = [
+    assessment.condition
+    for assessment in imaging_order.assessments.select_related("condition")
+    if assessment.condition
+]
+```
 
 | Field Name    | Type                                           |
 |---------------|------------------------------------------------|

@@ -44,6 +44,21 @@ url = task.document_url
 
 {% include alert.html type="info" content="<code>document_url</code> always points to the original file. Canvas saves staff annotations as separate files, so the URL doesn't reflect them. To read an annotated version, use the task's <code>document_annotations</code> or the filed document's <a href=\"/sdk/data-document-annotation/\">DocumentAnnotation</a> records." %}
 
+A task's `document_annotations` holds the annotations staff saved on the document in Data Integration. The newest one is the version Canvas shows for the task:
+
+```python
+from canvas_sdk.v1.data.integration_task import IntegrationTask
+
+task = IntegrationTask.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+latest = task.document_annotations.order_by("created").last()
+
+# The newest annotated version, else the document as Canvas received it
+url = latest.document_url if latest else task.document_url
+```
+
+Once the task is filed, annotations are saved on the filed document. To read its newest version, see the latest annotated version of a [lab report](/sdk/data-labs/#the-latest-annotated-version), [imaging report](/sdk/data-imaging/#the-latest-annotated-version), [referral report](/sdk/data-referral/#the-latest-annotated-version), [administrative document](/sdk/data-patient-administrative-document/#the-latest-annotated-version), or [uncategorized clinical document](/sdk/data-uncategorized-clinical-document/#the-latest-annotated-version).
+
 ## Filtering
 
 Integration tasks and reviews can be filtered by any attribute that exists on the models.
