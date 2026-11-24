@@ -131,6 +131,22 @@ current = referral_report.active_delegation
 
 For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
+## Attached documents
+
+The documents sent with a referral are `ReferralDocument` records, available through the referral's `documents` attribute. `document_type` names the kind of document, such as `LAB REPORT`, `IMAGING REPORT`, `REFERRAL REPORT`, `UNCATEGORIZED DOCUMENT`, or `NOTE`, and `document_id` holds that record's `dbid`. For an uploaded file, `url` and `bucket` hold its S3 location instead.
+
+```python
+from canvas_sdk.v1.data import LabReport, Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+lab_report_ids = [
+    attachment.document_id
+    for attachment in referral.documents.filter(document_type="LAB REPORT")
+]
+lab_reports = LabReport.objects.filter(dbid__in=lab_report_ids)
+```
+
 ## The document reference
 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
@@ -168,6 +184,36 @@ review = report.integration_task_review
 url = review.task.document_url if review else None
 ```
 
+## The latest annotated version
+
+When staff annotate or sign a referral report in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. The [document reference](#the-document-reference) and the [incoming fax or upload](#the-incoming-fax-or-upload) keep their stored files when the report is annotated, so look for an annotation first and fall back to the document reference when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the report's `dbid`. Annotations made in Data Integration before the report was filed are linked to the report when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, DocumentReference, ReferralReport
+
+report = ReferralReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="referralreport").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=report.dbid)
+    .order_by("created")
+    .last()
+)
+
+if latest:
+    url = latest.document_url
+else:
+    document = DocumentReference.objects.filter(
+        content_type=content_type, object_id=report.dbid
+    ).first()
+    url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that no one has annotated has no annotations, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### Referral
@@ -198,6 +244,7 @@ url = review.task.document_url if review else None
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
 | action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
+| documents             | [ReferralDocument](#referraldocument)[]                        |
 
 ### ReferralReport
 
@@ -246,6 +293,20 @@ url = review.task.document_url if review else None
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
 | reports                       | [ReferralReport](#referralreport)[]    |
+
+### ReferralDocument
+
+| Field Name    | Type                  | Notes |
+|---------------|-----------------------|-------|
+| dbid          | Integer               |       |
+| created       | DateTime              |       |
+| modified      | DateTime              |       |
+| referral      | [Referral](#referral) | The referral the document was sent with |
+| document_type | String                | The kind of document: `NOTE`, `LAB REPORT`, `IMAGING REPORT`, `REFERRAL REPORT`, or `UNCATEGORIZED DOCUMENT` |
+| document_id   | Integer               | The `dbid` of the attached record, or `None` |
+| label         | String                | The name shown for the attachment |
+| url           | String                | The S3 location of an uploaded file, or `None` |
+| bucket        | String                | The S3 bucket of an uploaded file, or `None` |
 
 ### ReferralReportCoding
 

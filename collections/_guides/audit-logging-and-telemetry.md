@@ -62,7 +62,8 @@ Alongside the record audit trail, Canvas captures:
 Authorship and change history are also exposed as FHIR `Provenance` resources across
 supported resource types, giving you a queryable record of who created or revised a
 resource and when. See the [Provenance API](/api/provenance/) reference for supported
-resource types and query parameters.
+resource types and query parameters. Plugins can read the same records through the SDK
+[Provenance](/sdk/data-provenance/) data model.
 
 Clinical notes additionally carry in-application revision history, visible to users
 directly in the chart.
