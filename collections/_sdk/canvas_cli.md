@@ -819,13 +819,30 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
 
 `canvas logs` chooses its credential per instance:
 
-- **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, and a live follow reconnects with a new token when the log stream ends the old one, so a long history read or a live follow keeps running.
+- **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires and before each live-follow reconnect, so a long history read or a live follow keeps running.
 - **Any other Canvas instance, while you're signed in**: `canvas logs` refuses it with the way to sign out (`canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN`).
 - **Any instance when you're not signed in, or `localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)). For a Canvas instance, it also prints a deprecation notice.
 
 When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform).
 
 When the log stream doesn't start, `canvas logs` exits with status 1, whichever credential it used, so a script can tell a failed stream from one that ran. When Console, the Canvas log stream service, refuses the stream, the error quotes its answer, for example `Console refused the log stream for <instance>. Console answered: No instance named '<instance>' was found.` When the connection fails before the stream starts, the error gives the connection failure and asks you to run the command again. Stopping a live follow with Ctrl+C exits with status 0.
+
+#### Reconnecting a live follow
+
+A live follow keeps printing until you press Ctrl+C. When its connection drops after the stream has started, `canvas logs` reconnects on its own, so a script or terminal that follows an instance's log doesn't need its own restart logic.
+
+- **Detecting a dead connection:** the CLI pings the log stream every 30 seconds, so a connection that stops answering ends within about 40 seconds and then reconnects.
+- **Waiting between attempts:** before each reconnect, `canvas logs` prints `Reconnecting to the log stream in <seconds>s.` to stderr. The wait starts near 1 second and doubles after each attempt, up to 60 seconds. After a stream that stayed open for at least 60 seconds, the wait starts over near 1 second.
+- **Retrying failures:** when a reconnect fails because Console is restarting or unreachable, or Canvas Platform can't be reached for a new token, `canvas logs` keeps retrying. When Console refuses the token on a reconnect, `canvas logs` quotes Console's answer and exits with status 1.
+- **Using `credentials.ini`:** the CLI reconnects with the same `credentials.ini` token. When Console ends the stream because that token is no longer active, `canvas logs` stops following and exits.
+
+The live stream can't replay the lines Console sent while the CLI was disconnected. After reconnecting, `canvas logs` prints the gap to stderr, with a `canvas logs --no-follow` command that prints those lines from history:
+
+```console
+The log stream dropped after 2026-11-24T03:12:08+00:00 and resumed at 2026-11-24T03:12:41+00:00. To print the lines sent in between, run: canvas logs --host my-instance --start 2026-11-24T03:12:08+00:00 --end 2026-11-24T03:12:42+00:00 --no-follow --all
+```
+
+The command keeps the live follow's `--plugin` filters.
 
 **Usage**:
 
