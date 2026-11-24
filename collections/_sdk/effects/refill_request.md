@@ -9,7 +9,7 @@ The `UpdateRefillRequest` effect changes a [refill request](/sdk/data-refill-req
 
 Ignoring a request does the same thing as the **Ignore** button in the refill panel: the request leaves the queue, and nothing is sent to the pharmacy. Use it for a request that was already handled some other way. To send the pharmacy an answer, approve or deny the request instead.
 
-Only pending requests can be updated: requests that aren't ignored and have no committed response. These are the requests that [`RefillRequest.objects.pending()`](/sdk/data-refill-request/#pending-requests) returns.
+Only pending requests can be updated: requests that aren't ignored and haven't been answered by a sent response. These are the requests that [`RefillRequest.objects.pending()`](/sdk/data-refill-request/#pending-requests) returns.
 
 ## Methods
 
