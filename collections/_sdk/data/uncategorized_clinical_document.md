@@ -66,7 +66,7 @@ assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
 
 ## Delegations
 
-A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
+When staff send a document to a provider for signature, Canvas records a delegation, and records another when the provider signs the document and Canvas returns it. The delegations for a document are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument
@@ -76,11 +76,11 @@ document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733
 # The full delegation history, oldest first.
 history = document.delegations
 
-# The current active delegation, or None when the document is with its owner.
+# The active delegation, or None when no delegation is in effect.
 current = document.active_delegation
 ```
 
-See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
+See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model. For the document's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 ## Document codings
 
@@ -121,6 +121,31 @@ record = UncategorizedClinicalDocument.objects.get(
 # Presigned S3 URL to the document file, or None
 url = record.document_url
 ```
+
+## The latest annotated version
+
+When staff annotate or sign an uncategorized clinical document in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. `document_url` returns the original file, so look for an annotation first and fall back to `document_url` when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the document's `dbid`. Annotations made in Data Integration before the document was filed are linked to the document when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, UncategorizedClinicalDocument
+
+record = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="uncategorizedclinicaldocument").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=record.dbid)
+    .order_by("created")
+    .last()
+)
+
+# The version Canvas shows: the newest annotation, else the original file
+url = latest.document_url if latest else record.document_url
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A document that no one has annotated has no annotations, so handle <code>None</code>." %}
 
 ## The document reference
 
@@ -176,6 +201,8 @@ url = document.document_url if document else None
 | priority           | Boolean                                                                     |
 | document           | File (S3 key)                                                               |
 | document_url       | String (computed)                                                           |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the document's delegations, oldest first) |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### UncategorizedClinicalDocumentReview
 

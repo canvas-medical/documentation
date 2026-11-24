@@ -85,6 +85,35 @@ These requests must be signed with [AWS Signature Version 4](https://docs.aws.am
 
 A typical reminders setup is a [CronTask](/sdk/handlers-crontask/) that runs on a schedule, builds the list of appointments needing reminders, and sends the notifications (directly to SNS as above, or to your own endpoint).
 
+## Emails and texts on non-production instances
+
+On an instance that isn't a production instance, Canvas doesn't deliver the emails and text messages it sends itself unless the recipient is on an allow list. That covers portal invites and login links, patient message notifications, appointment reminders, and lab result notifications. Anything else is logged instead of sent, and the UI still shows it as sent, so a portal invite can show **Invite sent** even though no email went out.
+
+- **Email:** addresses ending in `@canvasmedical.com` are always delivered. To receive email at any other address, add it to the organization setting named `emailAddressAllowList`.
+- **Text messages:** add the number to the organization setting named `phoneNumberAllowList`.
+
+Each setting's value is a JSON list. An entry has to match the destination exactly, so use the email address or phone number as it appears on the patient's profile (phone numbers as 10 digits):
+
+```json
+["test.patient@example.com", "developer@example.com"]
+```
+
+```json
+["5555550100"]
+```
+
+If the setting doesn't exist on the instance yet, create it under the organization's settings with that exact name. After you save it, resend the invite or message. Messages that a plugin delivers through its own provider, such as a link from [`get_login_url`](/sdk/utils/#getting-a-patient-portal-login-link) sent over your own SMS or email account, don't go through these allow lists.
+
+### Allow list changes can take up to an hour to apply everywhere
+
+Each Canvas server process caches organization settings in memory for up to an hour. Saving a setting clears the cache only in the process that handled the save, so other processes, such as the one that applies a plugin's effects, can keep reading the previous allow list for up to an hour. During that window a send to a newly added address can still be skipped, while a send handled by a process with a fresh cache goes out. Add test addresses and numbers well before you test with them, or wait an hour after editing the list.
+
+### Telling a skipped send from a delivered one
+
+When the email address or phone number isn't on the allow list, the send is counted as successful. For a patient message, the [`MessageTransmission`](/sdk/data-message/) is still stamped `delivered` and `failed` stays empty, so the transmission alone doesn't show whether the email or text left Canvas. `delivered_by` is only set when a staff member relays a message manually, so it's empty for every automated email or text.
+
+To check a skipped send, compare the transmission's `contact_point_value` with the allow list entries (the match is exact and case-sensitive), and compare the transmission's `created` time with when the allow list was last saved. A transmission created within an hour of an allow list change may have been checked against the earlier list.
+
 ## Sandbox restrictions on dict reads and writes
 
 The sandbox routes item access and assignment through internal `_safe_getitem` and `_safe_write` checks. Ordinary lookup errors pass straight through them, so a traceback for a missing key or an empty list names the guard even though the cause is your data:

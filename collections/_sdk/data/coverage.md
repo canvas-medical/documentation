@@ -144,6 +144,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (computed) |
 | claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
 | requests                           | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]   |
+| authorizations                     | [Authorization](/sdk/data-authorization/#authorization)[] |
 | eligibility_responses              | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[] |
 
 ### Transactor
@@ -269,19 +270,25 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### CoverageType
 
-| Value        | Label                     |
-| ------------ | ------------------------- |
-| commercial   | Commercial                |
-| workerscomp  | Workers Comp              |
-| bcbs         | Blue Cross Blue Shield    |
-| champus      | Tricare/Champus           |
-| medicaid     | Medicaid                  |
-| medicare     | Medicare                  |
-| other        | Other                     |
-| tpa          | Third Party Administrator |
-| motorvehicle | Motor Vehicle             |
-| lien         | Attorney/Lien             |
-| pip          | Personal Injury           |
+A coverage's `plan_type` comes from its payer's [TransactorType](#transactortype) and is set again whenever the coverage's payer changes. Each transactor type maps to the plan type with the same value, except `automobile`, which maps to `motorvehicle`. Any other value maps to `other`.
+
+| Value              | Label                     |
+| ------------------ | ------------------------- |
+| commercial         | Commercial                |
+| workerscomp        | Workers Comp              |
+| bcbs               | Blue Cross Blue Shield    |
+| champus            | Tricare/Champus           |
+| medicaid           | Medicaid                  |
+| medicare           | Medicare                  |
+| medicare_advantage | Medicare Advantage        |
+| CHIP               | CHIP                      |
+| employer           | Employer                  |
+| direct_care        | Direct Care               |
+| other              | Other                     |
+| tpa                | Third Party Administrator |
+| motorvehicle       | Motor Vehicle             |
+| lien               | Attorney/Lien             |
+| pip                | Personal Injury           |
 
 ### CoverageRelationshipCode
 

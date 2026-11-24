@@ -399,6 +399,8 @@ Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place
 
 Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
 
+Listing `SETTINGS` doesn't show it to a user whose role carries the permission that [removes admin console access](/guides/roles-and-permissions/#removing-admin-console-access).
+
 <br/>
 <br/>
 

@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: Just run through the motions, but don't merge/tag/close/create/etc...
+        description: Just run through the motions, but don't merge
         type: boolean
         required: false
         default: false
@@ -15,8 +15,22 @@ on:
 jobs:
   merge-release-branch-to-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      # Pushes made with this App token start the release PR's required checks.
+      - name: Create App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
       - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
       - name: Merge Release Branch
         id: merge-release-branch
         uses: ./.github/actions/merge-release-branch

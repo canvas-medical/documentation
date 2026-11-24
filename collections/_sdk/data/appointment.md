@@ -120,8 +120,8 @@ appointment = Appointment.objects.filter(
 | start_time                   | DateTime                                                          |
 | duration_minutes             | Integer                                                           |
 | comment                      | String                                                            |
-| note_id                      | Integer                                                           |
-| note_type_id                 | Integer                                                           |
+| note                         | [Note](/sdk/data-note/#note)                                      |
+| note_type                    | [NoteType](/sdk/data-note/#notetype)                              |
 | status                       | String                                                            |
 | meeting_link                 | URL                                                               |
 | telehealth_instructions_sent | Boolean                                                           |
@@ -132,6 +132,7 @@ appointment = Appointment.objects.filter(
 | children                     | [Appointment](#appointment)[]                                     |
 | appointment_rescheduled_to   | [Appointment](#appointment)[]                                     |
 | labels                       | [TaskLabel](/sdk/data-task/#tasklabel)[]                          |
+| scheduled_together           | [Appointment](#appointment)[]                                     |
 
 
 ### AppointmentExternalIdentifier
@@ -154,11 +155,37 @@ appointment = Appointment.objects.filter(
 
 The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Reach the labels on an appointment through its `labels` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+
+appointment = Appointment.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
+label_names = [label.name for label in appointment.labels.all()]
+```
+
 | Field Name  | Type                                   |
 |-------------|----------------------------------------|
 | dbid        | Integer                                |
 | appointment | [Appointment](#appointment)            |
 | task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
+
+### AppointmentScheduledTogether
+
+An appointment's `scheduled_together` attribute holds the other appointments booked in the same request with the multi-provider scheduling workflow. Each appointment in the group lists all of the others, and it's empty for an appointment booked on its own:
+
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+
+appointment = Appointment.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
+booked_with = appointment.scheduled_together.select_related("provider")
+```
+
+`AppointmentScheduledTogether` is the join behind it. Each row links one appointment to another appointment booked in the same request. Reach the group through the appointment's `scheduled_together` attribute rather than querying this model.
+
+| Field Name       | Type                        |
+|------------------|-----------------------------|
+| dbid             | Integer                     |
+| from_appointment | [Appointment](#appointment) |
+| to_appointment   | [Appointment](#appointment) |
 
 ### AppointmentMetadata
 

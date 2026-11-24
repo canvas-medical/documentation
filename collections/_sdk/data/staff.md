@@ -97,6 +97,43 @@ staff.licenses.all()
 
 ```
 
+## Finding staff who can e-prescribe
+
+Canvas treats a staff member as able to e-prescribe when all three are true:
+
+- **Active:** `active` is `True`.
+- **Set up with Surescripts:** `spi_number` is set. This is the staff member's Surescripts prescriber ID.
+- **A prescriber role:** the `internal_code` of their [`top_clinical_role`](#staffrole) is one of your instance's prescriber roles. By default those are `MD`, `DO`, `NP`, and `PA`.
+
+The same rule decides who can be [assigned a refill request](/sdk/effect-update-refill-request/#choosing-an-assignee). To list these staff members:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+PRESCRIBER_ROLES = {"MD", "DO", "NP", "PA"}
+
+
+def can_eprescribe(staff: Staff) -> bool:
+    role = staff.top_clinical_role
+    return bool(
+        staff.active
+        and staff.spi_number
+        and role is not None
+        and role.internal_code in PRESCRIBER_ROLES
+    )
+
+
+prescribers = [
+    staff
+    for staff in Staff.objects.filter(active=True)
+    .exclude(spi_number="")
+    .prefetch_related("roles")
+    if can_eprescribe(staff)
+]
+```
+
+`prefetch_related("roles")` loads every staff member's roles in one query, since `top_clinical_role` reads them. If your instance uses different prescriber roles, change `PRESCRIBER_ROLES` to match.
+
 ## Accessing the staff signature
 
 The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
@@ -173,16 +210,23 @@ url = staff.signature_url
 | roles                        | [StaffRole](#staffrole)[]                                                                       |                                                                                                                                                     |
 | licenses                     | [StaffLicense](#stafflicense)[]                                                                 |                                                                                                                                                     |
 | letters                      | [Letter](/sdk/data-letter/#letter)[]                                                            |                                                                                                                                                     |
+| interventions                | [Intervention](/sdk/data-campaign/#intervention)[]                                              |                                                                                                                                                     |
 | imaging_orders               | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                                               |                                                                                                                                                     |
+| service_requests             | [ServiceRequest](/sdk/data-service-request/#servicerequest)[]                                   | The service requests this staff member requested                                                                                                    |
 | dme_orders                   | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                                           |                                                                                                                                                     |
+| detected_issue_mitigations   | [DetectedIssueMitigation](/sdk/data-detected-issue/#detectedissuemitigation)[]                  |                                                                                                                                                     |
 | immunizations_given          | [Immunization](/sdk/data-immunization/#immunization)[]                                          |                                                                                                                                                     |
+| consolidated_immunizations_given| [ConsolidatedImmunization](/sdk/data-immunization/#consolidatedimmunization)[]                  |                                                                                                                                                     |
 | supervising_prescriptions    | [Prescription](/sdk/data-prescription/#prescription)[]                                          |                                                                                                                                                     |
 | refill_requests              | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                                      |                                                                                                                                                     |
 | default_patients             | [Patient](/sdk/data-patient/#patient)[]                                                         |                                                                                                                                                     |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[]          |                                                                                                                                                     |
 | transmissions_delivered      | [MessageTransmission](/sdk/data-message/#messagetransmission)[]                                 |                                                                                                                                                     |
 | integration_task_reviews     | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]                    |                                                                                                                                                     |
+| document_annotations         | [DocumentAnnotation](/sdk/data-document-annotation/#documentannotation)[]                       | The document annotations the staff member saved |
+| signed_document_annotations  | [DocumentAnnotation](/sdk/data-document-annotation/#documentannotation)[]                       | The document annotations that carry the staff member's signature |
 | assignee_note_tasks          | [NoteTask](/sdk/data-task/#notetask)[]                                                          |                                                                                                                                                     |
+| assigned_claims              | [Claim](/sdk/data-claim/#claim)[]                                                               |                                                                                                                                                     |
 | appointment_set              | [Appointment](/sdk/data-appointment/#appointment)[]                                             |                                                                                                                                                     |
 | prescription_set             | [Prescription](/sdk/data-prescription/#prescription)[]                                          |                                                                                                                                                     |
 | note_set                     | [Note](/sdk/data-note/#note)[]                                                                  |                                                                                                                                                     |

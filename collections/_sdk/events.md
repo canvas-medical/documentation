@@ -319,7 +319,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_CONTACT_PERSON_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is updated.</td></tr>
+    <tr><td colspan="2">Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.</td></tr>
   </thead>
   <tbody>
   <tr>
@@ -751,7 +751,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_ADDED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are added to an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is added to an appointment. Adding several labels at once fires one event per label. <strong>Note:</strong> the target of this event is the <code>TaskLabel</code> that was added, <em>not</em> the appointment. Read the appointment's ID from the context object as <code>appointment.id</code> (for example, <code>Appointment.objects.get(id=self.event.context["appointment"]["id"])</code>). The <code>appointment</code> and <code>patient</code> keys are present only when the appointment has a patient.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -759,11 +759,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -771,7 +773,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_REMOVED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are removed from an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is removed from an appointment. Removing several labels at once fires one event per label. As with <code>APPOINTMENT_LABEL_ADDED</code>, the target is the <code>TaskLabel</code> that was removed, and the appointment's ID is in the context object as <code>appointment.id</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -779,11 +781,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1254,6 +1258,26 @@ To keep an external system in sync with appointment changes made in the Canvas U
 
 <table>
   <thead>
+    <tr><th colspan="2">CLAIM_ASSIGNEE_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim is assigned to a staff member or team, reassigned, or unassigned, including through <a href="/sdk/effect-claims/#assign"><code>ClaimEffect.assign</code></a> and <a href="/sdk/effect-claims/#unassign"><code>ClaimEffect.unassign</code></a>. It also fires when a claim is created with an owner, with both <code>previous</code> values <code>null</code>. The context holds the assignment from before the change. A claim has one owner at a time, so at most one of <code>assignee</code> and <code>team</code> is set, and both are <code>null</code> when the claim was unassigned. To read the new assignment, get the claim and check its <a href="/sdk/data-claim/#claim"><code>assignee</code> and <code>team</code></a> attributes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous":
+  "assignee": <a href='/sdk/data-staff/#staff'>staff_id</a> | null
+  "team": <a href='/sdk/data-team/#team'>team_id</a> | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
     <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes. Use it to follow payments as they post and to see when the amount the patient or their insurance owes changes. A balance can change from:
 <ul>
@@ -1476,7 +1500,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <!-- source: discussion #1662 -->
 Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
 
-- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"], timeout=30)`, and check `document["channel"]` first if you only want one channel.
 - **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
 - **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 
@@ -1753,14 +1777,16 @@ Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound fax
   </tbody>
 </table>
 
-#### Document Review Delegation
+<a id="document-review-delegation"></a>
 
-The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's review is delegated to another staff member or team, or routed back to its owner. It is a review-workflow event, separate from the Data Integration document-lifecycle events above.
+#### Document Hand-off
+
+These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncategorized review from the document review screen or the document's card. They are review-workflow events, separate from the Data Integration document-lifecycle events above. They fire for documents created in the chart as well as for inbound documents. Each hand-off is also recorded as a [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 <table>
   <thead>
-    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
-    <tr><td colspan="2">Occurs when an uncategorized clinical document review is delegated to another staff member or team from the document review surface, or routed back to its owner. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>signature_consent</code> indicates whether the recipient may apply the owner's signature; <code>routed_back</code> is true when the document was returned to its owner; <code>comment</code> carries the delegator's instructions.</td></tr>
+    <tr><th colspan="2">DOCUMENT_REASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>reviewer</code> and <code>team</code> hold the new assignment, and either can be null. <code>reassigned_by</code> is null when the change came from outside a staff session, such as an API client or a plugin. It also fires when staff send a form to a provider for signature, with <code>sent_for_signature</code> set to true, and when Canvas returns a signed form. Both of those hand-offs also fire DOCUMENT_DELEGATED.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1768,9 +1794,109 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": document_id
-"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
-      <td><pre>"document": <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a>
+      <td><pre>"id": report_id
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
+"reassigned_at": datetime str
+"reassigned_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"previous_reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"previous_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"comment": str
+"sent_for_signature": bool
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_COMMENT_ADDED</th></tr>
+    <tr><td colspan="2">Occurs when staff add a comment to a reviewable document without changing who holds it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
+"commented_at": datetime str
+"commented_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"comment": str
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
+    <tr><td colspan="2">Occurs when staff select <b>SEND FOR SIGNATURE</b> to send a reviewable document to a provider, and again when the provider selects <b>SIGN FORM</b> and Canvas returns the signed form. It does not fire for <b>REASSIGN</b> or the card's reviewer and team dropdowns; those fire DOCUMENT_REASSIGNED. A signed form goes back to whoever sent it for signature. When that person can't take it, because they're the provider, are inactive, or can no longer see the patient, it goes to the staff member who created the document. When no one can take it, the form stays with the provider and this event doesn't fire. A DOCUMENT_REASSIGNED event fires for the same hand-off. The target is always the report. <code>document</code> holds the inbound document metadata when the report came in through Data Integration, and is null otherwise, such as for a document created in the chart or an electronic lab report. <code>delegated_by</code> is the sender, or the provider returning the signed form. <code>delegated_to</code> is the provider asked to sign, or the staff member the signed form returns to. <code>on_behalf_of</code> is the staff member who sent the form for signature, or, on a route-back, the staff member it returns to. <code>routed_back</code> is true when the signed form went back to its sender or creator. <code>comment</code> carries the comment left with the request. <code>signature_consent</code> is always false, because each staff member places only their own signature. <code>delegated_to_team</code> is null for these hand-offs.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
+"document":
   "id": document_id
   "channel": str
   "status": str
@@ -1787,6 +1913,10 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
 "delegated_to": <a href="/sdk/data-staff/#staff">Staff</a> or <a href="/sdk/data-team/#team">Team</a>
   "type": str ("STAFF" or "TEAM")
   "id": staff_or_team_id
+  "name": str
+"delegated_to_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
   "name": str
 "on_behalf_of": <a href="/sdk/data-staff/#staff">Staff</a>
   "type": str ("STAFF")
@@ -2669,6 +2799,11 @@ To be notified when lab results (documents and individual records) are added to 
 
 The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
 
+These events don't form one sequence that every prescription passes through. Which ones fire depends on how the prescription is sent:
+
+- Non-controlled prescriptions move from open to pending to ultimately accepted, or to error, firing `PRESCRIPTION_OPENED`, `PRESCRIPTION_PENDING`, and then `PRESCRIPTION_ACCEPTED` or `PRESCRIPTION_ERRORED`.
+- `PRESCRIPTION_RECEIVED`, `PRESCRIPTION_SIGNED`, `PRESCRIPTION_INQUEUE`, `PRESCRIPTION_TRANSMITTED`, and `PRESCRIPTION_DELIVERED` fire only for controlled-substance prescriptions, which Canvas sends through DrFirst for electronic prescribing of controlled substances (EPCS). Each time Canvas updates one of these prescriptions from DrFirst, it records only the most recent status DrFirst reports, so a prescription can skip some of these events. Don't rely on them arriving in a fixed order.
+
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_OPENED</th></tr>
@@ -2805,7 +2940,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_RECEIVED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been received by the e-prescribing network.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst has received a controlled-substance prescription.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2824,7 +2959,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_SIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been signed.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was signed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2843,7 +2978,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_INQUEUE</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is in queue for transmission.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription is in queue for transmission.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2862,7 +2997,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_TRANSMITTED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been transmitted to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was transmitted to the pharmacy.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2881,7 +3016,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_DELIVERED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been delivered to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was delivered to the pharmacy. Non-controlled prescriptions reach ultimately accepted instead, which fires <code>PRESCRIPTION_ACCEPTED</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2893,6 +3028,65 @@ The following events fire when a prescription's status changes during the e-pres
 "type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Refill requests
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas receives a refill request from a pharmacy.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is updated, such as when it's reassigned or ignored.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"patient":  # present only when the request is filed on a chart
+   "id": <a href='/sdk/data-patient/#patient'>pt_id</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFILL_REQUEST_ASSIGNEE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a refill request is assigned to a different staff member, including through the <a href="/sdk/effect-update-refill-request/"><code>UpdateRefillRequest</code></a> effect. It fires only when the assignee changes, not when a request is first received. The context holds the assignee from before the change. Its <code>id</code> is <code>null</code> when the request had no assignee. To read the new assignee, get the refill request and check its <a href="/sdk/data-refill-request/#refillrequest"><code>staff</code></a> attribute.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": refill_request_id
+"type": <a href='/sdk/data-refill-request/#refillrequest'>RefillRequest</a></pre></td>
+      <td><pre>"previous":
+  "id": <a href='/sdk/data-staff/#staff'>staff_id</a> | null</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2966,7 +3160,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before. <code>patient</code> is the chart the message is filed on. For a message a family member sent through <a href='/sdk/patient-portal/#family-portal-access'>family portal access</a>, <code>sender</code> is the family member's own patient id, or null when they have no chart of their own.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2978,8 +3172,8 @@ Surescripts response events fire when the platform receives a response from Sure
 "type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"message": <a href='/sdk/data-message/#message'>Message</a>
   "id": message_id
-  "sender": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
-  "recipient": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
+  "sender": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
+  "recipient": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
   "read": datetime str | null
 "team": <a href='/sdk/data-team/'>Team</a> | null
   "id": team_id
@@ -3296,7 +3490,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a letter is printed or faxed. For a fax, <code>delivered_by_fax</code> on the target is still <code>None</code>.</td></tr>
+    <tr><td colspan="2">Occurs when a letter is printed or faxed. A print fires it only after the letter's PDF renders, so a print that fails to render fires nothing. For a fax, <code>delivered_by_fax</code> on the target is still <code>None</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3558,6 +3752,90 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
   </tbody>
 </table>
 
+#### Portal Invitations
+
+These events follow a patient portal invite or password reset link through its life. Each one targets the link's <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a> record. They don't fire for portal notification links.
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A family member's or representative's invite or reset link goes to each email address and phone number Canvas has for them, and the event fires once for the link when at least one send is accepted. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"origin": str, <code>native</code> when Canvas sent the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+{% include alert.html type="warning" content="A handler for <code>PORTAL_INVITATION_CREATED</code> can't return <code>SendInviteEffect</code>. Sending an invite creates a new link, which would fire the event again. When a plugin returns that effect for this event, Canvas drops all the effects the plugin returned for it." %}
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_OPENED</th></tr>
+    <tr><td colspan="2">Occurs the first time the link is opened successfully. Later opens of the same link don't send it again.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CLAIMED</th></tr>
+    <tr><td colspan="2">Occurs when the link is used to set a password.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends <code>already_claimed</code>, and a link that lapsed without being claimed sends <code>expired</code>. Either way, the patient sees the same expired-link screen.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code>, <code>different_account</code>, or <code>already_claimed</code></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Protocol Overrides
 
 <table>
@@ -3599,6 +3877,7 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
 <table>
   <thead>
     <tr><th colspan="2">PROTOCOL_OVERRIDE_DELETED</th></tr>
+    <tr><td colspan="2">This event does not fire. When a protocol override is removed, Canvas sends <code>PROTOCOL_OVERRIDE_UPDATED</code> instead, and the override's <code>deleted</code> field is <code>true</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -4286,6 +4565,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4313,6 +4594,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4340,6 +4623,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4388,6 +4673,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4415,6 +4702,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4442,6 +4731,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4469,6 +4760,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4496,6 +4789,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4523,6 +4818,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4550,6 +4847,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4577,6 +4876,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4604,6 +4905,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4631,6 +4934,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4658,6 +4963,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -5901,6 +6208,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -5939,6 +6247,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -5973,6 +6282,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6002,6 +6312,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6031,6 +6342,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6081,6 +6393,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6110,6 +6423,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6139,6 +6453,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6168,6 +6483,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6197,6 +6513,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6226,6 +6543,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6255,6 +6573,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6284,6 +6603,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6313,6 +6633,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6342,6 +6663,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6371,6 +6693,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -28825,7 +29148,8 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)</pre></td>
+      <td><pre>"slots_by_provider": str, JSON
+    {provider: {date: [{"start", "end"}]}}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -28986,9 +29310,42 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
-"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
-"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
+      <td><pre>"document": str, one of
+    "after_visit_summary"
+    "lab_requisition"
+    "imaging_requisition"
+"note_id": str, the <a href='/sdk/data-note/#note'>Note</a> id
+    (after_visit_summary only)
+"order_id": str, the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or
+    <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> id
+    (requisitions only)</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_LOGIN_EMAIL</th></tr>
+    <tr><td colspan="3">Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a <a href='/sdk/patient-portal/#send-invite'><code>SendInviteEffect</code></a>, or a login link the patient requests from the portal login page. Return a <a href='/sdk/patient-portal/#customize-the-login-email'><code>LoginEmailContent</code></a> effect to replace the email's subject and body. See <a href='/sdk/patient-portal/#customize-the-login-email'>Customize the Login Email</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"link_type": str, one of
+    "invite"
+    "reset"
+"login_url": str
+"practice_location_id": str,
+    the <a href='/sdk/data-practicelocation/'>PracticeLocation</a> id
+    the email is sent from
+"default_subject": str
+"default_body": str, HTML</pre></td>
     </tr>
   </tbody>
 </table>

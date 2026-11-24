@@ -53,6 +53,19 @@ for coding in condition.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
+The category codings for a condition can be accessed with the `category_codings` attribute on a `Condition` object:
+
+```python
+from canvas_sdk.v1.data.condition import Condition
+from logger import log
+
+condition = Condition.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for category in condition.category_codings.all():
+    log.info(f"system: {category.system}")
+    log.info(f"code:   {category.code}")
+```
+
 ## Filtering
 
 Conditions can be filtered by any attribute that exists on the model.
@@ -99,7 +112,10 @@ conditions = Condition.objects.find(Diabetes)
 | resolution_date             | Date                                                                       |
 | clinical_status             | [ClinicalStatus](#clinicalstatus)                                          |
 | codings                     | [ConditionCoding](#conditioncoding)[]                                      |
+| category_codings            | [ConditionCategoryCoding](#conditioncategorycoding)[]                      |
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
+| service_requests            | [ServiceRequest](/sdk/data-service-request/#servicerequest)[] (the service requests that give this condition as a reason)|
+| service_request_reasons     | [ServiceRequestReasonCondition](/sdk/data-service-request/#servicerequestreasoncondition)[]                              |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
 | assessed_coding_gaps        | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]  |
@@ -108,6 +124,20 @@ conditions = Condition.objects.find(Diabetes)
 | past_medical_history_removals | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)[] |
 
 ### ConditionCoding
+
+| Field Name    | Type                    |
+|---------------|-------------------------|
+| dbid          | Integer                 |
+| created       | DateTime                |
+| modified      | DateTime                |
+| system        | String                  |
+| version       | String                  |
+| code          | String                  |
+| display       | String                  |
+| user_selected | Boolean                 |
+| condition     | [Condition](#condition) |
+
+### ConditionCategoryCoding
 
 | Field Name    | Type                    |
 |---------------|-------------------------|

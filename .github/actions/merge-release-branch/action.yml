@@ -1,5 +1,5 @@
-name: Merge Release Branch and Tag Main
-description: Merges release branch into the main branch and tags it
+name: Merge Release Branch
+description: Squash-merges the release PR into the main branch
 
 inputs:
   release_name:
@@ -7,7 +7,7 @@ inputs:
     required: true
     type: string
   dry_run:
-    description: Just run through the motions, but don't merge/tag/close/create/etc...
+    description: Just run through the motions, but don't merge
     type: boolean
     required: false
     default: false
@@ -15,53 +15,80 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Initialize Inputs
-      id: initialize-inputs
-      shell: bash
-      run: |
-        echo "RELEASE_NAME=${{ inputs.release_name }}" | tee -a $GITHUB_ENV
-        echo "DRY_RUN=${{ inputs.dry_run }}" | tee -a $GITHUB_ENV
-        echo "VERSION_TAG=$(echo ${{ inputs.release_name }} | sed 's/[\/\.]/-/g')" | tee -a $GITHUB_ENV # replace "/" and "." with "-"
     - name: Validate release_name
       id: validate-release_name
       shell: bash
+      env:
+        RELEASE_NAME: ${{ inputs.release_name }}
       run: |
-        echo $RELEASE_NAME | grep ^[release/]
-        echo
-    - id: checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: main
-    - id: config-git-user
+        [[ "$RELEASE_NAME" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release_name must look like release/1.2.3, got: $RELEASE_NAME"; exit 1; }
+    # main requires its checks to pass on a branch that is up to date with it, so a release
+    # branch cut before the previous release merged can't be merged as is. The caller checks
+    # out the repository with full history and a GitHub App token: a push made with the
+    # workflow's own GITHUB_TOKEN starts no workflows, so the required checks would never run.
+    - name: Bring the release branch up to date with main
+      id: update-release-branch
+      if: inputs.dry_run != 'true'
       shell: bash
+      env:
+        RELEASE_NAME: ${{ inputs.release_name }}
       run: |
-        git config --global user.email "github-actions@canvasmedical.com"
-        git config --global user.name "GitHub Actions"
-    - name: merge release branch
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git fetch --no-tags origin main "$RELEASE_NAME"
+        git checkout -B "$RELEASE_NAME" "origin/$RELEASE_NAME"
+        if git merge-base --is-ancestor origin/main HEAD; then
+          echo "$RELEASE_NAME already contains main."
+          exit 0
+        fi
+        if ! git merge --no-edit origin/main; then
+          echo "::error::$RELEASE_NAME conflicts with main. Merge main into the release branch, resolve the conflict, and run the merge again."
+          exit 1
+        fi
+        git push origin "HEAD:refs/heads/$RELEASE_NAME"
+    - name: Wait for the release PR's required checks
+      id: wait-for-checks
+      if: inputs.dry_run != 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        RELEASE_NAME: ${{ inputs.release_name }}
+      run: |
+        # Give GitHub a moment to register the new head and its pending checks.
+        sleep 20
+        deadline=$((SECONDS + 1800))
+        while :; do
+          state=$(gh pr view "$RELEASE_NAME" --json mergeStateStatus --jq .mergeStateStatus)
+          case "$state" in
+            CLEAN|UNSTABLE|HAS_HOOKS) echo "Release PR is ready to merge ($state)."; exit 0 ;;
+            DIRTY) echo "::error::$RELEASE_NAME conflicts with main."; exit 1 ;;
+          esac
+          # gh pr checks exits non-zero while checks are pending, so read its output only.
+          buckets=$(gh pr checks "$RELEASE_NAME" --required --json bucket --jq '.[].bucket' || true)
+          if [[ $'\n'"$buckets"$'\n' == *$'\nfail\n'* ]]; then
+            echo "::error::A required check failed on $RELEASE_NAME."
+            exit 1
+          fi
+          if (( SECONDS >= deadline )); then
+            echo "::error::Timed out waiting for $RELEASE_NAME's required checks (merge state $state)."
+            exit 1
+          fi
+          echo "Waiting for required checks (merge state $state)."
+          sleep 30
+        done
+    # Squash-merging the release PR lands the whole release on main as one commit titled
+    # after the PR, and goes through the main ruleset's required checks like any other PR.
+    - name: squash-merge the release PR
       id: merge-release-branch
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        RELEASE_NAME: ${{ inputs.release_name }}
+        DRY_RUN: ${{ inputs.dry_run }}
       run: |
-        git checkout ${{ env.RELEASE_NAME }}
-        echo "RELEASE_SHA=$(git show -s --format="%H" ${{ env.RELEASE_NAME }})" | tee -a $GITHUB_ENV
-        git checkout main
-        git merge ${{ env.RELEASE_NAME }}
-    - name: tag the version
-      id: tag-new-version
-      shell: bash
-      run: |
-        git tag ${{ env.VERSION_TAG }}
-    - name: push the merge and tag
-      id: push-the-merge-and-tag
-      if: ${{ !env.DRY_RUN || env.DRY_RUN == 'false' }}
-      shell: bash
-      run: |
-        git push origin main
-        git push origin ${{ env.VERSION_TAG }}
-    - name: delete release branch
-      id: delete-release-branch
-      if: ${{ env.DEVELOP_SHA == env.RELEASE_SHA }}
-      shell: bash
-      run: |
-        echo "Here's where we delete the release branch"
-        echo "git push origin --delete ${{ env.RELEASE_NAME }}"
+        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus
+        if [ "$DRY_RUN" != "true" ]; then
+          gh pr merge "$RELEASE_NAME" --squash
+        fi

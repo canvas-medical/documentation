@@ -72,6 +72,28 @@ for interview_response in interview.interview_responses.all():
 
 {% include alert.html type="info" content="A date question writes its answer to <code>response_option_date</code> as a real date, and to <code>response_option_value</code> as the same date in ISO-8601 form. Use <code>response_option_date</code> to compare or to filter, because date lookups such as <code>__gte</code> and <code>__year</code> work only on it. It is <code>None</code> for every other question type, and also when nobody answered the date question." %}
 
+## Questionnaire results
+
+A `QuestionnaireResult` holds what a questionnaire produced in an interview: its narrative, its score, its code, and whether it's abnormal. Reach results from an interview, a questionnaire, or a patient through their `questionnaire_results` attribute.
+
+An interview whose questionnaire Canvas scores typically has one result. Canvas records it when the interview's command is committed, by scoring the patient's answers. Canvas doesn't record a result for a questionnaire it doesn't score, but a plugin can record one with the [CreateQuestionnaireResult](/sdk/effect-questionnaires/#creating-a-questionnaire-result) effect.
+
+The `narrative` is the text Canvas displays to users as the interview's result in its command, for example `Score of 7`. Nearly every result has one. `score` is `None` when Canvas couldn't score the answers, for example when a scored question was left unanswered, and it can be `None` on a result a plugin records. Read `narrative` when you want what the provider saw.
+
+To read the results that count, the same ones Canvas shows on the chart, use `committed()`. It returns the results whose interview is committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.questionnaire import QuestionnaireResult
+from logger import log
+
+results = QuestionnaireResult.objects.committed().filter(
+    patient__id="1eed3ea2a8d546a1b681a2a45de1d790"
+)
+
+for result in results:
+    log.info(f"{result.questionnaire.name}: {result.narrative} (abnormal: {result.abnormal})")
+```
+
 ## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
@@ -176,7 +198,7 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | value                 | String                                                         |
 | response_option_set   | [ResponseOptionSet](#responseoptionset)                        |
 | ordering              | Integer                                                        |
-| interview_responses   | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses   | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | enablement_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 
 `enablement_conditions` holds the conditions that test for this response option, which is how you find the questions a given answer unlocks.
@@ -197,7 +219,7 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | code_system          | String                                                         |
 | code                 | String                                                         |
 | enable_behavior      | String — `all` or `any`                                        |
-| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionresponse)[] |
 | dependent_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 | triggers_condition   | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 
@@ -240,7 +262,7 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | name                      | String                                                         |
 | expected_completion_time  | Float                                                          |
 | can_originate_in_charting | Boolean                                                        |
-| use_case_in_charting      | String                                                         |
+| use_case_in_charting      | String — one of the [use cases](#use-cases-in-charting) below  |
 | scoring_function_name     | String                                                         |
 | scoring_code_system       | String                                                         |
 | scoring_code              | String                                                         |
@@ -250,7 +272,38 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | questions                 | [Question](#question)[]                                        |
 | use_in_shx                | Boolean                                                        |
 | carry_forward             | String                                                         |
-| interview_responses       | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| interview_responses       | [InterviewQuestionResponse](#interviewquestionresponse)[] |
+| item_groups               | [QuestionnaireItemGroup](#questionnaireitemgroup)[]            |
+| questionnaire_results     | [QuestionnaireResult](#questionnaireresult)[]                  |
+
+<a id="use-cases-in-charting"></a>
+
+#### Use cases in charting
+
+`use_case_in_charting` on a questionnaire or an interview holds a code from `QuestionnaireUseCase`:
+
+| `use_case_in_charting` | `QuestionnaireUseCase` member | Used as |
+|:-----------------------|:------------------------------|:--------|
+| `QUES` | `QUESTIONNAIRE` | Questionnaire |
+| `ROS`  | `REVIEW_OF_SYSTEMS` | Review of Systems |
+| `EXAM` | `PHYSICAL_EXAM` | Physical Exam |
+| `SA`   | `STRUCTURED_ASSESSMENT` | Structured Assessment |
+
+### QuestionnaireItemGroup
+
+A group of items in a questionnaire. A group sits at the top level of the questionnaire, under another group (`parent_group`), or under a question (`parent_question_map`), never under both.
+
+| Field Name          | Type                                                  |
+|---------------------|-------------------------------------------------------|
+| id                  | UUID                                                  |
+| dbid                | Integer                                               |
+| created             | DateTime                                              |
+| modified            | DateTime                                              |
+| questionnaire       | [Questionnaire](#questionnaire)                       |
+| parent_group        | [QuestionnaireItemGroup](#questionnaireitemgroup)     |
+| parent_question_map | [QuestionnaireQuestionMap](#questionnairequestionmap) |
+| ordering            | Integer                                               |
+| child_item_groups   | [QuestionnaireItemGroup](#questionnaireitemgroup)[]   |
 
 ### QuestionnaireQuestionMap
 
@@ -274,20 +327,54 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | status               | String                                                         |
 | name                 | String                                                         |
 | language_id          | Integer                                                        |
-| use_case_in_charting | String                                                         |
+| use_case_in_charting | String — one of the [use cases](#use-cases-in-charting)        |
 | patient              | [Patient](/sdk/data-patient/#patient)                          |
 | note_id              | Integer                                                        |
 | appointment_id       | Integer                                                        |
+| assessment           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | questionnaires       | [Questionnaire](#questionnaire)[]                              |
 | progress_status      | String                                                         |
+| skipped_questions    | [Question](#question)[]                                        |
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
-| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
-| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionresponse)[] |
+| assessments          | [Assessment](/sdk/data-assessment/#assessment)[]               |
+| questionnaire_results | [QuestionnaireResult](#questionnaireresult)[]                 |
+
+An interview has two relations to assessments:
+
+- `assessment` is the assessment in the same note that a [Structured Assessment](/sdk/commands/#structuredassessment) is linked to through its `assessment_id`. It's `None` when the interview isn't linked. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment).
+- `assessments` holds the assessments that a Structured Assessment produces when it's committed.
+
+`skipped_questions` holds the questions of the interview's questionnaire that were skipped, so they have no response.
+
+### InterviewSkippedQuestion
+
+The join between an interview and a [Question](#question) skipped in it. Reach the skipped questions through the interview's `skipped_questions` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+
+interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
+skipped = [question.name for question in interview.skipped_questions.all()]
+```
+
+| Field Name | Type                    |
+|------------|-------------------------|
+| dbid       | Integer                 |
+| interview  | [Interview](#interview) |
+| question   | [Question](#question)   |
 
 ### InterviewQuestionnaireMap
 
 The join between an [Interview](#interview) and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+
+interview = Interview.objects.get(id="75df6d7f-d58d-443b-9fa0-ce43b4d7b2a0")
+questionnaire_names = [questionnaire.name for questionnaire in interview.questionnaires.all()]
+```
 
 | Field Name    | Type                            |
 |---------------|---------------------------------|
@@ -315,6 +402,24 @@ The join between an [Interview](#interview) and the questionnaires it covers. Re
 | questionnaire_state   | String                            |
 | interview_state       | String                            |
 | comment               | String                            |
+
+### QuestionnaireResult
+
+The score a questionnaire produced in an interview. Use `QuestionnaireResult.objects.committed()` to keep only results whose interview is committed and not entered in error.
+
+| Field Name    | Type                                  |
+|---------------|---------------------------------------|
+| dbid          | Integer                               |
+| created       | DateTime                              |
+| modified      | DateTime                              |
+| interview     | [Interview](#interview)               |
+| questionnaire | [Questionnaire](#questionnaire)       |
+| patient       | [Patient](/sdk/data-patient/#patient) |
+| score         | Float, or `None` when there's no score |
+| abnormal      | Boolean                               |
+| narrative     | String                                |
+| code_system   | String                                |
+| code          | String                                |
 
 <br/>
 <br/>

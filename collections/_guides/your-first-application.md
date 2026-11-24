@@ -128,10 +128,9 @@ When opened in a patient's chart, both right chart pane targets stay open while 
 
 ## Step 5: Deploying the Application
 
-Sign in with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) if you haven't, then validate and deploy your application to an instance:
+Sign in with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) if you haven't, then deploy your application to an instance. `canvas deploy` runs the checks in [`canvas validate`](/sdk/canvas_cli/#canvas-validate) before it pushes:
 
 ```bash
-canvas validate <path/to/application>
 canvas deploy <path/to/application> --instance <instance>
 ```
 

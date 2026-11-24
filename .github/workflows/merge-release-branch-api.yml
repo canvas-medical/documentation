@@ -6,18 +6,49 @@ on:
 jobs:
   merge-release-branch-to-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - name: Initialize Inputs
-        id: initialize-inputs
-        run: |
-          echo "RELEASE_NAME=${{ github.event.client_payload.release_name }}" | tee -a $GITHUB_ENV
-          echo "DRY_RUN=${{ github.event.client_payload.dry_run }}" | tee -a $GITHUB_ENV
+      # Pushes made with this App token start the release PR's required checks.
+      - name: Create App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
       - name: Checkout Repo
         id: checkout-repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
       - name: Merge Release Branch
         id: merge-release-branch
         uses: ./.github/actions/merge-release-branch
         with:
-          release_name: ${{ env.RELEASE_NAME }}
-          dry_run: ${{ env.DRY_RUN }}
+          release_name: ${{ github.event.client_payload.release_name }}
+          dry_run: ${{ github.event.client_payload.dry_run }}
+      # The webhook is bound to #phi-release-coordination. toJSON quotes the text, so a
+      # release name from the dispatch payload can't break out of the YAML payload.
+      - name: Post the failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        with:
+          webhook: ${{ secrets.RELEASE_COORDINATION_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ${{ toJSON(format(':x: The docs release merge failed for {0}, so its release notes are not on main. <{1}/{2}/actions/runs/{3}|View the run> · <{1}/{2}/pulls?q=is%3Apr+head%3A{0}|Release PR>', github.event.client_payload.release_name, github.server_url, github.repository, github.run_id)) }}
+      # Last, so a failed post can't trigger the failure post above, and continue-on-error,
+      # so a failed post leaves the run green once the merge has landed. A dry run merges
+      # nothing and posts nothing; format() turns a boolean or string dry_run into 'true'.
+      - name: Post the merge to Slack
+        if: success() && format('{0}', github.event.client_payload.dry_run) != 'true'
+        continue-on-error: true
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d # v2.0.0
+        with:
+          webhook: ${{ secrets.RELEASE_COORDINATION_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ${{ toJSON(format(':white_check_mark: The docs for {0} merged to main, and its release notes go live on the next site deploy. <https://docs.canvasmedical.com/product-updates/release-notes/|Release notes> · <{1}/{2}/pulls?q=is%3Apr+head%3A{0}|Release PR>', github.event.client_payload.release_name, github.server_url, github.repository)) }}

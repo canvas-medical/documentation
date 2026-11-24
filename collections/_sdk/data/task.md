@@ -180,6 +180,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | original_role     | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
 | original_due      | DateTime                                |
 | internal_comment  | String                                  |
+| labels            | [TaskLabel](#tasklabel)[]               |
 
 ### TaskComment
 
@@ -211,15 +212,40 @@ committed_note_tasks = NoteTask.objects.committed()
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
 | appointments     | [Appointment](/sdk/data-appointment/)[]             |
+| note_tasks       | [NoteTask](#notetask)[]                             |
 
 ### TaskTaskLabel
 
 The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a task through its `labels` attribute rather than querying this model.
 
+```python
+from canvas_sdk.v1.data.task import Task
+
+task = Task.objects.get(id="7895e1db-f8de-4660-a0a3-9e5b43a475c6")
+label_names = [label.name for label in task.labels.all()]
+```
+
 | Field Name | Type                    |
 | ---------- | ----------------------- |
 | dbid       | Integer                 |
 | task       | [Task](#task)           |
+| task_label | [TaskLabel](#tasklabel) |
+
+### NoteTaskLabel
+
+The join between a note task and a [TaskLabel](#tasklabel). Reach the labels on a note task through its `labels` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data.task import NoteTask
+
+note_task = NoteTask.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+label_names = [label.name for label in note_task.labels.all()]
+```
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| note_task  | [NoteTask](#notetask)   |
 | task_label | [TaskLabel](#tasklabel) |
 
 ### TaskMetadata

@@ -20,6 +20,7 @@ To route a message to a group of staff rather than one person, assign it to a te
 Creates a message without sending it.
 
 - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- The SDK does not yet support sending a message from a family member with [family portal access](/sdk/patient-portal/#family-portal-access).
 - `message_id` must not be set.
 - `team_id` is optional. Set it to create the message already assigned to a team.
 
@@ -28,6 +29,7 @@ Creates a message without sending it.
 Creates the message and sends it in one operation.
 
 - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- The SDK does not yet support sending a message from a family member with [family portal access](/sdk/patient-portal/#family-portal-access).
 - `message_id` must not be set.
 - `team_id` is optional. Set it to create the message already assigned to a team.
 - When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
@@ -40,6 +42,7 @@ Changes an existing message.
 - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
 - `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See [Attaching files](#attaching-files).
 - `team_id` must not be set. Editing a message keeps its team. To change the team, use [`AssignMessageTeam`](#assigning-a-message-to-a-team).
+- To edit a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access), set `sender_id` to the patient the message is about. The family member stays the sender.
 
 ### send() → Effect
 
@@ -104,6 +107,15 @@ effect = message.create_and_send() if has_eligible_contact else message.create()
 ```
 
 Instances set up to deliver patient messages through a plugin, rather than through Canvas, do not send these notifications.
+
+When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`), and they have confirmed the patient's date of birth (`dob_verified_at` is set). The notice says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin don't send these notices either.
+
+Where Canvas sends each family member's notice depends on whether they have their own chart:
+
+- With their own chart, they get an email and a text message at the first-ranked eligible email address and phone number on that chart, eligible as described above.
+- Without their own chart, they get an email only, at the email address of the contact their login was set up for. A contact's phone number has no consent on record for automated texts, so Canvas doesn't text it.
+
+Canvas skips any address the patient's own notification goes to, such as a parent's phone number listed on a child's chart.
 
 `create()` on its own never notifies the patient.
 

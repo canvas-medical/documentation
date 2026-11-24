@@ -50,7 +50,7 @@ This guide demonstrates how to build an external application that integrates wit
 
 ### Step 2. Deploy the Plugin
 
-Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform) for the places the name appears). Then deploy it and set the Client ID:
 
 ```bash
 canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
