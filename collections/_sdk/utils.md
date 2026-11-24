@@ -981,7 +981,7 @@ def screen_medication_against_allergies(patient: Patient, considered_med: Medica
     return ontologies_http.get_json(f"/fdb/medication-allergy/?{params}").json()
 ```
 
-The response is a list of interaction objects — one per matched allergy, distinguishing a direct match from a cross-sensitive one (e.g. a penicillin allergy against a cephalosporin). An empty list `[]` means no interactions (all clear):
+The response is a list of interaction objects — one per matched allergy, distinguishing a direct match from a cross-sensitive one (e.g. a penicillin allergy against a cephalosporin). An `RXNORM` code can map to several FDB medications, and each one that matches an allergy gets its own object. An empty list `[]` means no interactions (all clear):
 
 ```json
 [
