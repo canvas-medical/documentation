@@ -73,6 +73,8 @@ If you need the pre-signed S3 URL itself — for example, to load it in an `<ifr
         const presignedUrl = response.headers['location'];
         // This URL works without auth — use it in an iframe, open in browser, etc.
         ```
+##  File type and download name 
+When a `DocumentReference` content file or a `Consent` source attachment is stored under a name that doesn't end in a recognized file extension, its pre-signed URL serves the file with its content type and a download filename that adds the matching extension. A dot inside the name doesn't count as an extension. Consent documents are served as `application/pdf`, so a consent stored under the title `Consent Form - Dr. Smith` downloads as `Consent Form - Dr. Smith.pdf`. A browser that opens one of these URLs displays or saves the file as that type.
 ##  Note on HTTP client redirect behavior 
 Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host. However, some HTTP clients do not do this, which can cause S3 to reject the request with a dual-auth error:
     ```xml
@@ -8518,7 +8520,7 @@ By default, this endpoint does not prevent duplicates in the record. **Canvas re
 **Recording Diagnose as Assess**  
 As part of the rollout retiring the Diagnose command, this endpoint records conditions as described below. To use this behavior now, ahead of the rollout, [contact Canvas Support](https://canvas-medical.help.usepylon.com/). It also keeps integrations that resend conditions from adding duplicates, and it changes how plugins' Diagnose commands are recorded; see [Diagnose](/sdk/commands/#diagnose). With it on, creates work as follows:  
 **A code the patient already has:** If the patient already has an active or resolved condition with the same ICD-10 code, the request returns `422` with the ID of that condition, and nothing is written. Codes are compared ignoring dots and case. Use the existing condition instead of creating another.  
-**A new active condition:** The Condition is recorded with a committed `Assess` command in the note. The Assess narrative is the Condition's `note` text, and its onset date is `onsetDateTime`. The condition goes on the problem list unless its categories include `encounter-diagnosis`. Plugins receive Assess command events for the command.  
+**A new active condition:** The Condition is recorded with a committed `Assess` command in the note. The Assess narrative is the Condition's `note` text, and its onset date is `onsetDateTime`. The condition keeps the category and domain sent in `category`: `problem-list-item`, `encounter-diagnosis`, or `health-concern`, plus a domain such as `sdoh` for a problem list item or health concern. Plugins receive Assess command events for the command.  
 **A new resolved condition:** The Condition is added as a `Past Medical History` command, as it is with the setting off.
 ### Attributes
 resourceType 
@@ -19070,7 +19072,7 @@ The status of the document reference.
   - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
   - For Clinical Note documents, the status will be `current` if it is the latest PDF of the locked note. If it is an older version due to a practitioner unlocking/ammending the note, the status will be `superseded`. If the note is deleted on the patient's chart, the status will be `entered-in-error`.
   - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
-  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices. If the first three invoices in a bulk run all fail to generate, Canvas stops the run and makes the archived invoices active again, so their status returns to `current`.
 **Value Options Supported:**
   - current 
   - superseded 
@@ -19390,7 +19392,7 @@ The status of the document reference.
   - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
   - For Clinical Note documents, the status will be `current` if it is the latest PDF of the locked note. If it is an older version due to a practitioner unlocking/ammending the note, the status will be `superseded`. If the note is deleted on the patient's chart, the status will be `entered-in-error`.
   - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
-  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices. If the first three invoices in a bulk run all fail to generate, Canvas stops the run and makes the archived invoices active again, so their status returns to `current`.
 **Value Options Supported:**
   - current 
   - superseded 
@@ -25266,7 +25268,8 @@ Type the reference refers to (e.g. "Encounter").
 operator 
 json 
 The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
+The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.   
+Canvas reads this attribute on create only, and read and search responses don't include it. To find a Media you created, keep the `id` returned in the create response's `Location` header.
 Click to view child attributes
 reference 
 string 
@@ -25367,17 +25370,6 @@ The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94
 type 
 string 
 Type the reference refers to (e.g. "Encounter").
-operator 
-json 
-The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
-Click to view child attributes
-reference 
-string 
-The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
-type 
-string 
-Type the reference refers to (e.g. "Practitioner").
 content 
 json 
 Actual Media.
@@ -25495,17 +25487,6 @@ The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94
 type 
 string 
 Type the reference refers to (e.g. "Encounter").
-operator 
-json 
-The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
-Click to view child attributes
-reference 
-string 
-The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
-type 
-string 
-Type the reference refers to (e.g. "Practitioner").
 content 
 json 
 Actual Media.
@@ -25742,9 +25723,6 @@ The request requires user authorization.
             "encounter": {
                 "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
             },
-            "operator": {
-                "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-            },
             "content": {
                 "contentType": "image/jpeg",
                 "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
@@ -25861,9 +25839,6 @@ The request requires user authorization.
                         },
                         "encounter": {
                             "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
-                        },
-                        "operator": {
-                            "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                         },
                         "content": {
                             "contentType": "image/jpeg",
@@ -33010,7 +32985,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access), so writing back an earlier read doesn't restore that contact.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -33492,7 +33467,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access), so writing back an earlier read doesn't restore that contact.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -34011,7 +33986,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access), so writing back an earlier read doesn't restore that contact.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -43565,7 +43540,7 @@ string
 The identifier of the RelatedPerson.
 active 
 boolean 
-Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access). Canvas keeps that contact for the records its family member wrote, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who`, resolve. A search by `patient` leaves it out.
+Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note. Canvas keeps that contact for the records that refer to it, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who` or an Encounter `participant.individual`, resolve. A search by `patient` leaves it out.
 patient 
 json 
 The patient this person is related to.
@@ -43727,7 +43702,7 @@ string
 The identifier of the RelatedPerson.
 active 
 boolean 
-Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access). Canvas keeps that contact for the records its family member wrote, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who`, resolve. A search by `patient` leaves it out.
+Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note. Canvas keeps that contact for the records that refer to it, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who` or an Encounter `participant.individual`, resolve. A search by `patient` leaves it out.
 patient 
 json 
 The patient this person is related to.
@@ -47004,8 +46979,8 @@ This guide will walk you through practical steps to use HCC codings in Canvas fo
   - Annotate ICD-10 codes that are mapped to HCC categories
 By surfacing relevant data when and where it's needed, you can eliminate unnecessary steps, reduce cognitive load, and keep workflows aligned with patient needs.
 ##  Create Coding Gaps via FHIR Detected Issue 
-The [DetectedIssue FHIR resource](/api/detectedissue)) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc.
-A key use case is surfacing potential codings gaps that come from external sources.
+The [DetectedIssue FHIR resource](/api/detectedissue) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc.
+A key use case is surfacing potential coding gaps that come from external sources.
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
     ```json
         "code": {

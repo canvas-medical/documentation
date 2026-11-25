@@ -59,6 +59,14 @@ expects_claim = note.note_type_version.is_billable
 claim = note.get_claim()
 ```
 
+## How diagnosis codes are ranked
+
+A claim lists its diagnosis codes in `rank` order, and rank 1 is the primary diagnosis. Each time Canvas syncs a claim with its note, such as when the note is locked or its charges are pushed, the sync adds each ICD-10 code on the note that the claim doesn't have yet. It adds each code once, even when two of the note's conditions share it.
+
+A note in the revamped format, on an instance in the [revamped note beta program](/product-updates/note-revamp/), also sets the order of the claim's codes. The sync ranks the note's codes first, in the order their commands appear in the note body. Codes that were added only on the claim follow, in their current order. A condition takes the position of the topmost command that records or assesses it, such as Diagnose, Assess, or Update Diagnosis. Conditions with no command of their own, such as an order's indication, come after those, in the order they were added. When a provider moves commands in the note, the next sync re-ranks the claim to match, including a claim that has already been filed, and adds a comment to the claim listing the new order.
+
+For other notes, the sync adds new codes after the existing ones and leaves the existing ranks unchanged.
+
 <!-- source: discussion #1642 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
 ## Claim balances and totals
@@ -93,6 +101,94 @@ patient_allocated = claim.patient_balance + claim.total_patient_paid
 ```
 
 This holds for self-pay and insured claims alike, including a self-pay claim carrying no postings at all.
+
+## Claim history
+
+Canvas records an event each time a claim changes queue, has a coverage changed, is assigned, or is snoozed. Read these events to build an audit trail or to report on how claims move through your revenue workflow. Each event has a `created` timestamp, and each kind has its own relation on the claim:
+
+| Relation on the claim | Model | What it records |
+| --- | --- | --- |
+| `claim_state_change_events` | [ClaimStateChangeEvent](#claimstatechangeevent) | The queue the claim left and the queue it entered |
+| `claim_coverage_events` | [ClaimCoverageEvent](#claimcoverageevent) | A coverage activated, deactivated, made current, reordered, or edited |
+| `assignee_events` | [ClaimAssigneeEvent](#claimassigneeevent) | The staff member or team the claim was assigned to, or that it was unassigned |
+| `snooze_events` | [ClaimSnoozeEvent](#claimsnoozeevent) | A snooze set, cleared, or expired |
+
+To list a claim's queue moves in order:
+
+```python
+from canvas_sdk.v1.data import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+for event in claim.claim_state_change_events.select_related("queue_exited", "queue_entered").order_by("created"):
+    exited = event.queue_exited.display_name if event.queue_exited else None
+    entered = event.queue_entered.display_name if event.queue_entered else None
+    print(f"{event.created}: {exited} -> {entered}")
+```
+
+A [ClaimQueue](#claimqueue) lists the moves into it as `enter_events` and the moves out of it as `exit_events`, and a [ClaimCoverage](#claimcoverage) lists its own changes as `events`.
+
+## Claim responses
+
+When a clearinghouse or payer answers a submitted claim, Canvas stores the answer as a [ClaimResponse](#claimresponse) on the claim's `claim_responses`. Each message in the answer, such as a rejection reason, is a [ClaimResponseDetail](#claimresponsedetail) on the response's `responses`.
+
+`status` holds the code the clearinghouse sent. [ClaimResponseStatus](#claimresponsestatus) names the two codes Canvas acts on: `A` (accepted) and `R` (rejected). To read why a claim was rejected:
+
+```python
+from canvas_sdk.v1.data import Claim, ClaimResponseStatus
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+rejections = claim.claim_responses.committed().filter(status=ClaimResponseStatus.REJECTED)
+for claim_response in rejections:
+    for detail in claim_response.responses.all():
+        print(claim_response.response_time, detail.response_code, detail.response)
+```
+
+`committed()` keeps responses that were committed and not entered in error.
+
+### What a claim response detail holds
+
+Canvas stores each message from Claim.MD's status report as one `ClaimResponseDetail`. Most of them acknowledge the claim. A typical accepted claim gets an `Acknowledged` from the clearinghouse, then a `Code 19` or `Code 20` message from the payer.
+
+A detail's `status` is a one-letter code:
+
+| `status` | Meaning     | Example `response`                                                     |
+| -------- | ----------- | ---------------------------------------------------------------------- |
+| `A`      | Accepted    | `Code 20 - Accepted for processing. - Payer`                           |
+| `R`      | Rejected    | `Atleast one diagnosis pointer required.`                              |
+| `W`      | Warning     | `Warning- This payer does not support electronic corrected claims.`    |
+| `I`      | Information |                                                                        |
+
+The details on one response can mix statuses. A rejected response (`R`) carries at least one `R` detail, and can also hold `A` and `W` details. An accepted response (`A`) can still carry `W` warnings and `I` messages, so read its details too. [ClaimResponseStatus](#claimresponsestatus) names only `A` and `R`, so compare `W` and `I` as strings.
+
+`response_code` is the message's ID, and its shape tells you where the message came from:
+
+| `response_code` | Source | Example `response` | `fields` |
+| --------------- | ------ | ------------------ | -------- |
+| `ACK` | An acknowledgment, usually from Claim.MD when it receives the claim. Payers can also send `ACK` messages, including payment status updates. | `Acknowledged` | Empty |
+| `A`, a claim status category digit, a status code, and an optional entity suffix, such as `A119-41`, `A220-PR`, or `A321` | A payer or clearinghouse claim status (X12 277): category `A1` received, `A2` accepted into adjudication, `A3` returned as unprocessable. The suffix names who sent it, such as `PR` for the payer or `41` for the submitter. | `Code 19 - Entity acknowledges receipt of claim/encounter. - Submitter` | Empty |
+| A Claim.MD edit code, such as `DP01`, `PH-INSSX`, `PHTXNMY1`, or `CHGAMT` | Claim.MD checked the claim before sending it | `Invalid Insured Sex [UNK]` | The claim fields at fault, such as `ins_sex` |
+| A claim adjustment or remark code, such as `CO-45`, `CO-16`, or `N381` | The payer's remittance denied or adjusted a service | `ERA DENIAL - Claim / service lacks information which is needed for adjudication. Check Remittance Remark Codes` | Empty |
+
+`fields` holds a comma-separated list of Claim.MD field names, such as `diag_ref_1`, `charge_1`, `bill_taxonomy`, or `prov_npi`. It's empty for messages from the payer.
+
+Treat `response` as display text. The same code can come with different wording from different payers. The text can also quote a value from the claim in brackets, such as a taxonomy code or an NPI.
+
+To list the problems on a claim with the fields to fix:
+
+```python
+from canvas_sdk.v1.data import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+for claim_response in claim.claim_responses.committed():
+    for detail in claim_response.responses.filter(status__in=["R", "W"]):
+        fields_to_fix = detail.fields.split(",") if detail.fields else []
+        print(detail.status, detail.response_code, detail.response, fields_to_fix)
+```
+
+To find the remits that paid a claim, read `claim.remits`. Each one is a [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice).
 
 ## Filtering
 
@@ -134,6 +230,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | aggregate_coverage_balance | Decimal                                               |                                           |
 | assignee                   | [Staff](/sdk/data-staff/#staff)                       | Staff member the claim is assigned to     |
 | team                       | [Team](/sdk/data-team/#team)                          | Team the claim is assigned to             |
+| authorization              | [Authorization](/sdk/data-authorization/#authorization) | The prior authorization the claim is billed under (nullable) |
 | created                    | DateTime                                              |                                           |
 | modified                   | DateTime                                              |                                           |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |
@@ -150,6 +247,13 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | coverages                  | [ClaimCoverage](#claimcoverage)[]                     |                                           |
 | submissions                | [ClaimSubmission](#claimsubmission)[]                 |                                           |
 | postings                   | [BasePosting](/sdk/data-posting/#baseposting)[]       |                                           |
+| remits                     | [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice)[] | Remits that cover the claim   |
+| full_invoices              | [Invoice](/sdk/data-invoice/#invoice)[]               | Statements the claim appeared on          |
+| claim_responses            | [ClaimResponse](#claimresponse)[]                     |                                           |
+| claim_state_change_events  | [ClaimStateChangeEvent](#claimstatechangeevent)[]     |                                           |
+| claim_coverage_events      | [ClaimCoverageEvent](#claimcoverageevent)[]           |                                           |
+| assignee_events            | [ClaimAssigneeEvent](#claimassigneeevent)[]           |                                           |
+| snooze_events              | [ClaimSnoozeEvent](#claimsnoozeevent)[]               |                                           |
 | total_charges              | Decimal (computed)                                    | Total charges for active line items       |
 | total_paid                 | Decimal (computed)                                    | Sum of paid amounts from postings         |
 | total_adjusted             | Decimal (computed)                                    | Sum of adjustments and transfers          |
@@ -213,6 +317,8 @@ Represents individual billed procedures or services tied to a claim.
 | newlineitempayments    | QuerySet[[NewLineItemPayment](/sdk/data-posting/#newlineitempayment)]       |
 | newlineitemadjustments | QuerySet[[NewLineItemAdjustment](/sdk/data-posting/#newlineitemadjustment)] |
 | lineitemtransfers      | QuerySet[[LineItemTransfer](/sdk/data-posting/#lineitemtransfer)]           |
+| lineitemalloweds       | QuerySet[[LineItemAllowed](/sdk/data-posting/#lineitemallowed)]             |
+| remark_codes           | QuerySet[[RemarkCode](/sdk/data-posting/#remarkcode)]                       |
 
 ### ClaimLineItemDiagnosisCode
 
@@ -291,10 +397,11 @@ Links a claim to a specific insurance coverage.
 | payer_icn                          | String                                                                   |
 | created                            | DateTime                                                                 |
 | modified                           | DateTime                                                                 |
+| events                             | QuerySet[[ClaimCoverageEvent](#claimcoverageevent)]                      |
 
 ### ClaimComment
 
-Represents a free-text comment made on a Claim.
+Represents a free-text comment made on a Claim. To read only committed comments, use the `committed` method, for example `claim.comments.committed()`.
 
 | Field Name       | Type                               |
 | ---------------- | ---------------------------------- |
@@ -328,7 +435,7 @@ Represents banner alerts associated with a claim. Banner alerts are displayed in
 
 ### ClaimDiagnosisCode
 
-Represents diagnosis codes associated with a claim, ordered by rank.
+Represents diagnosis codes associated with a claim, ordered by rank. See [How diagnosis codes are ranked](#how-diagnosis-codes-are-ranked).
 
 | Field Name                | Type                                                        |
 | ------------------------- | ----------------------------------------------------------- |
@@ -358,6 +465,8 @@ Defines the metadata for claim queues used in revenue workflows.
 | visible_columns     | Array\[[ClaimQueueColumns](#claimqueuecolumns)] |
 | created             | DateTime                                        |
 | modified            | DateTime                                        |
+| enter_events        | QuerySet[[ClaimStateChangeEvent](#claimstatechangeevent)] |
+| exit_events         | QuerySet[[ClaimStateChangeEvent](#claimstatechangeevent)] |
 
 ### ClaimPatient
 
@@ -499,7 +608,140 @@ Represents a payment plan between a patient and provider.
 | modified             | DateTime                                        |
 | claims               | [Claim](#claim)[]                               |
 
+### ClaimStateChangeEvent
+
+Records a claim leaving one queue and entering another.
+
+| Field Name    | Type                                | Description                         |
+|---------------|-------------------------------------|-------------------------------------|
+| dbid          | Integer                             |                                     |
+| claim         | [Claim](#claim)                     |                                     |
+| queue_exited  | [ClaimQueue](#claimqueue)           | Queue the claim left                |
+| queue_entered | [ClaimQueue](#claimqueue)           | Queue the claim entered             |
+| originator    | [CanvasUser](/sdk/data-canvasuser/) | User who moved the claim            |
+| created       | DateTime                            |                                     |
+| modified      | DateTime                            |                                     |
+
+### ClaimCoverageEvent
+
+Records a change to one of a claim's coverages.
+
+| Field Name     | Type                                                | Description                    |
+|----------------|-----------------------------------------------------|--------------------------------|
+| dbid           | Integer                                             |                                |
+| claim          | [Claim](#claim)                                     |                                |
+| claim_coverage | [ClaimCoverage](#claimcoverage)                     | Coverage that changed          |
+| event_type     | [ClaimCoverageEventType](#claimcoverageeventtype)   | What changed                   |
+| originator     | [CanvasUser](/sdk/data-canvasuser/)                 | User who made the change       |
+| created        | DateTime                                            |                                |
+| modified       | DateTime                                            |                                |
+
+### ClaimAssigneeEvent
+
+Records a change to who owns a claim: a staff member, a team, or nobody.
+
+| Field Name    | Type                                | Description                                                       |
+|---------------|-------------------------------------|-------------------------------------------------------------------|
+| dbid          | Integer                             |                                                                   |
+| claim         | [Claim](#claim)                     |                                                                   |
+| assignee      | [Staff](/sdk/data-staff/#staff)     | Staff member the claim was assigned to                            |
+| team          | [Team](/sdk/data-team/#team)        | Team the claim was assigned to                                    |
+| assignee_name | String                              | Staff member's name at the time of the change                     |
+| team_name     | String                              | Team's name at the time of the change                             |
+| originator    | [CanvasUser](/sdk/data-canvasuser/) | User who made the change, or `None` when a plugin made it         |
+| created       | DateTime                            |                                                                   |
+| modified      | DateTime                            |                                                                   |
+
+- When both `assignee` and `team` are `None`, the claim was unassigned.
+- `assignee_name` and `team_name` keep the owner's name after the staff member or team is deleted and `assignee` or `team` becomes `None`.
+
+### ClaimSnoozeEvent
+
+Records a claim's snooze being set, cleared, or expiring.
+
+| Field Name | Type                                  | Description                                        |
+|------------|---------------------------------------|----------------------------------------------------|
+| dbid       | Integer                               |                                                    |
+| claim      | [Claim](#claim)                       |                                                    |
+| state      | [ClaimSnoozeState](#claimsnoozestate) |                                                    |
+| date       | Date                                  | Date the claim is snoozed until, empty on a clear  |
+| originator | [CanvasUser](/sdk/data-canvasuser/)   | User who made the change                           |
+| created    | DateTime                              |                                                    |
+| modified   | DateTime                              |                                                    |
+
+### ClaimResponse
+
+A clearinghouse or payer response to a submitted claim.
+
+| Field Name              | Type                                | Description                                                  |
+|-------------------------|-------------------------------------|--------------------------------------------------------------|
+| dbid                    | Integer                             |                                                              |
+| claim                   | [Claim](#claim)                     |                                                              |
+| status                  | String                              | Code the clearinghouse sent; see [ClaimResponseStatus](#claimresponsestatus) |
+| response_time           | DateTime                            |                                                              |
+| clearinghouse_claim_id  | String                              |                                                              |
+| remote_claim_id         | String                              |                                                              |
+| batch_id                | String                              |                                                              |
+| file_id                 | String                              |                                                              |
+| file_name               | String                              |                                                              |
+| from_date               | Date                                |                                                              |
+| payer_id                | String                              |                                                              |
+| subscriber_number       | String                              |                                                              |
+| billing_provider_npi    | String                              |                                                              |
+| billing_provider_tax_id | String                              |                                                              |
+| sender_icn              | String                              |                                                              |
+| sender_name             | String                              |                                                              |
+| sender_id               | String                              |                                                              |
+| total_charge            | Decimal                             |                                                              |
+| originator              | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| committer               | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| entered_in_error        | [CanvasUser](/sdk/data-canvasuser/) |                                                              |
+| created                 | DateTime                            |                                                              |
+| modified                | DateTime                            |                                                              |
+| responses               | QuerySet[[ClaimResponseDetail](#claimresponsedetail)] | Messages in the response                   |
+
+### ClaimResponseDetail
+
+One message within a claim response. See [What a claim response detail holds](#what-a-claim-response-detail-holds).
+
+| Field Name                | Type                            | Description |
+|---------------------------|---------------------------------|-------------|
+| dbid                      | Integer                         | |
+| claim_response            | [ClaimResponse](#claimresponse) | |
+| clearinghouse_response_id | String                          | Claim.MD's ID for this message |
+| response_code             | String                          | The message's code, such as `ACK`, `A220-PR`, `DP01`, or `CO-45` |
+| response                  | String                          | The message text |
+| fields                    | String                          | Comma-separated Claim.MD field names the message is about, or empty |
+| status                    | String                          | `A` (accepted), `R` (rejected), `W` (warning), or `I` (information) |
+| created                   | DateTime                        | |
+| modified                  | DateTime                        | |
+
 ## Enumeration types
+
+### ClaimCoverageEventType
+
+| Value       | Label      |
+|-------------|------------|
+| activate    | Activate   |
+| deactivated | Deactivate |
+| current     | Current    |
+| reorder     | Reordered  |
+| edit        | Edited     |
+
+### ClaimSnoozeState
+
+| Value  | Label  |
+|--------|--------|
+| set    | set    |
+| clear  | clear  |
+| expire | expire |
+
+### ClaimResponseStatus
+
+| Value | Label    |
+|-------|----------|
+| A     | Accepted |
+| R     | Rejected |
 
 ### ClaimLineItemStatus
 

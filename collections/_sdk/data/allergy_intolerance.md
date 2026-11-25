@@ -53,6 +53,22 @@ for coding in allergy.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
+## Reactions
+
+The reactions recorded for an allergy intolerance can be accessed with the `reactions` attribute on an `AllergyIntolerance` object. Each reaction is a coding:
+
+```python
+from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
+from logger import log
+
+allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for reaction in allergy.reactions.all():
+    log.info(f"system:  {reaction.system}")
+    log.info(f"code:    {reaction.code}")
+    log.info(f"display: {reaction.display}")
+```
+
 ## Filtering
 
 Allergy intolerances can be filtered by any attribute that exists on the model.
@@ -107,12 +123,27 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | recorded_date                  | DateTime                                                |
 | narrative                      | String                                                  |
 | codings                        | [AllergyIntoleranceCoding](#allergyintolerancecoding)[] |
+| reactions                      | [AllergyIntoleranceReaction](#allergyintolerancereaction)[] |
 | remove_allergy_events          | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
 
 ### AllergyIntoleranceCoding
 
 | Field Name          | Type                                      |
 | ------------------- | ----------------------------------------- |
+| dbid                | Integer                                   |
+| created             | DateTime                                  |
+| modified            | DateTime                                  |
+| system              | String                                    |
+| version             | String                                    |
+| code                | String                                    |
+| display             | String                                    |
+| user_selected       | Boolean                                   |
+| allergy_intolerance | [AllergyIntolerance](#allergyintolerance) |
+
+### AllergyIntoleranceReaction
+
+| Field Name          | Type                                      |
+|---------------------|-------------------------------------------|
 | dbid                | Integer                                   |
 | created             | DateTime                                  |
 | modified            | DateTime                                  |
