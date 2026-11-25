@@ -99,7 +99,7 @@ sections:
                           exclude_in: create,update
           - name: verificationStatus
             description_for_all_endpoints: The verification status to support the clinical status of the condition.
-            read_and_search_description: A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Diagnose. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.  
+            read_and_search_description: A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Assess. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.  
             exclude_in: create, update
             type: json
             attributes:

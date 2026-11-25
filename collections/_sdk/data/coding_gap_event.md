@@ -83,6 +83,14 @@ assess_event = AssessCodingGapEvent.objects.get(id="0b2f2f8c-3c2c-4d9e-9a1a-2b6a
 conditions = assess_event.conditions.all()
 ```
 
+When a clinician accepts a coding gap with **Accept and Assess**, `conditions` holds one condition for each picked diagnosis, and the note gets an assessment of each one. In the command's data, this option's `status` value is `"accept and diagnose"`.
+
+- If the patient already has a charted condition with the diagnosis's ICD-10 code, the command uses that condition instead of adding a duplicate. A resolved or investigative condition becomes active again.
+- Otherwise, the command records a new condition.
+- With **Show in problem list** on, which is the default, each condition becomes a problem list item. It takes the **Category Domain** picked in the command, and a charted condition keeps its own domain when none is picked. With the box off, each condition becomes an encounter diagnosis, with no domain.
+
+Entering the Assess Coding Gap command in error enters in error the conditions it recorded and the assessments it added. A charted condition it used stays on the chart, with its earlier categories and onset date. If the command made that condition active again, the condition is resolved again, unless an assessment committed afterward uses it.
+
 For a given condition, the assess events it was included in are reachable with the `assessed_coding_gaps` accessor on a `Condition` object:
 
 ```python
