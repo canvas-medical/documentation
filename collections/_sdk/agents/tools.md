@@ -79,6 +79,8 @@ tools.extend(standard_tools)  # adopt the SDK catalog
             type="string",
             description="Substring match on the coding display.",
             apply=lambda qs, v: qs.filter(codings__display__icontains=v),
+            # A condition with two matching codings would come back twice.
+            distinct=True,
         ),
     },
     prefetch_related=("codings",),
@@ -153,7 +155,11 @@ tools.add_effect_tool(
 - **`filter_search_tool`** — patient-scoped reads with optional
   filters. The decorated function serializes one row. The model gets
   one tool that combines filter arguments, rather than many narrow
-  tools. Used by almost every `find_*` in the SDK catalog.
+  tools. Used by almost every `find_*` in the SDK catalog. Set
+  `distinct=True` on a `FilterSpec` that filters through a to-many
+  relation, such as `codings__`, so that a row with several matching
+  related rows is returned once. It takes effect only when that filter
+  is applied, and defaults to `False`.
 - **`originate_command_tool`** — staging a draft chart Command on the
   patient's current note. Resolves the note from `ctx["note_id"]` by
   default (override `note_resolver` if your agent finds the note
