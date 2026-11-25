@@ -80,6 +80,8 @@ Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset)
 $ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
 ```
 
+For a plugin Canvas Platform manages, when `config set` or `config unset` adds, changes, or clears a value, the instance reloads the plugin so it reads the new values, then sends a [`PLUGIN_UPDATED`](/sdk/events/#other-events) event. Respond to that event to rebuild anything your plugin derives from `self.secrets`, such as a cached client. A command that leaves every value as it was sends no event. The event follows the reload by a few seconds, but if the reload is slow, the plugin can still have its old values when it handles the event.
+
 {% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install --secret</code> and <code>--variable</code> set values while installing straight onto an instance with <code>credentials.ini</code>. Support ends on December 14, 2026; see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 #### Listing configured values
