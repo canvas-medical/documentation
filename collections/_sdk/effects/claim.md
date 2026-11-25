@@ -304,7 +304,7 @@ Posts a payment to a claim, specifying payment details and line item transaction
 
 #### Example Usage
 
-The most common use case for this method will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler.
+The most common use case for this method will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler. This route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -317,15 +317,11 @@ from canvas_sdk.effects.claim import (
 )
 from datetime import date
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
-class MyAPI(SimpleAPIRoute):
+class MyAPI(APIKeyAuthMixin, SimpleAPIRoute):
     PATH = "/routes/post-claim-payment"
-
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        # replace with desired authentication logic
-        return True
 
     def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
         return claim.line_items.active().filter(proc_code=proc_code).first()
