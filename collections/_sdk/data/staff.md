@@ -103,14 +103,18 @@ Canvas treats a staff member as able to e-prescribe when all three are true:
 
 - **Active:** `active` is `True`.
 - **Set up with Surescripts:** `spi_number` is set. This is the staff member's Surescripts prescriber ID.
-- **A prescriber role:** the `internal_code` of their [`top_clinical_role`](#staffrole) is one of your instance's prescriber roles. By default those are `MD`, `DO`, `NP`, and `PA`.
+- **A prescriber role:** the `internal_code` of their [`top_clinical_role`](#staffrole) is one of your instance's prescriber roles. The organization's [`PRESCRIBER_STAFF_ROLES` setting](/sdk/data-organization/#organizationsetting) lists them, and they default to `MD`, `DO`, `NP`, and `PA`.
 
 The same rule decides who can be [assigned a refill request](/sdk/effect-update-refill-request/#choosing-an-assignee). To list these staff members:
 
 ```python
+from canvas_sdk.v1.data.organization import Organization
 from canvas_sdk.v1.data.staff import Staff
 
-PRESCRIBER_ROLES = {"MD", "DO", "NP", "PA"}
+roles_setting = (
+    Organization.objects.first().settings.filter(name="PRESCRIBER_STAFF_ROLES").first()
+)
+PRESCRIBER_ROLES = set(roles_setting.value) if roles_setting else {"MD", "DO", "NP", "PA"}
 
 
 def can_eprescribe(staff: Staff) -> bool:
@@ -132,7 +136,7 @@ prescribers = [
 ]
 ```
 
-`prefetch_related("roles")` loads every staff member's roles in one query, since `top_clinical_role` reads them. If your instance uses different prescriber roles, change `PRESCRIBER_ROLES` to match.
+`prefetch_related("roles")` loads every staff member's roles in one query, since `top_clinical_role` reads them.
 
 ## Accessing the staff signature
 
@@ -208,7 +212,6 @@ url = staff.signature_url
 | addresses                    | [StaffAddress](#staffaddress)[]                                                                 |                                                                                                                                                     |
 | photos                       | [StaffPhoto](#staffphoto)[]                                                                     |                                                                                                                                                     |
 | roles                        | [StaffRole](#staffrole)[]                                                                       |                                                                                                                                                     |
-| settings                     | [StaffSetting](#staffsetting)[]                                                                 |                                                                                                                                                     |
 | licenses                     | [StaffLicense](#stafflicense)[]                                                                 |                                                                                                                                                     |
 | letters                      | [Letter](/sdk/data-letter/#letter)[]                                                            |                                                                                                                                                     |
 | interventions                | [Intervention](/sdk/data-campaign/#intervention)[]                                              |                                                                                                                                                     |
@@ -384,31 +387,6 @@ for metadata in staff.metadata.all():
 `PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
 one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
 to upsert it from a plugin.
-
-### StaffSetting
-
-| Field Name | Type            |
-| ---------- | --------------- |
-| dbid       | Integer         |
-| created    | DateTime        |
-| modified   | DateTime        |
-| staff      | [Staff](#staff) |
-| name       | String          |
-| value      | JSON            |
-
-A staff member's settings, each with a `name` and a JSON `value`. `name` is one of `conditionDisplayFilters`, `conditionDisplaySortValues`, `vitalsDisplay`, or `labAccounts`. The `labAccounts` value maps each lab account key to its account number, for example `{"labAccountCanvasMock": {"accountNumber": "0123456789"}}`.
-
-```python
-from canvas_sdk.v1.data.staff import Staff
-
-staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
-lab_accounts = staff.settings.filter(name="labAccounts").first()
-
-if lab_accounts:
-    account_numbers = {
-        key: account.get("accountNumber") for key, account in lab_accounts.value.items()
-    }
-```
 
 ## Enumeration types
 
