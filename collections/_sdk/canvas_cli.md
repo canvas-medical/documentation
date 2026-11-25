@@ -833,21 +833,21 @@ A live follow keeps printing until you press Ctrl+C. When its connection drops a
 
 - **Detecting a dead connection:** the CLI pings the log stream every 30 seconds, so a connection that stops answering ends within about 40 seconds and then reconnects.
 - **Waiting between attempts:** before each reconnect, `canvas logs` prints `[notice] Reconnecting to the log stream in <seconds>s.` to stderr. The wait starts near 1 second and doubles after each attempt, up to 60 seconds. After a stream that stayed open for at least 60 seconds, the wait starts over near 1 second.
-- **Retrying failures:** when a reconnect fails because Console is restarting or unreachable, or Canvas Platform can't be reached for a new token, `canvas logs` keeps retrying. When Console refuses the token on a reconnect, `canvas logs` quotes Console's answer and exits with status 1.
+- **Retrying failures:** when a reconnect fails because Console is restarting or unreachable, or Canvas Platform can't be reached or answers with a server error (5xx) when the CLI asks it for a new log token, `canvas logs` keeps retrying. When Console refuses the token on a reconnect, `canvas logs` quotes Console's answer and exits with status 1.
 - **Using `credentials.ini`:** the CLI reconnects with the same `credentials.ini` token. When Console ends the stream because that token is no longer active, `canvas logs` stops following and exits.
 
 The live stream can't replay the lines Console sent while the CLI was disconnected, so `canvas logs` fetches them from history. About 10 seconds after the stream resumes, it prints a notice to stderr, then prints the missed lines to stdout, oldest first and formatted like history output, with the live follow's `--plugin` filters applied:
 
 ```console
-[notice] Printing the 3 lines sent while the log stream was down, 2026-11-24T03:12:08+00:00 to 2026-11-24T03:12:42+00:00.
+[notice] Printing the 3 lines sent while the log stream was down, 2026-11-24T03:12:03+00:00 to 2026-11-24T03:12:46+00:00.
 ```
 
-The window starts when the dropped stream last heard from Console and ends a second after the stream resumed, so it can repeat a few lines the live follow already printed. Live lines that arrive meanwhile print after the block, not inside it.
+The window starts 5 seconds before the dropped stream last heard from Console and ends 5 seconds after the stream resumed. The margins cover the moment the new stream takes to start delivering lines and any clock difference between your machine and the instance, so the block can repeat a few lines the live follow already printed. Live lines that arrive meanwhile print after the block, not inside it.
 
 When the history fetch fails, `canvas logs` keeps following and prints a notice with a `canvas logs --no-follow` command that prints the missed lines:
 
 ```console
-[notice] The log stream dropped after 2026-11-24T03:12:08+00:00 and resumed at 2026-11-24T03:12:41+00:00. To print the lines sent in between, run: canvas logs --host my-instance --start 2026-11-24T03:12:08+00:00 --end 2026-11-24T03:12:42+00:00 --no-follow --all
+[notice] The log stream dropped after 2026-11-24T03:12:03+00:00 and resumed at 2026-11-24T03:12:41+00:00. To print the lines sent in between, run: canvas logs --host my-instance --start 2026-11-24T03:12:03+00:00 --end 2026-11-24T03:12:46+00:00 --no-follow --all
 ```
 
 Every notice the reconnect prints starts with `[notice]`, so a script that reads `canvas logs` output can skip those lines.
