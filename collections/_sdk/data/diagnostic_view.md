@@ -29,6 +29,30 @@ from canvas_sdk.v1.data import DiagnosticView
 views = DiagnosticView.objects.all()
 ```
 
+## The codes a view shows
+
+Each lab test or questionnaire score in a view is a `DiagnosticViewElement`, available through the view's `elements` attribute. `data_type` says whether the element reads a lab value or a questionnaire score, and `system` and `code` identify what it reads. Sort by `ordering` to get the elements in the order the view shows them:
+
+```python
+from canvas_sdk.v1.data import DiagnosticView
+from logger import log
+
+view = DiagnosticView.objects.get(id="dca3a3c5-0a8e-4f7b-9c6a-1b9bf3a6e5e0")
+
+for element in view.elements.order_by("ordering"):
+    log.info(f"{element.name}: {element.system} {element.code} ({element.units})")
+```
+
+To find the views that show a given code, filter through the elements:
+
+```python
+from canvas_sdk.v1.data import DiagnosticView
+
+a1c_views = DiagnosticView.objects.filter(
+    elements__system="loinc", elements__code="4548-4"
+).distinct()
+```
+
 ## Filtering
 
 Diagnostic views can be filtered by any attribute that exists on the model.
@@ -87,3 +111,39 @@ def compute():
 | name       | String (up to 100 characters)                            |
 | tags       | String (up to 500 characters; free-text search terms)    |
 | originator | [CanvasUser](/sdk/data-canvasuser)                       |
+| elements   | [DiagnosticViewElement](#diagnosticviewelement)[]        |
+
+### DiagnosticViewElement
+
+| Field Name | Type                                                                 |
+|------------|----------------------------------------------------------------------|
+| dbid       | Integer                                                              |
+| created    | DateTime                                                             |
+| modified   | DateTime                                                             |
+| view       | [DiagnosticView](#diagnosticview)                                    |
+| data_type  | [DiagnosticViewElementDataType](#diagnosticviewelementdatatype)      |
+| system     | [DiagnosticViewElementCodingSystem](#diagnosticviewelementcodingsystem) |
+| code       | String (up to 100 characters)                                        |
+| name       | String (up to 200 characters)                                        |
+| units      | String (up to 30 characters; empty when not set)                     |
+| ordering   | Integer (the element's position in the view)                         |
+
+## Enumeration types
+
+### DiagnosticViewElementDataType
+
+| Value              | Label               |
+|--------------------|---------------------|
+| LabValue           | lab value           |
+| QuestionnaireScore | questionnaire score |
+
+### DiagnosticViewElementCodingSystem
+
+| Value    | Label    |
+|----------|----------|
+| loinc    | loinc    |
+| snomed   | snomed   |
+| icd-10   | icd-10   |
+| cpt      | cpt      |
+| canvas   | canvas   |
+| internal | internal |

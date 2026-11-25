@@ -99,6 +99,7 @@ On an instance in the [revamped note beta program](/product-updates/note-revamp/
 | linked_dme_orders            | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                         |
 | linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
 | linked_imaging_orders        | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                             |
+| imaging_orders               | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                             |
 | linked_interviews            | [Interview](/sdk/data-questionnaire/#interview)[]                             |
 | linked_lab_orders            | [LabOrder](/sdk/data-labs/#laborder)[]                                        |
 | linked_prescriptions         | [Prescription](/sdk/data-prescription/#prescription)[]                        |

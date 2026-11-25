@@ -60,6 +60,10 @@ class MySectionHandler(PatientChartSummaryCustomSectionHandler):
 - **`handle()`**
   Called when Canvas requests the content for this section. Must return a list containing a single [`PatientChartSummaryCustomSection`](/sdk/patient-chart-summary-custom-section-effect/) effect.
 
+### Section height
+
+Each section starts 200 pixels tall. To fit the section to its content, have the section's HTML send a `RESIZE` message with its height. See [Frame height](/sdk/patient-chart-summary-custom-section-effect/#frame-height).
+
 ## Configuring Chart Summary Sections
 
 A custom section handler alone is not enough — the section must also be included in the chart summary layout. Use `PatientChartSummaryConfiguration` to declare which sections appear in the chart summary and in what order. For the full list of available built-in sections, see [Patient Summary layout effects](/sdk/layout-effect/#patient-summary).
