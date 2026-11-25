@@ -117,7 +117,7 @@ from canvas_sdk.clients.llms.structures.settings import (
 )
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 from canvas_sdk.handlers.simple_api.api import FileFormPart, StringFormPart
 from llm_manip.constants.secrets import Secrets
 
@@ -137,17 +137,17 @@ class LlmResponse(BaseModelLlmJson):
     result: Result | None
 
 
-class LlmManip(SimpleAPI):
-    """Simple API handler for LLM-based image analysis and chat operations."""
+class LlmManip(StaffSessionAuthMixin, SimpleAPI):
+    """Simple API handler for LLM-based image analysis and chat operations.
+
+    Only signed-in staff can call these routes; the app's same-origin requests already carry
+    the staff session.
+    """
 
     PREFIX = None
     LLM_ANTHROPIC = 0
     LLM_GOOGLE = 1
     LLM_OPENAI = 2
-
-    def authenticate(self, credentials: Credentials) -> bool:
-        """Authenticate API requests."""
-        return True
 
     def _llm_client(self, provider: int) -> LlmApi:
         """Create and configure a LLM client with credentials from secrets."""

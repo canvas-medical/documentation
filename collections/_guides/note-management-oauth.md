@@ -210,14 +210,17 @@ from canvas_sdk.v1.data import Note as NoteModel
 
 
 class AppApi(SimpleAPI):
-    """API handler for serving the note management application."""
+    """API handler for serving the note management application's page.
+
+    The page itself is public: it holds no patient data, and the OAuth flow inside it signs the
+    user in. Every route that returns or changes data lives on ``NoteApi``.
+    """
 
     PREFIX = ""
+    PUBLIC_ACCESS = True
 
     def authenticate(self, credentials: Credentials) -> bool:
-        """Allow access without authentication.
-        The OAuth flow will handle authentication within the app.
-        """
+        """Serve the page to anyone; it carries no data."""
         return True
 
     @api.get("/app")

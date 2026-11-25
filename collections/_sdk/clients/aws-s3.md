@@ -287,14 +287,11 @@ from http import HTTPStatus
 from canvas_sdk.clients.aws import S3, Credentials
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials as APICredentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 
 
-class S3Handler(SimpleAPI):
+class S3Handler(StaffSessionAuthMixin, SimpleAPI):
     """Simple API handler for S3 operations."""
-
-    def authenticate(self, credentials: APICredentials) -> bool:
-        return True
 
     def _s3_client(self) -> S3:
         """Create S3 client from plugin secrets."""

@@ -640,7 +640,7 @@ from canvas_sdk.clients.llms.structures import BaseModelLlmJson, FileContent, Ll
 from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 from canvas_sdk.handlers.simple_api.api import FileFormPart, StringFormPart
 
 
@@ -651,11 +651,8 @@ class AnimalCount(BaseModelLlmJson):
     total: int = Field(description="Total number of animals")
 
 
-class LlmHandler(SimpleAPI):
+class LlmHandler(StaffSessionAuthMixin, SimpleAPI):
     """Simple API handler for LLM operations."""
-
-    def authenticate(self, credentials: Credentials) -> bool:
-        return True
 
     def _llm_client(self) -> LlmOpenai:
         """Create LLM client from plugin secrets."""

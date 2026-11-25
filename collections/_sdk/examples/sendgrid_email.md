@@ -37,6 +37,10 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
       {
         "class": "email_sender.handlers.email_manip:EmailManip",
         "description": "Emails with Sendgrid"
+      },
+      {
+        "class": "email_sender.handlers.email_manip:SendGridCallbacks",
+        "description": "Receives SendGrid's inbound email and event webhooks"
       }
     ],
     "applications": [
@@ -71,13 +75,14 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
 
 **Purpose**
 
-This code defines a SimpleAPI handler that exposes REST endpoints for managing email operations via the Canvas SDK's SendGrid client.
+This code defines two SimpleAPI handlers that expose REST endpoints for managing email operations via the Canvas SDK's SendGrid client.
 
 **Class Overview**
 
-- The main class, `EmailManip`, extends `SimpleAPI`.
+- The main class, `EmailManip`, extends `SimpleAPI` and uses `StaffSessionAuthMixin`, so only signed-in staff can call its routes. The app's requests from the chart already carry the staff session.
 - It creates a SendGrid `EmailClient` using an API key stored in plugin secrets.
 - It uses the plugin cache system for storing webhook callback data.
+- `SendGridCallbacks` holds the two `POST` routes that SendGrid calls, which arrive without a Canvas session. They store what SendGrid sends, and `EmailManip` reads it back.
 
 **Main Workflow**
 
@@ -88,10 +93,13 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
 - `GET /inbound_webhook` — Gets the current inbound webhook configuration status.
 - `POST /outbound_webhook` — Enables/disables the SendGrid outbound event webhook.
 - `GET /outbound_webhook` — Gets the current outbound webhook configuration status.
-- `POST /inbound_email` — Receives and caches parsed inbound emails from SendGrid.
 - `GET /inbound_email` — Retrieves the most recent inbound email from cache.
-- `POST /outbound_email_status` — Receives and caches outbound email status events.
 - `GET /outbound_email_status` — Retrieves the most recent outbound status events from cache.
+
+`SendGridCallbacks` routes:
+
+- `POST /inbound_email` — Receives and caches parsed inbound emails from SendGrid.
+- `POST /outbound_email_status` — Receives and caches outbound email status events.
 
 **SendGrid Client Integration**
 
@@ -128,18 +136,18 @@ from canvas_sdk.clients.sendgrid.structures import (
 )
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, StaffSessionAuthMixin, api
 from logger import log
 
 
-class EmailManip(SimpleAPI):
-    """API handler for SendGrid email operations including sending, webhooks, and logging."""
+class EmailManip(StaffSessionAuthMixin, SimpleAPI):
+    """API handler for SendGrid email operations including sending, webhooks, and logging.
+
+    Only signed-in staff can call these routes; the app's same-origin requests already carry
+    the staff session. SendGrid's own callbacks are on ``SendGridCallbacks``.
+    """
 
     PREFIX = None
-
-    def authenticate(self, credentials: Credentials) -> bool:
-        """Authenticate the API request. Always returns True (no authentication required)."""
-        return True
 
     def _sendgrid_client(self) -> EmailClient:
         """Create and return a configured SendGrid email client."""
@@ -403,14 +411,6 @@ class EmailManip(SimpleAPI):
             )
         ]
 
-    @api.post("/outbound_email_status")
-    def outbound_status_save(self) -> list[Response | Effect]:
-        """Receive and cache outbound email status events from SendGrid webhook."""
-        events = [EmailEvent.from_dict(item) for item in self.request.json()]
-        self.cache_save("outbound_email_status", [e.to_dict() for e in events])
-        log.info(f"outbound status received:{len(events)}")
-        return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
-
     @api.get("/inbound_email")
     def last_inbound_email(self) -> list[Response | Effect]:
         """Retrieve the most recent inbound email from cache."""
@@ -420,6 +420,40 @@ class EmailManip(SimpleAPI):
                 status_code=HTTPStatus(HTTPStatus.OK),
             )
         ]
+
+    @classmethod
+    def cache_save(cls, key: str, payload: list) -> None:
+        """Store a payload in the plugin cache under the given key."""
+        get_cache().set(key, payload)
+
+    @classmethod
+    def cache_retrieve(cls, key: str) -> list:
+        """Retrieve a cached payload by key, returning an empty list if not found."""
+        return get_cache().get(key) or []
+
+
+class SendGridCallbacks(SimpleAPI):
+    """The two routes SendGrid itself posts to, which can't carry a Canvas session.
+
+    They only store what SendGrid sends; reading it back goes through ``EmailManip``, which
+    requires a staff session. A production plugin should also verify SendGrid's signed event
+    webhook before storing anything.
+    """
+
+    PREFIX = None
+    PUBLIC_ACCESS = True
+
+    def authenticate(self, credentials: Credentials) -> bool:
+        """Accept SendGrid's callbacks, which arrive without a Canvas session."""
+        return True
+
+    @api.post("/outbound_email_status")
+    def outbound_status_save(self) -> list[Response | Effect]:
+        """Receive and cache outbound email status events from SendGrid webhook."""
+        events = [EmailEvent.from_dict(item) for item in self.request.json()]
+        EmailManip.cache_save("outbound_email_status", [e.to_dict() for e in events])
+        log.info(f"outbound status received:{len(events)}")
+        return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
 
     @api.post("/inbound_email")
     def inbound_email_save(self) -> list[Response | Effect]:
@@ -443,19 +477,9 @@ class EmailManip(SimpleAPI):
                     message[key] = str(value)
 
         parsed = ParsedEmail.from_dict(message)
-        self.cache_save("inbound_treatment", [parsed.to_dict()])
+        EmailManip.cache_save("inbound_treatment", [parsed.to_dict()])
         log.info(f"inbound email received from {parsed.email_from} to {parsed.email_to}")
         return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
-
-    @classmethod
-    def cache_save(cls, key: str, payload: list) -> None:
-        """Store a payload in the plugin cache under the given key."""
-        get_cache().set(key, payload)
-
-    @classmethod
-    def cache_retrieve(cls, key: str) -> list:
-        """Retrieve a cached payload by key, returning an empty list if not found."""
-        return get_cache().get(key) or []
 ```
 
 ### email_form_app.py
