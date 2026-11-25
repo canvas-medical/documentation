@@ -234,8 +234,11 @@ for metadata in appointment_metadata:
 
 ### AppointmentReminder
 
+Unlike most models, `dbid` is a UUID rather than an integer. It holds the same value as `id`.
+
 | Field Name   | Type                                                    |
 |--------------|---------------------------------------------------------|
+| dbid         | UUID                                                    |
 | id           | UUID                                                    |
 | created      | DateTime                                                |
 | modified     | DateTime                                                |
