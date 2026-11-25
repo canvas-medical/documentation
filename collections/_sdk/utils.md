@@ -20,7 +20,7 @@ http = Http()
 | `client_cert` | _string_ | `false`  | A PEM client certificate to present to `base_url` for mutual TLS. Requires `client_key`.          |
 | `client_key`  | _string_ | `false`  | The unencrypted PEM private key for `client_cert`. Requires `client_cert`.                        |
 
-With `base_url`, pass each method a path instead of a full URL. End `base_url` with `/` and leave the leading `/` off the path, so the path joins under the base URL rather than replacing its path.
+With `base_url`, pass each method a path instead of a full URL. End `base_url` with `/` and leave the leading `/` off the path. A path with a leading `/`, or a `base_url` without a trailing `/`, resolves outside the base URL, and the request raises `ValueError`.
 
 ### Presenting a client certificate
 
