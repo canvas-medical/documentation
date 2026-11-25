@@ -63,9 +63,14 @@ runs:
         sleep 20
         deadline=$((SECONDS + 1800))
         while :; do
-          state=$(gh pr view "$RELEASE_NAME" --json mergeStateStatus --jq .mergeStateStatus)
+          # Read the state and the head it describes together, so the merge step can refuse
+          # any commit pushed after the checks passed.
+          read -r state head_sha < <(gh pr view "$RELEASE_NAME" --json mergeStateStatus,headRefOid --jq '"\(.mergeStateStatus) \(.headRefOid)"')
           case "$state" in
-            CLEAN|UNSTABLE|HAS_HOOKS) echo "Release PR is ready to merge ($state)."; exit 0 ;;
+            CLEAN|UNSTABLE|HAS_HOOKS)
+              echo "Release PR is ready to merge ($state) at $head_sha."
+              echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+              exit 0 ;;
             DIRTY) echo "::error::$RELEASE_NAME conflicts with main."; exit 1 ;;
           esac
           # gh pr checks exits non-zero while checks are pending, so read its output only.
@@ -85,6 +90,8 @@ runs:
     # after the PR, once the step above has seen its required checks pass. main requires a
     # merge queue, and a queue entry made with the workflow's own GITHUB_TOKEN starts no
     # merge_group checks, so the App on main's bypass list merges it directly with --admin.
+    # --admin skips the ruleset's checks, so --match-head-commit pins the merge to the head
+    # the step above saw pass, and a push after that fails the merge instead of landing.
     - name: squash-merge the release PR
       id: merge-release-branch
       shell: bash
@@ -93,8 +100,10 @@ runs:
         GH_REPO: ${{ github.repository }}
         RELEASE_NAME: ${{ inputs.release_name }}
         DRY_RUN: ${{ inputs.dry_run }}
+        HEAD_SHA: ${{ steps.wait-for-checks.outputs.head_sha }}
       run: |
-        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus
+        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus,headRefOid
         if [ "$DRY_RUN" != "true" ]; then
-          gh pr merge "$RELEASE_NAME" --squash --admin
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::No checked head commit recorded for $RELEASE_NAME."; exit 1; }
+          gh pr merge "$RELEASE_NAME" --squash --admin --match-head-commit "$HEAD_SHA"
         fi
