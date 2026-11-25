@@ -38,6 +38,7 @@ Represents an individual message record.
 | `note`      | [Note](/sdk/data-note)                    | Associated note (if any) for contextual linkage. May be null. `note.patient` is the patient whose chart the message is filed on. |
 | `read`      | `DateTime`                                | Timestamp when the recipient read the message. Null if unread. |
 | `team`      | [Team](/sdk/data-team/#team)              | The team the message is assigned to. Null if unassigned. See [Assigning a message to a team](/sdk/effect-messages/#assigning-a-message-to-a-team). |
+| `template`  | [LetterLanguageTemplate](/sdk/data-letter/#letterlanguagetemplate) | The letter template the message was written from. Null if it wasn't written from a template. |
 | `transmissions` | QuerySet[[MessageTransmission](#messagetransmission)] | The delivery transmissions associated with this message.   |
 | `message`   | QuerySet[[MessageAttachment](#messageattachment)] | The file attachments associated with this message.             |
 

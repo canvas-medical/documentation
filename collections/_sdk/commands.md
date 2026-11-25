@@ -462,7 +462,7 @@ and whether it is surgical.
 |:--------|:------------|
 | [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
-| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, you are not assessing it, and the patient's chart doesn't have its code yet. For a code already on the chart, use Assess. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
 | [Diagnose](#diagnose) | Still available for a new active condition you are assessing for the first time, but planned for retirement in a future release. Use Assess with `icd10_code` instead. |
 
@@ -521,6 +521,29 @@ To answer a refill request a pharmacy sent, use [ApproveRefill](#approverefill) 
 [DenyRefill](#denyrefill). A plugin starts the response in a note, and the provider sends it to the
 pharmacy from the command.
 
+## Linked item URNs
+
+Imaging Order, Refer, Task, and the review commands take `linked_items_urns`, the records to link to the command, such as a note or a report. These are the same items staff pick in the command's **Linked items** field.
+
+Canvas identifies a linked record by a URN: the base64 encoding of `<model>:<content type dbid>:<record dbid>`, where `<model>` and `<content type dbid>` come from the record's [ContentType](/sdk/data-content-type/). Resolve the content type at runtime from its stable `app_label` and `model`, never a hardcoded `dbid`, which differs between instances:
+
+```python
+import base64
+
+from canvas_sdk.v1.data import ContentType, Note
+
+
+def linked_item_urn(record, app_label: str, model: str) -> str:
+    """Build the URN Canvas uses to link a record to a command."""
+    content_type = ContentType.objects.get(app_label=app_label, model=model)
+    token = f"{content_type.model}:{content_type.dbid}:{record.dbid}"
+    return base64.b64encode(token.encode("ascii")).decode("ascii")
+
+
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+note_urn = linked_item_urn(note, app_label="api", model="note")
+```
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -532,13 +555,32 @@ the note's History section, without opening an assessment for it. Reach for it w
 diagnosed previously and is still active. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess and MedicalHistory.
 
+AddCondition records a condition only when the patient's chart doesn't already have its ICD-10 code.
+For a code that's already on the chart, active or resolved, use [Assess](#assess) with `icd10_code`,
+which reuses that condition and makes a resolved one active again. Codes match regardless of dots
+and case, so `M54.50` and `M5450` name the same condition, and surgical history entries aren't
+checked. A staged AddCondition with a charted code shows
+`This condition is already on the patient's chart. Use Assess to update it, including reactivating a resolved condition.`,
+and committing it records nothing. When a plugin commits one, with `commit()` or by passing
+`commit=True` to `originate()`, the command stays staged in the note and the plugin gets no error.
+
+The command's **Category Type** field is required and defaults to Problem List Item, so the condition
+is recorded as a problem list item unless a clinician sets it to Health Concern. Clinicians can also
+pick an optional **Category Domain**, or clear it to record no domain.
+
+Plugins can read the choices in the command's data as `category_type`, which is `problem-list-item`
+or `health-concern`, and `category_domain`, which is `sdoh`, `functional-status`,
+`disability-status`, or `cognitive-status`, and is empty when no domain is set.
+
+{% include alert.html type="info" content="<code>AddConditionCommand</code> doesn't have parameters for the category type or domain yet, so a plugin's AddCondition records a problem list item with no domain. A future release will add parameters that let plugins set both." %}
+
 **Command-specific parameters**:
 
 | Name                        | Type     | Required to commit | Description                                                |
 |:----------------------------|:---------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `background`                | _string_ | `false`  | Background information about the condition.                |
-| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
 
 **Example**:
@@ -607,7 +649,7 @@ AdjustPrescriptionCommand(
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
 | `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
-| `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the allergy was identified. Send a year or a month when that's all you know. |
 
 **Enums and Types**:
 
@@ -742,7 +784,7 @@ You can always enter a committed Assess in error, even when other assessments us
 |:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
-| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began, or only its year or month. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
 | `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, an encounter diagnosis stays one, and any other condition goes on the problem list, including a health concern and a new condition. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
@@ -1010,7 +1052,7 @@ already in a note keep working when the setting is turned on or off.
 |:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
-| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
@@ -1097,7 +1139,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | Name             | Type                     | Required to commit        | Description                                                                                                                                                                                                                |
 |:-----------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
-| `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
+| `requested_date` | _[ApproximateDate](#approximatedate)_ | `false`                   | The desired follow-up date. Send a year or a month when no specific day is wanted.                                                                                                                                                                                              |
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
@@ -1230,7 +1272,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
 | `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
-| `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
+| `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`         | _string_          | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
@@ -1292,10 +1334,10 @@ imaging_order = ImagingOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ImagingReport](/sdk/data-imaging/#imagingreport) IDs to review. Must be reports on that patient's chart.                                                                          |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).       |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -1329,7 +1371,7 @@ imaging_review = ImagingReviewCommand(
 | `cpt_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations). |
 | `cvx_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations).   |
 | `unstructured`     | _[Coding](#coding)_             | `false`* | Free-text immunization description.                                                                                 |
-| `approximate_date` | _date_               | `false`  | The approximate date when the immunization was administered.                                                        |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date when the immunization was administered. Send a year or a month when that's all you know. |
 | `comments`         | _string_             | `false`  | Additional comments about the immunization (max 255 characters).                                                    |
 
 *Must provide either both `cpt_code` and `cvx_code` together, or `unstructured` alone (cannot mix structured and unstructured).
@@ -1588,10 +1630,10 @@ LabOrderCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [LabReport](/sdk/data-labs/#labreport) IDs to review. Must be reports on that patient's chart.                                                                              |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).           |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -1626,8 +1668,8 @@ Backfills a condition the patient had in the past that is not active now. See
 | Name                     | Type      | Required to commit | Description                                                |
 |--------------------------|-----------|----------|------------------------------------------------------------|
 | `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
-| `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
-| `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
+| `approximate_start_date` | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate start date of the condition. Send a year or a month when that's all you know. |
+| `approximate_end_date`   | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate end date of the condition. Send a year or a month when that's all you know. |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
 
@@ -1816,7 +1858,7 @@ Records a past surgical procedure, coded in SNOMED. See [Recording a condition](
 | Name                    | Type                 | Required to commit | Description                                        |
 |-------------------------|----------------------|----------|----------------------------------------------------|
 | `past_surgical_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the past surgical procedure. Search with the [procedures endpoint](/sdk/utils/#get-snomedprocedures--surgical-history-procedures).      |
-| `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
+| `approximate_date`      | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate date of the surgery. Send a year or a month when that's all you know. |
 | `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
 
 **Coding Support**:
@@ -2631,7 +2673,7 @@ unstructured_rfv = ReasonForVisitCommand(
 | `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  |
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
-| `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+| `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`       | _string_                | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
@@ -2712,7 +2754,7 @@ Read the committed reference back with the [Reference](/sdk/data-reference/#refe
 
 | Name                  | Type                | Required to commit | Description                                                                                                                                   |
 |:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
-| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. It must match a diagnostic view on your instance. |
 
 **Example**:
 
@@ -2742,10 +2784,10 @@ def compute():
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [ReferralReport](/sdk/data-referral/#referralreport) IDs to review. Must be reports on that patient's chart.                                                                         |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).      |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -2967,7 +3009,7 @@ Records that a patient is stopping a medication, along with the reason. See [Rec
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
-| `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
+| `rationale`     | _string_ | `false`  | The reason for stopping the medication (max length: 1024 characters). |
 | `assessment_id` | _string_ | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
@@ -3021,7 +3063,7 @@ questionnaire = StructuredAssessmentCommand(
 | `priority`          | _[TaskPriority](#taskpriority) enum_ | `false` | Priority of the task. Must be one of [`TaskPriority`](#taskpriority). |
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
-| `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
+| `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task. See [Linked item URNs](#linked-item-urns). |
 | `assessment_id`     | _string_       | `false`  | The id (a UUID) of the [Assessment](/sdk/data-assessment/#assessment) that an Assess command in the same note records as its [anchor object](/sdk/data-command/#the-anchor-object). Any other id is rejected on `originate` and `edit`, including an id from another note, the Assessment a Diagnose command creates, and the Assessment of an Assess command entered in error. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Enums and Types**:
@@ -3056,10 +3098,20 @@ questionnaire = StructuredAssessmentCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import TaskCommand
-from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
-from canvas_sdk.v1.data.task import TaskPriority
+import base64
 from datetime import date
+
+from canvas_sdk.commands import TaskCommand
+from canvas_sdk.commands.commands.task import AssigneeType, TaskAssigner
+from canvas_sdk.v1.data import ContentType, Note
+from canvas_sdk.v1.data.task import TaskPriority
+
+# Link the visit note to the task. See "Linked item URNs" above.
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+content_type = ContentType.objects.get(app_label="api", model="note")
+note_urn = base64.b64encode(
+    f"{content_type.model}:{content_type.dbid}:{note.dbid}".encode("ascii")
+).decode("ascii")
 
 TaskCommand(
     title="Follow-up appointment scheduling",
@@ -3068,7 +3120,7 @@ TaskCommand(
     priority=TaskPriority.URGENT,
     comment="Ensure the patient schedules a follow-up within 30 days.",
     labels=["Urgent"],
-    linked_items_urns=["urn:task:123", "urn:note:456"]
+    linked_items_urns=[note_urn],
 )
 ```
 
@@ -3082,10 +3134,10 @@ TaskCommand(
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument) ids to review. Must be documents already on that patient's chart.                                                                  |
-| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient (max length: 2048 characters).                                  |
 | `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).                            |
-| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
-| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review. See [Linked item URNs](#linked-item-urns). |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review (max length: 2048 characters).                                               |
 
 **Example**:
 
@@ -3383,6 +3435,49 @@ VitalsCommand(
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
+
+### ApproximateDate
+
+`ApproximateDate` is the type of the command parameters Canvas records as approximate dates, such as the onset of a condition or the date of a past surgery. Use it when you know only the year or the month something happened: send `"2023"` rather than inventing January 1, 2023.
+
+A parameter of this type accepts:
+
+- A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. A one-digit month, as in `6/2025`, also works. These are the partial forms the chart's own date field takes.
+- Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, a Unix timestamp at midnight UTC, or a `YYYY-MM-DD` string.
+
+A year or a month stays the string you sent, and a full date becomes a `date`. Any other value raises a validation error when you create the command. For example, `"2026-09"` puts the year first, `"13/2026"` names a month that doesn't exist, and the number `2023` isn't a string.
+
+Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period.
+
+| Value sent     | Shown in the chart | Date recorded |
+|:---------------|:-------------------|:--------------|
+| `"2023"`       | 2023               | 2023-01-01    |
+| `"09/2026"`    | 09/2026            | 2026-09-01    |
+| `"6/2025"`     | 6/2025             | 2025-06-01    |
+| `"2026-09-14"` or `date(2026, 9, 14)` | 2026-09-14 | 2026-09-14 |
+
+The commands with `ApproximateDate` parameters are [AddCondition](#addcondition), [Allergy](#allergy), [Assess](#assess), [Diagnose](#diagnose), [FollowUp](#followup), [ImmunizationStatement](#immunizationstatement), [MedicalHistory](#medicalhistory), and [SurgicalHistory](#surgicalhistory). Other date parameters, such as those on Goal, Task, and Immunize, take a full `date`. To annotate your own values with this type, import it from `canvas_sdk.commands.constants`.
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import MedicalHistoryCommand, PastSurgicalHistoryCommand
+
+# Only the year of the surgery is known
+surgical_history = PastSurgicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_surgical_history="Appendectomy",
+    approximate_date="2023"
+)
+
+# The condition started in September 2026 and ended on a known day
+medical_history = MedicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_medical_history="J0390",
+    approximate_start_date="09/2026",
+    approximate_end_date="2026-10-02"
+)
+```
 
 ### ClinicalQuantity
 

@@ -51,6 +51,7 @@ You can also access `PayorSpecificCharge`s from the `ChargeDescriptionMaster` mo
 | ndc_code       | String                          |
 | transactor_charges | QuerySet[[PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)] |
 | vaccines       | QuerySet[[Vaccine](/sdk/data-vaccine/#vaccine)] |
+| authorizations | QuerySet[[Authorization](/sdk/data-authorization/#authorization)] |
 
 ## Enumeration types
 
