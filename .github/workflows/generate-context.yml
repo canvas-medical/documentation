@@ -13,6 +13,8 @@ on:
 jobs:
   generate-context:
     runs-on: ubuntu-latest
+    # The App on main's bypass list keeps its key in this environment, which only main can use.
+    environment: github-app
     steps:
       - uses: actions/create-github-app-token@v1
         id: app-token
