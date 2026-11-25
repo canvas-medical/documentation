@@ -5208,7 +5208,7 @@ Field | Type | Required | Description
           {"path": "assets/summary.png", "caption": "In the note", "alt": "An intake summary in a note"}
         ],
         "video": {
-          "url": "https://www.youtube.com/watch?v=<video-id>",
+          "sha256": "<the-mp4-sha256>",
           "poster": "assets/video-poster.png",
           "caption": "Summarizing an intake"
         },
@@ -5236,7 +5236,7 @@ Field | Type | Required | Description
 `maintainer` | string | No | Who maintains the plugin: `publisher` for the plugin's publisher, or `installer` for each organization that installs it. Defaults to `publisher`.  
 `keywords` | array | No | Free search terms, separate from Tags: lowercase letters, digits and hyphens, up to 32 characters each.  
 `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40.  
-`video` | object | No | A YouTube video that the plugin's page plays first in its screenshot row. It has a `url` (a YouTube watch, `youtu.be` or embed link over `https`, naming the video's 11-character id), a `poster` image shown until the video plays (with the same rules as a screenshot `path`), and an optional `caption` of at most 40 characters. The video must allow embedding, which is YouTube's default for an unlisted upload.  
+`video` | object | No | A video that the plugin's page plays first in its screenshot row. It has a `poster` image shown until the video plays (with the same rules as a screenshot `path`), an optional `caption` of at most 40 characters, and exactly one of `sha256` and `url` to name the video. `sha256` is the SHA-256 of an MP4 that Canvas holds on Canvas Platform, as 64 lowercase hex digits; the plugin's page plays the MP4 in the catalog's own player. `url` is a YouTube watch, `youtu.be` or embed link over `https`, naming the video's 11-character id, and the video must allow embedding, which is YouTube's default for an unlisted upload.  
 `pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. It can take an optional `markup_bps` instead: how far above the gateway's list price the plugin's tokens bill, as a whole number of basis points from `0` to `10000`, so `1500` is 15%. For a plugin Canvas publishes that declares the sensitive variable `INFERENCE_GATEWAY_KEY`, Canvas Platform issues the installing organization an inference gateway key in that variable and bills its tokens at this markup. No other unit takes a `markup_bps`. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge.  
 `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas.  
 `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase.  
@@ -32432,6 +32432,33 @@ Attribute | Type | Description | Required | Updatable
             note_effect.datetime_of_service = datetime.datetime.now()
             return [note_effect.update()]
     ```
+####  Restricting a note's supervising provider 
+The supervising provider list in the note header's provider form shows all staff, and no plugin event can filter that list or stop the change from saving. The supervising provider search events (`PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH` and the matching Refill and Adjust Prescription events) apply only to those commands' fields.
+A plugin can still enforce an approved list after the fact. [`NOTE_SUPERVISING_PROVIDER_CHANGED`](/sdk/events/#notes) fires once the new value is saved, and its context carries the previous value. When the new supervising provider isn't approved, return an update that restores the previous one if it's approved, or clears the field otherwise. The update fires the event again. This time the supervising provider is approved or empty, so the handler returns nothing. Don't restore a previous value that isn't approved: the two values would keep replacing each other.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.note import Note as NoteEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import Note, Staff
+    class RestrictSupervisingProvider(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_SUPERVISING_PROVIDER_CHANGED)
+        def compute(self) -> list[Effect]:
+            note = Note.objects.select_related("supervising_provider").get(id=self.event.target.id)
+            current = note.supervising_provider
+            if current is None or self.is_approved(current.id):
+                return []
+            previous_id = (self.event.context.get("previous") or {}).get("id")
+            note_effect = NoteEffect(instance_id=str(note.id))
+            if previous_id and self.is_approved(previous_id):
+                note_effect.supervising_provider_id = previous_id
+            else:
+                note_effect.supervising_provider_id = None
+            return [note_effect.update()]
+        def is_approved(self, staff_id: str) -> bool:
+            # Approved: anyone who is some staff member's default supervising provider.
+            return Staff.objects.filter(id=staff_id, supervising_team__isnull=False).exists()
+    ```
 ###  Fax Note 
 `FaxNoteEffect.apply() → Effect`
 Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
@@ -38598,7 +38625,7 @@ Target object | Context object
     }  
 NOTE_SUPERVISING_PROVIDER_CHANGED  
 ---  
-Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or `null` if the note previously had no supervising provider.  
+Occurs when a note's supervising provider is changed, including changes made in the note header's provider form and by a [Note update effect](/sdk/effect-notes/#update-note). The context includes the previous supervising provider's Staff ID, or `null` if the note previously had no supervising provider. The event fires after the change is saved, and the note header's supervising provider list has no search hook, so a plugin can't filter that list or block the change. To keep notes to an approved set of supervisors, respond with a Note update effect that sets the value back; see [Restricting a note's supervising provider](/sdk/effect-notes/#restricting-a-notes-supervising-provider).  
 Target object | Context object  
     "id": note_id
     "type": [Note](/sdk/data-note/)
