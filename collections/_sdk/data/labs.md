@@ -11,8 +11,10 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 
 - **`LabOrder`**: Represents a lab order placed for a patient, including order details, transmission type, and associated tests
 - **`LabTest`**: Individual tests within a lab order, tracking status from creation through processing
+- **`LabTestAOE`**: Ask-at-order-entry (AOE) answers recorded on a lab test, accessible via `LabTest.aoes`
 - **`LabReport`**: Contains the results returned from the lab, including all values and associated metadata
 - **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
+- **`LabReportProducer`**: A facility or person involved in performing the tests on a lab report, as the lab sent it, accessible via `LabReport.producers`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
 - **`DiagnosticReport`**: The `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
@@ -215,7 +217,7 @@ for test in lab_order.tests.all():
 
 ### Working with Diagnostic Reports
 
-A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), the `lab` foreign key back to the originating `LabReport`, and its code and category codings.
 
 #### Getting the DiagnosticReport(s) from a LabReport
 
@@ -240,6 +242,23 @@ diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
 lab_report = diagnostic_report.lab
 if lab_report:
     print(f"LabReport ID: {lab_report.id}")
+```
+
+#### Reading a DiagnosticReport's codings
+
+A `DiagnosticReport`'s report codes are available through its `codings` attribute, and its categories through `category_codings`:
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+from logger import log
+
+diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
+
+for coding in diagnostic_report.codings.all():
+    log.info(f"code: {coding.system} {coding.code} {coding.display}")
+
+for category in diagnostic_report.category_codings.all():
+    log.info(f"category: {category.system} {category.code} {category.display}")
 ```
 
 #### Filtering DiagnosticReports by patient
@@ -392,6 +411,27 @@ committed_orders = LabOrder.objects.committed()
 committed_order_reasons = LabOrderReason.objects.committed()
 ```
 
+### Ask-at-order-entry answers
+
+Some lab tests require answers to ask-at-order-entry (AOE) questions when they're ordered. Each answer is a [LabTestAOE](#labtestaoe) record on the test. The answer is held in `boolean_value`, `date_value`, or `text_value`, depending on its `aoe_type`, one of the [LabTestAOEAnswerType](#labtestaoeanswertype) values. A date answer that couldn't be parsed is kept in `text_value`:
+
+```python
+from canvas_sdk.v1.data.lab import LabOrder
+from logger import log
+
+lab_order = LabOrder.objects.get(id="9e4c0c35-4b8c-4f6b-9a0c-3f0b6d1c2a71")
+
+for test in lab_order.tests.prefetch_related("aoes"):
+    for aoe in test.aoes.all():
+        if aoe.aoe_type == "boolean":
+            answer = aoe.boolean_value
+        elif aoe.aoe_type == "date":
+            answer = aoe.date_value or aoe.text_value
+        else:
+            answer = aoe.text_value
+        log.info(f"{test.ontology_test_name} {aoe.code} ({aoe.display}): {answer}")
+```
+
 <!-- source: discussion #472 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
 ### POC (point-of-care) Lab Test results
@@ -406,6 +446,41 @@ lab_report = command.anchor_object
 ```
 
 To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
+
+### Specimens and performing labs
+
+A lab order's collected specimens are [LabOrderSpecimen](#laborderspecimen) records in `specimens`. An [Observation](/sdk/data-observation/#observation) recorded for a specimen points to it through `specimen`.
+
+When a lab result names the lab that performed a value, the [LabValue](#labvalue) points to a [LabValuePerformer](#labvalueperformer) through `performer`. The values on one report that were performed at the same lab share a performer.
+
+```python
+from canvas_sdk.v1.data import LabOrder, LabReport
+
+order = LabOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+specimens = order.specimens.filter(deleted=False)
+
+report = LabReport.objects.get(id="f0e1d2c3-b4a5-4968-8776-655443322110")
+for value in report.values.select_related("performer"):
+    performing_lab = value.performer.name if value.performer else None
+```
+
+## Delegations
+
+When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a lab report are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import LabReport
+
+lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
+
+# The full delegation history, oldest first.
+history = lab_report.delegations
+
+# The active delegation, or None when no delegation is in effect.
+current = lab_report.active_delegation
+```
+
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 ## The document reference
 
@@ -428,6 +503,36 @@ url = document.document_url if document else None
 ```
 
 {% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that has not been reviewed yet has no document reference, so handle <code>None</code>." %}
+
+## The latest annotated version
+
+When staff annotate or sign a lab report in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. The [document reference](#the-document-reference) keeps its stored file when the report is annotated, so look for an annotation first and fall back to the document reference when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the report's `dbid`. Annotations made in Data Integration before the report was filed are linked to the report when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, DocumentReference, LabReport
+
+report = LabReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="labreport").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=report.dbid)
+    .order_by("created")
+    .last()
+)
+
+if latest:
+    url = latest.document_url
+else:
+    document = DocumentReference.objects.filter(
+        content_type=content_type, object_id=report.dbid
+    ).first()
+    url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that no one has annotated has no annotations, so handle <code>None</code>." %}
 
 ## Attributes
 
@@ -465,8 +570,11 @@ url = document.document_url if document else None
 | ordered_tests        | [LabTest](#labtest)[]                 |
 | result_tests         | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
+| producers            | [LabReportProducer](#labreportproducer)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
 | laborder_set         | [LabOrder](#laborder)[]               |
+| delegations          | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first) |
+| active_delegation    | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### LabReportRemark
 
@@ -477,6 +585,20 @@ url = document.document_url if document else None
 | modified   | DateTime                |
 | report     | [LabReport](#labreport) |
 | comment    | String                  |
+
+### LabReportProducer
+
+A facility or person involved in performing the tests on a lab report. The name and address are free text, as the lab sent them.
+
+| Field Name           | Type                    |
+|----------------------|-------------------------|
+| id                   | UUID                    |
+| dbid                 | Integer                 |
+| created              | DateTime                |
+| modified             | DateTime                |
+| report               | [LabReport](#labreport) |
+| unstructured_name    | String                  |
+| unstructured_address | String                  |
 
 ### DiagnosticReport
 
@@ -491,6 +613,36 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | status     | [DiagnosticReportStatus](#diagnosticreportstatus)     |
 | subject    | [Patient](/sdk/data-patient/#patient)                 |
 | lab        | [LabReport](#labreport)                               |
+| codings    | [DiagnosticReportCodeCoding](#diagnosticreportcodecoding)[] |
+| category_codings | [DiagnosticReportCategoryCoding](#diagnosticreportcategorycoding)[] |
+
+### DiagnosticReportCodeCoding
+
+| Field Name        | Type                                  |
+|-------------------|---------------------------------------|
+| dbid              | Integer                               |
+| created           | DateTime                              |
+| modified          | DateTime                              |
+| system            | String                                |
+| version           | String                                |
+| code              | String                                |
+| display           | String                                |
+| user_selected     | Boolean                               |
+| diagnostic_report | [DiagnosticReport](#diagnosticreport) |
+
+### DiagnosticReportCategoryCoding
+
+| Field Name        | Type                                  |
+|-------------------|---------------------------------------|
+| dbid              | Integer                               |
+| created           | DateTime                              |
+| modified          | DateTime                              |
+| system            | String                                |
+| version           | String                                |
+| code              | String                                |
+| display           | String                                |
+| user_selected     | Boolean                               |
+| diagnostic_report | [DiagnosticReport](#diagnosticreport) |
 
 ### LabReview
 
@@ -529,7 +681,30 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | comment            | String                              |
 | observation_status | String                              |
 | test               | [LabTest](#labtest)                 |
+| performer          | [LabValuePerformer](#labvalueperformer) (nullable) |
 | codings            | [LabValueCoding](#labvaluecoding)[] |
+
+### LabValuePerformer
+
+The lab that performed a [LabValue](#labvalue).
+
+| Field Name   | Type                    | Notes |
+|--------------|-------------------------|-------|
+| id           | UUID                    |       |
+| dbid         | Integer                 |       |
+| created      | DateTime                |       |
+| modified     | DateTime                |       |
+| name         | String                  |       |
+| ordinal      | Integer                 | The performer's position among the performers on a lab report, for display |
+| line1        | String                  |       |
+| line2        | String                  |       |
+| city         | String                  |       |
+| state_code   | String                  |       |
+| postal_code  | String                  |       |
+| contact_name | String                  |       |
+| phone        | String                  |       |
+| email        | String                  |       |
+| values       | [LabValue](#labvalue)[] | The values this lab performed |
 
 ### LabValueCoding
 
@@ -579,6 +754,32 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | reports                   | [LabReport](#labreport)[]                         |
 | laborder_set              | [LabOrder](#laborder)[]                           |
 | action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
+| specimens                 | [LabOrderSpecimen](#laborderspecimen)[]           |
+
+### LabOrderSpecimen
+
+A specimen collected for a [LabOrder](#laborder).
+
+| Field Name           | Type                                                  | Notes |
+|----------------------|-------------------------------------------------------|-------|
+| id                   | UUID                                                  |       |
+| dbid                 | Integer                                               |       |
+| created              | DateTime                                              |       |
+| modified             | DateTime                                              |       |
+| originator           | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| committer            | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| deleted              | Boolean                                               |       |
+| order                | [LabOrder](#laborder)                                 |       |
+| identifier           | String                                                | Up to two characters |
+| specimen_type        | String                                                |       |
+| quantity             | Float                                                 |       |
+| units                | String                                                |       |
+| source               | String                                                |       |
+| source_additional    | String                                                |       |
+| collection_date_time | DateTime                                              |       |
+| body_site_id         | Integer                                               | The `dbid` of the specimen's body site. Body sites have no SDK model. |
+| observations         | [Observation](/sdk/data-observation/#observation)[]   | Observations recorded for the specimen |
 
 ### LabOrderReason
 
@@ -626,6 +827,25 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | aoe_code                    | String                                    |
 | procedure_class             | String                                    |
 | values                      | [LabValue](#labvalue)[]                   |
+| aoes                        | [LabTestAOE](#labtestaoe)[]               |
+
+### LabTestAOE
+
+An ask-at-order-entry (AOE) answer on a lab test.
+
+| Field Name    | Type                                        | Description |
+|---------------|---------------------------------------------|-------------|
+| id            | UUID                                        |             |
+| dbid          | Integer                                     |             |
+| created       | DateTime                                    |             |
+| modified      | DateTime                                    |             |
+| test          | [LabTest](#labtest)                         |             |
+| code          | String                                      | The AOE question's code |
+| display       | String                                      |             |
+| aoe_type      | [LabTestAOEAnswerType](#labtestaoeanswertype) | Which field holds the answer |
+| boolean_value | Boolean                                     | The answer when `aoe_type` is `boolean` |
+| date_value    | Date                                        | The answer when `aoe_type` is `date` |
+| text_value    | String                                      | The answer for other types, or a date answer that couldn't be parsed |
 
 ## Enumeration types
 
@@ -685,6 +905,16 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | IN    | investigate |
 | SF    | screen for  |
 | UNK   | unknown     |
+
+### LabTestAOEAnswerType
+
+| Value         | Label         |
+|---------------|---------------|
+| `string`      | string        |
+| `date`        | date          |
+| `choice`      | choice        |
+| `boolean`     | boolean       |
+| `open-choice` | open-choice   |
 
 ### LabTestOrderStatus
 

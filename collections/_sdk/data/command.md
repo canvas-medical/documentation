@@ -224,6 +224,19 @@ review = UncategorizedClinicalDocumentReview.objects.get(dbid=command.anchor_obj
 
 If a command's anchor record has been deleted, `anchor_object` raises the data model's `DoesNotExist` rather than returning `None`.
 
+## Deleted and entered-in-error commands
+
+Only a staged command can be deleted. `approveChange`, `denyChange` and `adjustProtocol` commands can't be deleted at all. The note doesn't offer to delete them, and the SDK has no command class for them, so there's no `delete` effect for them either.
+
+Deleting a command, from the note or with the [`delete` effect](/sdk/commands/#delete), has two results:
+
+- The `Command` record is removed. Deleted commands are no longer returned by `Command.objects` or `note.commands`, and no record of them is kept on this model.
+- The command's anchor record is kept and marked deleted (`deleted` set to true), with its note, patient, originator and last saved content.
+
+A deleted command's anchor record isn't returned by the anchor's data model, because data models return only records that aren't marked deleted. To capture what a command contained before it was deleted, respond to its pre-delete [command lifecycle event](/sdk/events/#command-lifecycle-events) and read the command while it still exists.
+
+A committed command can't be deleted. Entering it in error keeps the `Command` record, sets `state` to `entered_in_error`, and records the user in `entered_in_error`. The command's anchor record also has `entered_in_error` set to that user. It isn't marked deleted, so the anchor's data model still returns it.
+
 ## Attributes
 
 ### Command
@@ -248,8 +261,38 @@ If a command's anchor record has been deleted, `anchor_object` raises the data m
 | anchor_object_dbid | Integer                               |
 | anchor_object      | Model (optional)                      |
 | metadata           | QuerySet[[CommandMetadata](/sdk/data-command/#commandmetadata)] |
+| edited_by          | QuerySet[[CanvasUser](/sdk/data-canvasuser)]                  |
 
 The `custom_html` field stores HTML content that is rendered alongside the command in the note. This field is optional and defaults to `None`. Use the [`set_custom_html`](/sdk/commands/#set_custom_html) method to set or clear this field on a staged command.
+
+`edited_by` holds the users who have edited the command. To find the commands a user has edited, use the `commands_edited` attribute on [CanvasUser](/sdk/data-canvasuser):
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+editors = command.edited_by.all()
+```
+
+### CommandEditedBy
+
+The join between a command and a [CanvasUser](/sdk/data-canvasuser) who edited it. Reach the editors through the command's `edited_by` attribute rather than querying this model.
+
+```python
+from canvas_sdk.v1.data import Staff
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# The staff members who edited the command
+editors = Staff.objects.filter(user__in=command.edited_by.all())
+```
+
+| Field Name | Type                                  |
+|------------|---------------------------------------|
+| dbid       | Integer                               |
+| command    | [Command](#command)                   |
+| user       | [CanvasUser](/sdk/data-canvasuser)    |
 
 ### CommandMetadata
 

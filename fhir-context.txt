@@ -73,6 +73,8 @@ If you need the pre-signed S3 URL itself — for example, to load it in an `<ifr
         const presignedUrl = response.headers['location'];
         // This URL works without auth — use it in an iframe, open in browser, etc.
         ```
+##  File type and download name 
+When a `DocumentReference` content file or a `Consent` source attachment is stored under a name that doesn't end in a recognized file extension, its pre-signed URL serves the file with its content type and a download filename that adds the matching extension. A dot inside the name doesn't count as an extension. Consent documents are served as `application/pdf`, so a consent stored under the title `Consent Form - Dr. Smith` downloads as `Consent Form - Dr. Smith.pdf`. A browser that opens one of these URLs displays or saves the file as that type.
 ##  Note on HTTP client redirect behavior 
 Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host. However, some HTTP clients do not do this, which can cause S3 to reject the request with a dual-auth error:
     ```xml
@@ -7927,7 +7929,7 @@ recipient
 array[json] required
 Message recipient.  
 Supported reference types are a single **Patient** or **Practitioner**.
-Between the sender and recipient, one must be a practitioner while the other must be a patient.
+Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson** , the recipient must be a practitioner.
 Click to view child attributes
 reference 
 string required
@@ -7938,15 +7940,16 @@ Type the reference refers to (e.g. "Patient" or "Practitioner").
 sender 
 json required
 Message sender.  
-Supported reference types are a single **Patient** or **Practitioner**.
-Between the sender and recipient, one must be a practitioner while the other must be a patient.
+Supported reference types are a single **Patient** , **Practitioner** , or **RelatedPerson**. A **RelatedPerson** sender is a family member or other representative who sent the message through [family portal access](/sdk/patient-portal/#family-portal-access). The reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, even when they also have a chart of their own.
+Between the sender and recipient, one must be a practitioner while the other must be a patient.  
+To send a message as a family member, set `sender` to the RelatedPerson their access was given from and `recipient` to a practitioner. Canvas files the message on that RelatedPerson's patient's chart, sent from the family member's own portal login.
 Click to view child attributes
 reference 
 string required
-The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`.
 type 
 string 
-Type the reference refers to (e.g. "Patient" or "Practitioner").
+Type the reference refers to (e.g. "Patient", "Practitioner", or "RelatedPerson").
 payload 
 array[json] required
 Message payload.  
@@ -7996,7 +7999,7 @@ A communication message in Canvas that was sent, received, delivered, or relayed
   - unknown 
 subject 
 json 
-Focus of the message. Always a **Patient** reference.
+Focus of the message. Always a **Patient** reference: the patient whose chart the message is filed on. For a message a family member or other representative sent through [family portal access](/sdk/patient-portal/#family-portal-access), that's the chart they sent it on, even when they have a chart of their own.
 Click to view child attributes
 reference 
 string 
@@ -8028,14 +8031,15 @@ Type the reference refers to (e.g. "Patient" or "Practitioner").
 sender 
 json 
 Message sender.  
-Supported reference types are a single **Patient** or **Practitioner**.
+Supported reference types are a single **Patient** , **Practitioner** , or **RelatedPerson**. A **RelatedPerson** sender is a family member or other representative who sent the message through [family portal access](/sdk/patient-portal/#family-portal-access). The reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, even when they also have a chart of their own.
+When Canvas can no longer name the RelatedPerson a family member's message came from, `sender` is the family member's own Patient reference if they have a chart, and is left out if they don't.
 Click to view child attributes
 reference 
 string 
-The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`.
 type 
 string 
-Type the reference refers to (e.g. "Patient" or "Practitioner").
+Type the reference refers to (e.g. "Patient", "Practitioner", or "RelatedPerson").
 payload 
 array[json] 
 Message payload.  
@@ -8057,7 +8061,7 @@ The requested resource was not found.
 get
 /Communication
 #### Communication search
-Communication search will only return messages between a practitioner and patient, not between two practitioners.  
+Communication search will only return messages between a practitioner and patient, including a family member's messages to a practitioner, not between two practitioners.  
 ### Query Parameters
 ****
 _id 
@@ -8071,7 +8075,7 @@ string
 Message recipient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
 sender 
 string 
-Message sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+Message sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. A Patient sender matches the messages that patient sent on their own chart, not ones they sent on another chart through family portal access. A RelatedPerson sender matches the messages family members sent through the access given from that RelatedPerson, including after staff removed the contact from the chart.
 ### Response Payload Attributes
 resourceType 
 string 
@@ -8116,7 +8120,7 @@ A communication message in Canvas that was sent, received, delivered, or relayed
   - unknown 
 subject 
 json 
-Focus of the message. Always a **Patient** reference.
+Focus of the message. Always a **Patient** reference: the patient whose chart the message is filed on. For a message a family member or other representative sent through [family portal access](/sdk/patient-portal/#family-portal-access), that's the chart they sent it on, even when they have a chart of their own.
 Click to view child attributes
 reference 
 string 
@@ -8148,14 +8152,15 @@ Type the reference refers to (e.g. "Patient" or "Practitioner").
 sender 
 json 
 Message sender.  
-Supported reference types are a single **Patient** or **Practitioner**.
+Supported reference types are a single **Patient** , **Practitioner** , or **RelatedPerson**. A **RelatedPerson** sender is a family member or other representative who sent the message through [family portal access](/sdk/patient-portal/#family-portal-access). The reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, even when they also have a chart of their own.
+When Canvas can no longer name the RelatedPerson a family member's message came from, `sender` is the family member's own Patient reference if they have a chart, and is left out if they don't.
 Click to view child attributes
 reference 
 string 
-The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"` or `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`.
+The reference string of the sender in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`, `"Practitioner/ed1e304acdb847148338c6b0596d93fd"`, or `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`.
 type 
 string 
-Type the reference refers to (e.g. "Patient" or "Practitioner").
+Type the reference refers to (e.g. "Patient", "Practitioner", or "RelatedPerson").
 payload 
 array[json] 
 Message payload.  
@@ -8499,6 +8504,7 @@ The request requires user authorization.
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/condition/
 ### 
+> **Warning:** The Diagnose command is planned for retirement in a future release, in favor of Assess. An active Condition created through this endpoint is recorded with a Diagnose command, or with an Assess command when your instance records Diagnose as Assess. To move off Diagnose ahead of its retirement, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to turn that on. See [Important Dates](/product-updates/important-dates/).
 A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html>  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html>
@@ -8508,9 +8514,14 @@ post
 /Condition
 #### Condition create
 Create a Condition resource.  
-This endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.  
-If `clinicalStatus` is **active** , the Condition will be added as a `Diagnose` command. If it is not **active** , the Condition will be added as a `Past Medical History` command.  
-If an `encounter` or a note ID in the `extension` is provided, the Condition will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
+If `clinicalStatus` is **active** , the Condition is added as a `Diagnose` command. If it is not **active** , the Condition is added as a `Past Medical History` command.  
+If an `encounter` or a note ID in the `extension` is provided, the Condition is added to the existing encounter (note). If it is not provided, a new data import note is created.  
+By default, this endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.  
+**Recording Diagnose as Assess**  
+As part of the rollout retiring the Diagnose command, this endpoint records conditions as described below. To use this behavior now, ahead of the rollout, [contact Canvas Support](https://canvas-medical.help.usepylon.com/). It also keeps integrations that resend conditions from adding duplicates, and it changes how plugins' Diagnose commands are recorded; see [Diagnose](/sdk/commands/#diagnose). With it on, creates work as follows:  
+**A code the patient already has:** If the patient already has an active or resolved condition with the same ICD-10 code, the request returns `422` with the ID of that condition, and nothing is written. Codes are compared ignoring dots and case. Use the existing condition instead of creating another.  
+**A new active condition:** The Condition is recorded with a committed `Assess` command in the note. The Assess narrative is the Condition's `note` text, and its onset date is `onsetDateTime`. The condition keeps the category and domain sent in `category`: `problem-list-item`, `encounter-diagnosis`, or `health-concern`, plus a domain such as `sdoh` for a problem list item or health concern. Plugins receive Assess command events for the command.  
+**A new resolved condition:** The Condition is added as a `Past Medical History` command, as it is with the setting off.
 ### Attributes
 resourceType 
 string 
@@ -8531,7 +8542,7 @@ The valueId field is used for the Note extension and will be the note's unique i
 clinicalStatus 
 json required
 The clinical status of the condition.
-If clinicalStatus is active, the Condition will be added as a Diagnose command. If it is not active, the Condition will be added as a Past Medical History command.
+If clinicalStatus is active, the Condition is added as a Diagnose command, or as an Assess command when your instance records Diagnose as Assess. If it is not active, the Condition is added as a Past Medical History command.
 Click to view child attributes
 coding 
 array[json] required
@@ -8635,7 +8646,7 @@ string
 Type the reference refers to (e.g. "Practitioner").
 note 
 array[json] 
-Additional information about the Condition. This note only appears in the Canvas UI for resolved conditions.
+Additional information about the Condition, up to 1,000 characters. This note only appears in the Canvas UI for resolved conditions. When your instance records Diagnose as Assess, the note of an active Condition becomes the Assess narrative.
 Click to view child attributes
 text 
 string 
@@ -8732,7 +8743,7 @@ Plain text representation of the concept.
 verificationStatus 
 json 
 The verification status to support the clinical status of the condition.
-A `confirmed` status corresponds to committed conditions from a Diagnose or Past Medical History command. An `entered-in-error` status means the Diagnose or Past Medical History command was entered-in-error. A `provisional` condition means it was added as an `indication` to either Image, Refer, POC Lab Test, or a Lab Order command.
+A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Diagnose. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.
 Click to view child attributes
 coding 
 array[json] 
@@ -8892,7 +8903,8 @@ put
 /Condition/{id}
 #### Condition update
 Update a Condition resource.  
-The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but out FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.
+The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but our FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.  
+When your instance records Diagnose as Assess, entering a Condition in error also enters in error the command that recorded it: the `Diagnose`, `Assess`, `Add Condition`, or `Past Medical History` command. This works only when that command is all that references the condition. If another command assesses or resolves the condition, or no such command recorded it, the request returns `422`; enter the condition in error from the patient's chart instead.
 ### Attributes
 resourceType 
 string 
@@ -9124,7 +9136,7 @@ Plain text representation of the concept.
 verificationStatus 
 json 
 The verification status to support the clinical status of the condition.
-A `confirmed` status corresponds to committed conditions from a Diagnose or Past Medical History command. An `entered-in-error` status means the Diagnose or Past Medical History command was entered-in-error. A `provisional` condition means it was added as an `indication` to either Image, Refer, POC Lab Test, or a Lab Order command.
+A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Diagnose. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.
 Click to view child attributes
 coding 
 array[json] 
@@ -14921,6 +14933,16 @@ After the user clicks **Authorize** , they are redirected to your `redirect_uri`
     ```text
     https://your-app.com/callback?code=AUTHORIZATION_CODE
     ```
+####  Skipping the prompt for a user who already approved 
+By default the authorization prompt appears on every request to `/auth/authorize/`, even for a user who approved the same application a moment ago. To skip it on repeat requests, add `approval_prompt=auto` to the authorize URL:
+    ```text
+    {YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={REDIRECT_URI}&launch={LAUNCH_CONTEXT}&approval_prompt=auto
+    ```
+With `approval_prompt=auto`, Canvas redirects straight to your `redirect_uri` with a new `code`, without showing the prompt, when all of these are true:
+  - The logged-in user already has an access token for this application (matched by `client_id`).
+  - That access token has not expired.
+  - That access token's scopes include every scope in the new request. The token carries only the scopes the user left checked on the prompt, so if the user unchecked a scope, or a fine-grained scope started unchecked, a later request for that scope shows the prompt again.
+Otherwise, Canvas shows the prompt as usual. The user still approves the first time, and sees the prompt again after their last access token for the application expires or when the request asks for a scope they haven't approved.
 ###  Step 2: Exchange the Code for Tokens 
     ```shell
     curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
@@ -19050,7 +19072,7 @@ The status of the document reference.
   - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
   - For Clinical Note documents, the status will be `current` if it is the latest PDF of the locked note. If it is an older version due to a practitioner unlocking/ammending the note, the status will be `superseded`. If the note is deleted on the patient's chart, the status will be `entered-in-error`.
   - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
-  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices. If the first three invoices in a bulk run all fail to generate, Canvas stops the run and makes the archived invoices active again, so their status returns to `current`.
 **Value Options Supported:**
   - current 
   - superseded 
@@ -19263,7 +19285,7 @@ date or datetime
 Filter by the date or specific datetime the document was created. See [Date Filtering](/api/date-filtering) for more information.
 patient 
 string 
-The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Optional: when neither `patient` nor `subject` is given, the search returns matching documents across all patients, so you can combine `category`, `type`, `date` and `status` on their own (e.g. `category=clinical-note&date=ge2026-10-01&status=current`) and page through the results with [Pagination](/api/pagination).
 status 
 string 
 The status of the document reference
@@ -19370,7 +19392,7 @@ The status of the document reference.
   - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
   - For Clinical Note documents, the status will be `current` if it is the latest PDF of the locked note. If it is an older version due to a practitioner unlocking/ammending the note, the status will be `superseded`. If the note is deleted on the patient's chart, the status will be `entered-in-error`.
   - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
-  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+  - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices. If the first three invoices in a bulk run all fail to generate, Canvas stops the run and makes the archived invoices active again, so their status returns to `current`.
 **Value Options Supported:**
   - current 
   - superseded 
@@ -21967,6 +21989,7 @@ Error Code | Description
 404 - Not Found | The requested resource doesn't exist.  
 412 - Precondition Failed | A conditional request failed because the resource has been modified since the precondition was specified.  
 422 - Unprocessable Entity | The request was syntactically correct but failed due to request semantics, database state, or a business rule.  
+504 - Gateway Timeout | Canvas didn't respond within 60 seconds. The request may still have completed. See Timeouts.  
 5XX - Server Error | Something went wrong on Canvas's end.  
 **400**
     ```json
@@ -22072,6 +22095,26 @@ Error Code | Description
         }
       ]
     }
+    ```
+##  Timeouts 
+If the FHIR API doesn't respond within 60 seconds, the proxy in front of it returns a `504 Gateway Timeout` response. This response comes from the proxy, so its body isn't an OperationOutcome and it has no `Fumage-Correlation-ID` header.
+Canvas keeps processing the request after the proxy returns the 504. A create or update that returned a 504 may have completed, and retrying it can create a duplicate record. Before you retry, search for the record, such as an Appointment search for the patient and date, and retry only if the search doesn't find it.
+##  Correlation IDs 
+Responses from the FHIR API, including error responses, have a `Fumage-Correlation-ID` header that identifies the request. Include this ID when you contact Canvas support about a failed request.
+A `504` response from the proxy has no correlation ID. To know a request's ID even when it times out, send your own: set the `Fumage-Correlation-ID` request header to a new UUID version 4 for each request, and log it with the request. The FHIR API uses that value as the request's correlation ID and returns it in the response header. If the value isn't a valid UUID version 4, the FHIR API generates a new ID instead.
+    ```python
+    import uuid
+    import requests
+    url = "https://fumage-example.canvasmedical.com/Patient/<patient ID>"
+    correlation_id = str(uuid.uuid4())
+    headers = {
+        "accept": "application/json",
+        "Authorization": "Bearer <token>",
+        "Fumage-Correlation-ID": correlation_id,
+    }
+    response = requests.get(url, headers=headers)
+    if not response.ok:
+        print(f"Request failed with status {response.status_code}. Correlation ID: {correlation_id}")
     ```
 ----- END PAGE https://docs.canvasmedical.com/api/errors/
 
@@ -25225,7 +25268,8 @@ Type the reference refers to (e.g. "Encounter").
 operator 
 json 
 The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
+The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.   
+Canvas reads this attribute on create only, and read and search responses don't include it. To find a Media you created, keep the `id` returned in the create response's `Location` header.
 Click to view child attributes
 reference 
 string 
@@ -25326,17 +25370,6 @@ The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94
 type 
 string 
 Type the reference refers to (e.g. "Encounter").
-operator 
-json 
-The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
-Click to view child attributes
-reference 
-string 
-The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
-type 
-string 
-Type the reference refers to (e.g. "Practitioner").
 content 
 json 
 Actual Media.
@@ -25454,17 +25487,6 @@ The reference string of the encounter in the format of `"Encounter/086cd6fe-2c94
 type 
 string 
 Type the reference refers to (e.g. "Encounter").
-operator 
-json 
-The person who generated the image.  
-The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
-Click to view child attributes
-reference 
-string 
-The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
-type 
-string 
-Type the reference refers to (e.g. "Practitioner").
 content 
 json 
 Actual Media.
@@ -25701,9 +25723,6 @@ The request requires user authorization.
             "encounter": {
                 "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
             },
-            "operator": {
-                "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
-            },
             "content": {
                 "contentType": "image/jpeg",
                 "url": "https://fumage-example.canvasmedical.com/Media/729e5242-bad6-4bd7-905d-9716ae262971/files/content",
@@ -25820,9 +25839,6 @@ The request requires user authorization.
                         },
                         "encounter": {
                             "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
-                        },
-                        "operator": {
-                            "reference": "Practitioner/76428138e7644ce6b7eb426fdbbf2f39"
                         },
                         "content": {
                             "contentType": "image/jpeg",
@@ -25961,7 +25977,8 @@ Search for Medication resources.
 **A Medication Search requires either a code or _text search parameter to perform.**
 _text 
 string 
-Performs a case insensitive partial search on the narrative of the Medication.
+Performs a case-insensitive partial search on the narrative of the Medication, which is the medication description. A Medication matches when every word of the search appears somewhere in its description, in any order. Commas separate words the same way spaces do.  
+A strength can be written with or without a space before the unit: `amoxicillin 500mg` and `amoxicillin 500 mg` return the same results. Numbers also match inside larger numbers, so `lisinopril 5mg` can return 25 mg strengths alongside 5 mg.
 code 
 System url and code that identifies the medication formatted like   
 `system_url|code`.  
@@ -28957,7 +28974,7 @@ Here are some Canvas specific workflows where observations will be created:
   1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)  
   2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`).   
   3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it.   
-  4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`).
+  4. Once weight and either height or pediatric body length are entered on a patient's chart, Canvas calculates one body size observation, chosen by the patient's age on the date the vitals were recorded (category coding will be `vital-signs`): Weight-for-Length Percentile for patients under 24 months, BMI for Age Percentile from 24 months up to the 20th birthday, and Body Mass Index (kg/m2) for patients 20 and older. Percentiles come from WHO growth charts under 24 months and CDC growth charts from 24 months on. If the instance has no growth chart data for the patient's sex and age or length, no percentile observation is created. This also applies to the Head Occipital-Frontal Circumference Percentile.   
   5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`).   
   6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`). Canvas lab orders are placed with a lab-specific identifier or a CPT code rather than a LOINC code, so treat the lab vendor as the source of truth for a result's LOINC code. When you create lab results through the API, prefer the vendor's specific LOINC code over a generic laboratory result code, because what is ordered can differ slightly from what the lab performs.
 **Related guides:**
@@ -29074,7 +29091,9 @@ Currently supported numeric values are
 \- body temperature  
 \- pulse rate  
 \- oxygen saturation  
-\- respiration rate A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
+\- respiration rate  
+The value must be a number greater than zero; otherwise the request is rejected with a 422 error.   
+A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
 Click to view child attributes
 value 
 number required
@@ -29087,9 +29106,9 @@ string
 Actual result.  
 This is used for vital observation that correspond with a string value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute.   
 Currently supported string values are   
-\- **note** \- this is a free text comment field in the Canvas Vital Command   
-\- **pulse rhythm** \- This is an enum in the Canvas Vital command. Values supported are **Regular** , **Irregularly Irregular** , **Regulary Irregular**. If one of these values is not provided, a 422 error will occur.   
-\- **blood pressure** \- This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command.
+\- **note** \- this is a free text comment field in the Canvas Vital Command. Maximum length is 150 characters.   
+\- **pulse rhythm** \- This is an enum in the Canvas Vital command. Values supported are **Regular** , **Irregularly Irregular** , **Regularly Irregular**. Any other value is rejected with a 422 error.   
+\- **blood pressure** \- This is a string representation of the systolic and diastolic combined in the format `"100/80"`. A trailing `mmHg` is accepted and removed; a blood pressure valueString in any other format is rejected with a 422 error.
 hasMember 
 array[json] 
 Related Observation reference(s) that belongs to the Observation group/panel.  
@@ -29275,6 +29294,7 @@ The code of the observation.
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
+  - 39156-5 (LOINC code for Body Mass Index) 
   - 59576-9 (LOINC code for BMI for Age Percentile) 
   - 77606-2 (LOINC code for Weight-for-Length Percentile) 
   - Any LOINC codes from Lab Report Values captured 
@@ -29685,6 +29705,7 @@ The code of the observation.
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
+  - 39156-5 (LOINC code for Body Mass Index) 
   - 59576-9 (LOINC code for BMI for Age Percentile) 
   - 77606-2 (LOINC code for Weight-for-Length Percentile) 
   - Any LOINC codes from Lab Report Values captured 
@@ -32309,7 +32330,8 @@ array[json]
 Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
 **us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
 **us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
-**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).   
+How a write is stored: Canvas looks up each `ncpdp-id` in its pharmacy directory and saves the pharmacy's name, address, phone, fax, and specialty type from that directory. It does not save the `name`, `phone-number`, `address`, `fax-number`, or `specialty_type` values sent in the request. A pharmacy sent without `default` is stored with `default` set to `false`. The preferred-pharmacy extensions in a create or update replace the patient's whole list. An update that sends no preferred-pharmacy extension leaves the list unchanged. If the directory doesn't find an `ncpdp-id`, that pharmacy is dropped and the request still succeeds. If none of the sent pharmacies is found, the patient's preferred pharmacies are cleared. Read the Patient back after writing to confirm what was stored.
 Click to view child attributes
 url 
 string required
@@ -32730,7 +32752,8 @@ array[json]
 Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
 **us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
 **us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
-**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).   
+How a write is stored: Canvas looks up each `ncpdp-id` in its pharmacy directory and saves the pharmacy's name, address, phone, fax, and specialty type from that directory. It does not save the `name`, `phone-number`, `address`, `fax-number`, or `specialty_type` values sent in the request. A pharmacy sent without `default` is stored with `default` set to `false`. The preferred-pharmacy extensions in a create or update replace the patient's whole list. An update that sends no preferred-pharmacy extension leaves the list unchanged. If the directory doesn't find an `ncpdp-id`, that pharmacy is dropped and the request still succeeds. If none of the sent pharmacies is found, the patient's preferred pharmacies are cleared. Read the Patient back after writing to confirm what was stored.
 Click to view child attributes
 url 
 string 
@@ -32962,7 +32985,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -33213,7 +33236,8 @@ array[json]
 Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
 **us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
 **us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
-**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).   
+How a write is stored: Canvas looks up each `ncpdp-id` in its pharmacy directory and saves the pharmacy's name, address, phone, fax, and specialty type from that directory. It does not save the `name`, `phone-number`, `address`, `fax-number`, or `specialty_type` values sent in the request. A pharmacy sent without `default` is stored with `default` set to `false`. The preferred-pharmacy extensions in a create or update replace the patient's whole list. An update that sends no preferred-pharmacy extension leaves the list unchanged. If the directory doesn't find an `ncpdp-id`, that pharmacy is dropped and the request still succeeds. If none of the sent pharmacies is found, the patient's preferred pharmacies are cleared. Read the Patient back after writing to confirm what was stored.
 Click to view child attributes
 url 
 string required
@@ -33443,7 +33467,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -33729,7 +33753,8 @@ array[json]
 Used by compound extensions whose value is itself a list of extensions. The shape of each inner entry depends on the outer `url`:   
 **us-core-race** / **us-core-ethnicity** — one or more inner extensions with `url`: `ombCategory`, `detailed`, or `text`. For `ombCategory` / `detailed`, provide a `valueCoding`. For `text`, provide a `valueString`.   
 **us-core-tribal-affiliation** — exactly one inner extension with `url`: `tribalAffiliation` and a `valueCodeableConcept` containing one or more codings (each requires `system`, `code`, and `display`).   
-**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).
+**preferred-pharmacy** — one inner extension with `url`: `ncpdp-id` is **required** ; the NCPDP number goes in `valueIdentifier.value` (must be exactly **7 digits** , left-padded with zeros). Optional inner extensions: `default` (boolean — at most one preferred pharmacy per patient may be set to `true`), `name`, `phone-number`, `address`, `fax-number`, `specialty_type` (each `valueString`).   
+How a write is stored: Canvas looks up each `ncpdp-id` in its pharmacy directory and saves the pharmacy's name, address, phone, fax, and specialty type from that directory. It does not save the `name`, `phone-number`, `address`, `fax-number`, or `specialty_type` values sent in the request. A pharmacy sent without `default` is stored with `default` set to `false`. The preferred-pharmacy extensions in a create or update replace the patient's whole list. An update that sends no preferred-pharmacy extension leaves the list unchanged. If the directory doesn't find an `ncpdp-id`, that pharmacy is dropped and the request still succeeds. If none of the sent pharmacies is found, the patient's preferred pharmacies are cleared. Read the Patient back after writing to confirm what was stored.
 Click to view child attributes
 url 
 string 
@@ -33961,7 +33986,7 @@ Contact parties (e.g., guardian, partner, friend, emergency contact) for the pat
 Click to view child attributes
 id 
 string 
-Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one.
+Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note, so writing back an earlier read doesn't restore that contact.
 relationship 
 array[json] 
 Codings describing the relationship of the contact to the patient. Codings can come from the standard `v3-RoleCode` system or from your instance's [configurable contact categories](https://help.canvasmedical.com/articles/8258338559-contact-categories), including the built-in **Emergency contact** category (`code`: `EMC`). Multiple codings can be combined on a single relationship to capture, e.g., both a familial relationship (`SPS` = spouse) and a contact-category role (`EMC` = emergency contact).
@@ -37278,8 +37303,9 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
+The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name. A username is up to 150 characters of letters, digits, and `@`, `.`, `+`, `-`, or `_`.
 valueUrl 
 string 
 Value of extension.  
@@ -37316,28 +37342,28 @@ valueCoding
 json required
 Click to view child attributes
 system 
-string 
+string required
 The system url of the coding.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string required
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
 identifier 
 array[json] 
-A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+The practitioner's NPI number. The NPI is optional, so you can create a practitioner without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.
 Click to view child attributes
 system 
 string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/us-npi 
 value 
 string 
-Practitioner's NPI number. Its value must be a 10 digit number.
+The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
 active 
 boolean 
 A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
@@ -37420,12 +37446,12 @@ array[json] required
 This component identifies the issuing authority of the Practitioner's qualification (license).
 Click to view child attributes
 system 
-string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+string required
+Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url 
 value 
-string 
+string required
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
 json 
@@ -37447,20 +37473,24 @@ json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
-string 
+string required
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
-string 
+string required
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+json required
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
-string 
-The display text of the license's short name.
+string required
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
-array[json] 
+array[json] required
+The issuing authority's short name, the state that issued the license, and whether the license is primary.  
+Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.  
+For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.  
+Mark at most one license of each license type as primary with the `license-primary` extension.
 Click to view child attributes
 url 
 string 
@@ -37518,8 +37548,8 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
 valueUrl 
 string 
 Value of extension.  
@@ -37565,7 +37595,7 @@ The system url of the coding.
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string 
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
@@ -37710,13 +37740,14 @@ string
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
 json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
 string 
-The display text of the license's short name.
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
 array[json] 
+The issuing authority's short name, the state that issued the license, and whether the license is primary.
 Click to view child attributes
 url 
 string 
@@ -37766,8 +37797,9 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
+You can't change a practitioner's username. If you send the username extension, its `valueString` must match the practitioner's current username, or the update fails with a 422 error. If you omit the username extension, the username stays the same.
 valueUrl 
 string 
 Value of extension.  
@@ -37804,28 +37836,29 @@ valueCoding
 json required
 Click to view child attributes
 system 
-string 
+string required
 The system url of the coding.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string required
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
 identifier 
 array[json] 
-A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+The practitioner's NPI number. The NPI is optional, so you can send an update without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.  
+If you omit `identifier` during an update, Canvas removes the practitioner's stored NPI. To keep the NPI, send it in every update.
 Click to view child attributes
 system 
 string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/us-npi 
 value 
 string 
-Practitioner's NPI number. Its value must be a 10 digit number.
+The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
 active 
 boolean 
 A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
@@ -37919,12 +37952,12 @@ array[json] required
 This component identifies the issuing authority of the Practitioner's qualification (license).
 Click to view child attributes
 system 
-string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+string required
+Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url 
 value 
-string 
+string required
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
 json 
@@ -37946,20 +37979,24 @@ json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
-string 
+string required
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
-string 
+string required
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+json required
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
-string 
-The display text of the license's short name.
+string required
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
-array[json] 
+array[json] required
+The issuing authority's short name, the state that issued the license, and whether the license is primary.  
+Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.  
+For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.  
+Mark at most one license of each license type as primary with the `license-primary` extension.
 Click to view child attributes
 url 
 string 
@@ -38063,8 +38100,8 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
 valueUrl 
 string 
 Value of extension.  
@@ -38110,7 +38147,7 @@ The system url of the coding.
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string 
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
@@ -38255,13 +38292,14 @@ string
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
 json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
 string 
-The display text of the license's short name.
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
 array[json] 
+The issuing authority's short name, the state that issued the license, and whether the license is primary.
 Click to view child attributes
 url 
 string 
@@ -40153,7 +40191,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40203,10 +40241,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. The agent is the record's committer, or its originator when the record has no committer. When the agent is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. When a family member or other representative acts on the patient's chart through [family portal access](/sdk/patient-portal/#family-portal-access), the reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, in the format `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, Canvas couldn't identify that committer or originator on the patient's chart, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "RelatedPerson", "Organization").
 display 
 string 
 Text alternative for the resource.
@@ -40351,7 +40389,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40401,10 +40439,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. The agent is the record's committer, or its originator when the record has no committer. When the agent is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. When a family member or other representative acts on the patient's chart through [family portal access](/sdk/patient-portal/#family-portal-access), the reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, in the format `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, Canvas couldn't identify that committer or originator on the patient's chart, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "RelatedPerson", "Organization").
 display 
 string 
 Text alternative for the resource.
@@ -43502,7 +43540,7 @@ string
 The identifier of the RelatedPerson.
 active 
 boolean 
-Whether this related person's record is in active use.
+Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note. Canvas keeps that contact for the records that refer to it, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who` or an Encounter `participant.individual`, resolve. A search by `patient` leaves it out.
 patient 
 json 
 The patient this person is related to.
@@ -43664,7 +43702,7 @@ string
 The identifier of the RelatedPerson.
 active 
 boolean 
-Whether this related person's record is in active use.
+Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access) or was listed as a participant on a note. Canvas keeps that contact for the records that refer to it, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who` or an Encounter `participant.individual`, resolve. A search by `patient` leaves it out.
 patient 
 json 
 The patient this person is related to.
@@ -46941,8 +46979,8 @@ This guide will walk you through practical steps to use HCC codings in Canvas fo
   - Annotate ICD-10 codes that are mapped to HCC categories
 By surfacing relevant data when and where it's needed, you can eliminate unnecessary steps, reduce cognitive load, and keep workflows aligned with patient needs.
 ##  Create Coding Gaps via FHIR Detected Issue 
-The [DetectedIssue FHIR resource](/api/detectedissue)) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc.
-A key use case is surfacing potential codings gaps that come from external sources.
+The [DetectedIssue FHIR resource](/api/detectedissue) can be used to surface an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, ineffective treatment frequency, procedure-condition conflict, gaps in care, etc.
+A key use case is surfacing potential coding gaps that come from external sources.
 The workflow within Canvas is centered around issues created with the `DetectedIssue.code` set to `CODINGGAP`. Although we are leveraging it in our R4 endpoint, `CODINGGAP` was introduced to the value set in R5, and can be used for surfacing conditions that may be present on historical claims but not yet diagnosed within the current year, suspect conditions, or condition data from external sources. The code should be structured as follows:
     ```json
         "code": {
@@ -47193,7 +47231,7 @@ This guide demonstrates how to build an external application that integrates wit
   5. **Save** the application
   6. Copy the **Client ID** \- you'll need this in the next step
 ###  Step 2. Deploy the Plugin 
-Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform) for the places the name appears). Then deploy it and set the Client ID:
     ```bash
     canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
     canvas config set acme__note_management_app client_id=<YOUR_CLIENT_ID> --instance <YOUR_INSTANCE>
@@ -47725,12 +47763,12 @@ Here is the payload for how to create a Vital Panel (remember to set the patient
     response = requests.post(url, json=payload, headers=headers)
     ```
 On a successful create, when the `response.status_code` equal 201. We can fetch the ID of the newly created observation in the `response.headers['location']` attribute. The value will always be in the format `{url}/{id}/_history/1`. We need to extract the `id` from the value.
-However, if the request failed it will throw an error to see what went wrong. It will also display the Correlation ID that can be given to Customer Support for help with further debugging.
+If the request fails, the code raises an exception that shows what went wrong and the request's correlation ID, which you can give to Canvas support. A request that takes longer than 60 seconds returns a `504` with no correlation ID, so the code reads the header with `response.headers.get()` and shows `None` in that case. A create that returned a `504` may still have completed, so search for the observation before you retry it. For more about timeouts and how to set your own correlation ID, see [Errors](/api/errors/#timeouts).
     ```python
     if response.status_code == 201:
         panel_id = response.headers['location'].replace(f"{url.replace('https', 'http')}/", '').replace('/_history/1', '')
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be a Data Import note placed on that patient's timeline based on the date passed in the `effectiveDateTime` attribute with an empty Vitals Command:
 ![Protocol framework](/assets/images/vitals/vital-panel-in-import-note.png)
@@ -47794,7 +47832,7 @@ Here is a payload to create a height of 69.0 inches:
     if response.status_code == 201:
         print(f"Height observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be height of `69.0 in` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/height.png)
@@ -47833,12 +47871,12 @@ Here is a payload to create a weight of 176.4 lbs:
     if response.status_code == 201:
         print(f"Weight observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be weight of `176 lbs 6.4 oz` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/weight.png)
 ####  Add Waist Circumference 
-Waist Circumference is denoted by the LOINC code `29463-7`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
+Waist Circumference is denoted by the LOINC code `56086-2`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
 Here is a payload to create a waist circumference of `98.2 cm`:
     ```python
     payload = {
@@ -47872,7 +47910,7 @@ Here is a payload to create a waist circumference of `98.2 cm`:
     if response.status_code == 201:
         print(f"Waist Circumference observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be waist circumference of `98.2 cm` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/waist-circumference.png)
@@ -47911,12 +47949,12 @@ Here is a payload to create a temperature of `98.4 °F`:
     if response.status_code == 201:
         print(f"Body Temperature observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be temperature of `98.4 °F` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/body-temperature.png)
 ####  Add Blood Pressure 
-Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command.
+Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command. A trailing `mmHg` is accepted and removed; a `valueString` in any other format is rejected with a 422 error.
 Since blood pressure is made up of two values, the payload will also define a `component` attribute list to pass the systolic (LOINC code `8480-6`) and diastolic (LOINC code `8462-4`) values. These two values are numeric, so they will have the `valueQuantity` attributes where the unit will be `mmHg`
 Here is a payload to create a Blood Pressure of `122/68`:
     ```python
@@ -47980,7 +48018,7 @@ Here is a payload to create a Blood Pressure of `122/68`:
     if response.status_code == 201:
         print(f"Blood Pressure observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be blood pressure of `122/68` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/blood-pressure.png)
@@ -48019,12 +48057,12 @@ Here is a payload to create a pulse rate of `115 bpm`:
     if response.status_code == 201:
         print(f"Pulse Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/pulse-rate.png)
 ####  Add Pulse Rhythm 
-Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regulary Irregular`. This value will be passed in the `valueString` attribute.
+Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regularly Irregular`, and rejects any other value with a 422 error. This value will be passed in the `valueString` attribute.
 Here is a payload to create a pulse rhythm of `Regular`:
     ```python
     payload = {
@@ -48055,7 +48093,7 @@ Here is a payload to create a pulse rhythm of `Regular`:
     if response.status_code == 201:
         print(f"Pulse rhythm observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be pulse rhythm of `Regular` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/pulse-rhythm.png)
@@ -48094,7 +48132,7 @@ Here is a payload to create a respiration rate of `15 bpm`:
     if response.status_code == 201:
         print(f"Respiration Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be respiration rate of `15 bpm` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/respiration-rate.png)
@@ -48138,7 +48176,7 @@ Here is a payload to create a Oxygen Saturation of `98%`:
     if response.status_code == 201:
         print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now be Oxygen Saturation of `98%` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/oxygen-saturation.png)
@@ -48174,7 +48212,7 @@ Here is a payload to create an internal Note:
     if response.status_code == 201:
         print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 Looking in the Canvas UI, there will now will be a Note added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/note.png)
@@ -48186,7 +48224,7 @@ A full Vital Panel has been completed! Let's now perform a FHIR Observation Read
     if response.status_code == 200:
         pprint(response.json())
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 The output will look like:
     ```json
@@ -48290,7 +48328,7 @@ And finally let's perform a FHIR Observation Search to see all the vital signs t
     if response.status_code == 200:
         pprint(response.json())
     else:
-        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+        raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
     ```
 The response will look like:
     ```json

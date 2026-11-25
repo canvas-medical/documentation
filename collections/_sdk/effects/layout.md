@@ -399,6 +399,8 @@ Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place
 
 Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
 
+Listing `SETTINGS` doesn't show it to a user whose role carries the permission that [removes admin console access](/guides/roles-and-permissions/#removing-admin-console-access).
+
 <br/>
 <br/>
 
@@ -434,7 +436,7 @@ Launches the modal for the user whose action triggered the handler. See [Where M
 - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
 - `PAGE`: Opens the content as a full page.
 - `NOTE`: Opens the content within a note tab (used with Note Applications).
-- `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
+- `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`, or by a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications), which adds a band to the top or bottom of the patient portal.
 
 ### Example
 

@@ -8,6 +8,11 @@ on:
       - synchronize
   workflow_dispatch:
 
+# Pull requests run code their markdown imports, so the job gets a read-only
+# token and the checkout keeps no credentials.
+permissions:
+  contents: read
+
 jobs:
   test-code:
     runs-on: ubuntu-latest
@@ -22,6 +27,8 @@ jobs:
     steps:
       - name: Checkout docs
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6

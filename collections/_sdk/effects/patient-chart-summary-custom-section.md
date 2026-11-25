@@ -31,6 +31,29 @@ Providing both fields in a pair, or neither, raises a `ValidationError`.
 | `icon`     | `str` \| `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`. | Exactly one of `icon` or `icon_url` |
 | `icon_url` | `str` \| `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.      | Exactly one of `icon` or `icon_url` |
 
+## Frame height
+
+Canvas renders each custom section in a frame that starts 200 pixels tall. To fit the frame to your content, send a `RESIZE` message with the content's height over the message channel Canvas opens with the frame. This works for both `content` and `url` sections. Send the height as a number of pixels. Canvas reads only `height`; the frame's width is fixed.
+
+After the frame loads, Canvas posts an `INIT_CHANNEL` message that carries a `MessagePort`. Send `RESIZE` messages on that port, as described in [Resizing Modals](/sdk/layout-effect/#resizing-modals). To keep the frame in step with your content, send the height once the port arrives and again whenever the content changes size:
+
+```html
+<script>
+  window.addEventListener('message', (event) => {
+    if (event.data?.type !== 'INIT_CHANNEL' || !event.ports?.[0]) {
+      return;
+    }
+
+    const port = event.ports[0];
+    const reportHeight = () =>
+      port.postMessage({ type: 'RESIZE', height: document.body.scrollHeight });
+
+    reportHeight();
+    new ResizeObserver(reportHeight).observe(document.body);
+  });
+</script>
+```
+
 ## Examples
 
 ### Inline HTML content

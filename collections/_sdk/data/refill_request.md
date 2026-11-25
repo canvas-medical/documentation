@@ -9,7 +9,9 @@ hidden: false
 
 The `RefillRequest` model represents an incoming request to refill a patient's medication — for example, a renewal request received electronically from a pharmacy. Each request carries the raw request payload in its `content` attribute, the associated patient and staff member, the medication codings that describe the requested drug (`RefillRequestCoding`), and the prescription(s) written in response.
 
-An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
+An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it — and can be marked as `ignored` to drop it from the refill queue. To reassign or ignore a request from a plugin, use the [`UpdateRefillRequest`](/sdk/effect-update-refill-request/) effect. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
+
+`patient` is the chart the request is filed on, which isn't always the chart the original prescription was written for. Canvas matches an incoming request to the original prescription's chart. If that chart has since been deactivated, Canvas files the request on the one active chart with the same name and date of birth. Canvas leaves `patient` unset when no active chart matches, when more than one matches, or when the request's name and date of birth don't match the deactivated chart. Staff then link the request to a chart manually. Check `patient` for `None` before you use it. The key of the chart Canvas matched the request to is in `content`, as described in [Message content](#message-content).
 
 ## Basic usage
 
@@ -39,6 +41,25 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 refill_requests = RefillRequest.objects.for_patient(patient_id)
 ```
 
+### Pending requests
+
+The `pending` method returns the requests in the refill queue, the ones the refill panel shows: requests that aren't ignored and have no committed response.
+
+```python
+from canvas_sdk.v1.data.refill_request import RefillRequest
+
+pending_requests = RefillRequest.objects.pending()
+```
+
+`pending` returns a queryset, so you can combine it with other filters, such as the requests for one patient:
+
+```python
+from canvas_sdk.v1.data.refill_request import RefillRequest
+
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+pending_requests = RefillRequest.objects.for_patient(patient_id).pending()
+```
+
 ## Filtering
 
 Refill requests can be filtered by any attribute that exists on the model.
@@ -52,10 +73,10 @@ Specify an attribute with `filter` to filter by that attribute:
 ```python
 from canvas_sdk.v1.data.refill_request import RefillRequest
 
-outstanding_requests = RefillRequest.objects.filter(ignored=False)
+not_ignored_requests = RefillRequest.objects.filter(ignored=False)
 ```
 
-The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the active refill worklist and is used to suppress duplicates — for example, a pharmacy re-sending a request. Requests that have already been responded to are excluded from the worklist separately, through their linked `response`. A plugin can filter on `ignored`, but setting it is not available through the data module. The example above returns the active (non-dismissed) requests.
+The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the refill queue and is used to suppress duplicates — for example, a pharmacy re-sending a request. The example above returns the requests that aren't ignored, including ones that have already been answered. Answered requests leave the queue through their linked `response`, so to get only the requests still in the queue, use [`pending`](#pending-requests). To ignore a request, use the [`UpdateRefillRequest`](/sdk/effect-update-refill-request/) effect.
 
 ## Related data
 
@@ -85,6 +106,7 @@ The `message_id` and `content` attributes carry the details of the inbound eRx m
 
 `content` is a JSON field holding the parsed inbound NCPDP SCRIPT refill-renewal request payload. It is a free-form, unstructured representation whose exact shape can vary between messages. The information typically available includes:
 
+- the patient as reported by the pharmacy (name, date of birth, gender, phone), along with `patient_key`, the key of the chart Canvas matched the request to. This key can differ from `patient` when that chart was deactivated, and it can be null when Canvas matched no chart.
 - the pharmacy (name, NCPDP ID, phone, address)
 - the prescriber as reported by the sender (name, NPI, SPI, and a sender-supplied identifier)
 - the dispensed and prescribed medication details (drug description, NDC, quantity, days supply, directions, number of refills, substitution allowance, written date, and similar)

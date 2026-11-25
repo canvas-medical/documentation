@@ -59,11 +59,17 @@ Call it from a handler as `get_access_token(self.secrets)`.
 
 ---
 
-## Capacity and eviction
+## Storage and Capacity
 
-All plugins on a Canvas instance share one cache. Each plugin reads and writes only its own keys, but every plugin's entries count toward one limit, 1,000 entries by default. A plugin that stays well under that limit on its own can still lose keys when other plugins on the instance also use the cache. When a write finds the cache over that limit, Canvas first deletes expired entries. If the cache is still over the limit, Canvas deletes about a third of the remaining entries, whichever plugin owns them.
+On a Canvas instance, the plugin cache is a table in the instance's database. Every plugin and every plugin-runner worker on the instance uses the same table. `get_cache()` prefixes each key with your plugin's name, so a plugin only reads and writes its own keys, but the table's capacity is shared by all plugins on the instance.
 
-Because a key can disappear before its TTL ends, handle a missing key as a cache miss and rebuild the value. Store data that must not be lost in [Custom Data](/sdk/custom-data/).
+- **Entry limit:** 1,000 entries for the whole instance by default, counted across all plugins.
+- **When the cache is full:** when a write finds more than 1,000 entries already in the table, expired ones included, the cache first deletes expired entries. If more than 1,000 remain, it deletes about a third of the remaining entries, the ones whose keys sort first alphabetically. That can include entries from any plugin, entries that haven't expired, and a whole run of your plugin's keys at once, because they share a prefix.
+- **Key length:** keys are stored in a 255-character column, together with a prefix that includes the instance identifier and the plugin name. Keep keys short.
+- **Values:** values are serialized and stored in the database. The SDK sets no size limit per entry, but the cache is meant for small values.
+- **Configuration:** a plugin can't change these limits.
+
+Because any entry can be removed before it expires, treat a missing key as a normal case and be able to rebuild the value. Don't keep anything in the cache that your plugin's correctness depends on, such as "already sent this message" markers or idempotency records. Store those in [Custom Data](/sdk/custom-data/) instead.
 
 ---
 

@@ -124,7 +124,7 @@ sections:
 
               - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
 
-              - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+              - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices. If the first three invoices in a bulk run all fail to generate, Canvas stops the run and makes the archived invoices active again, so their status returns to `current`.
             create_description: Status must be set to `current` on creation; the value has no further effect.
             enum_options: 
               - value: current
@@ -378,7 +378,8 @@ sections:
             description: Filter by the date or specific datetime the document was created. See [Date Filtering](/api/date-filtering) for more information.
           - name: patient
             type: string
-            description: The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: >-
+              The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Optional: when neither `patient` nor `subject` is given, the search returns matching documents across all patients, so you can combine `category`, `type`, `date` and `status` on their own (e.g. `category=clinical-note&date=ge2026-10-01&status=current`) and page through the results with [Pagination](/api/pagination).
           - name: status
             type: string
             description: The status of the document reference

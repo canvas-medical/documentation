@@ -80,7 +80,7 @@ Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset)
 $ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
 ```
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install --secret</code> and <code>--variable</code> set values while installing straight onto an instance with <code>credentials.ini</code>. Support ends on December 14, 2026; see <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
+{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install --secret</code> and <code>--variable</code> set values while installing straight onto an instance with <code>credentials.ini</code>. Support ends on December 14, 2026; see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 #### Listing configured values
 
