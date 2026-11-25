@@ -112,6 +112,8 @@ Updates an existing note. Only certain fields can be modified after creation.
 
 **Note**: `patient_id` and `note_type_id` cannot be updated after creation.
 
+Canvas records the staff member who triggered the effect as the note's [`last_modified_by_staff`](/sdk/data-note/#note), or Canvas Bot if no user triggered it. Setting `provider_id` doesn't change `last_modified_by_staff`.
+
 #### Example Usage
 
 ```python
