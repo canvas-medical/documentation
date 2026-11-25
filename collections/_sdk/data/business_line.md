@@ -96,7 +96,7 @@ A business line's own settings, which Canvas uses for the business line's patien
 
 | Name                               | Value                                                                                                                         |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `appointmentReminders`             | A reminder schedule, in the same shape as the [organization's](/sdk/data-organization/#organizationsetting). Canvas doesn't use it to schedule reminders. |
+| `appointmentReminders`             | A reminder schedule, in the same shape as the [organization's](/sdk/data-organization/#organizationsetting). |
 | `appointmentReminderCustomization` | The text Canvas adds to reminder messages, in the same shape as the [organization's](/sdk/data-organization/#organizationsetting). |
 | `phoneNumber`                      | The phone number Canvas sends the business line's patients text messages from, such as appointment reminders, as a string. Canvas assigns it when the business line is created with an area code. |
 
@@ -107,65 +107,7 @@ Canvas uses a business line's `appointmentReminderCustomization` or `phoneNumber
 - The patient belongs to the business line.
 - The business line's value isn't empty.
 
-Otherwise, Canvas uses the organization's setting. The reminder schedule always comes from the organization's `appointmentReminders`.
-
-```python
-from canvas_sdk.v1.data import Patient
-
-patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
-
-# Presigned S3 URL to the logo image, or None if no logo is set
-logo_url = patient.business_line.logo_url if patient.business_line else None
-```
-
-## Filtering
-
-The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter Business Line data:
-
-**Show an Organization's Business Lines that are active and in the 732 area code**
-
-```python
->>> from canvas_sdk.v1.data import BusinessLine, Organization
->>> org = Organization.objects.first()
->>> active_732_business_lines = BusinessLine.objects.filter(organization=org, active=True, area_code="732")
->>> print([business_line.name for business_line in active_732_business_lines])
-['Foo', 'Bar']
-```
-
-## Attributes
-
-### BusinessLine
-
-| Field Name   | Type                                    |
-| ------------ | --------------------------------------- |
-| id           | UUID                                    |
-| dbid         | Integer                                 |
-| created      | DateTime                                |
-| modified     | DateTime                                |
-| name         | String                                  |
-| description  | String                                  |
-| area_code    | String                                  |
-| subdomain    | String                                  |
-| active       | Boolean                                 |
-| state        | [BusinessLineState](#businesslinestate) |
-| organization | [Organization](/sdk/data-organization)  |
-| logo         | File (S3 key)                           |
-| logo_url     | String (computed)                       |
-| patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
-| settings     | QuerySet[[BusinessLineSetting](#businesslinesetting)] |
-
-### BusinessLineSetting
-
-A business line's appointment reminder configuration. Each setting has a `name`, either `appointmentReminders` or `appointmentReminderCustomization`, and a JSON `value` in the same shape as the matching [OrganizationSetting](/sdk/data-organization/#organizationsetting).
-
-Canvas uses a business line's `appointmentReminderCustomization` in place of the organization's when all of these are true:
-
-- Business lines are enabled on the instance.
-- The business line is active.
-- The reminder is for one of the business line's patients.
-- The business line's value isn't empty.
-
-Otherwise, Canvas uses the organization's text. The reminder schedule always comes from the organization's `appointmentReminders`.
+Otherwise, Canvas uses the instance-wide value, such as the organization's `appointmentReminderCustomization`. The reminder schedule always comes from the organization's `appointmentReminders`.
 
 ```python
 from canvas_sdk.v1.data import Patient
