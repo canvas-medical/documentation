@@ -54281,7 +54281,7 @@ PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
 GET_PROVIDER_MENU_CONFIGURATION | The provider (hamburger) menu is loading. See [Provider Menu Configuration](/sdk/layout-effect/#provider-menu-configuration).  
 PLUGIN_CREATED | A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
-PLUGIN_UPDATED | A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
+PLUGIN_UPDATED | A plugin is enabled, its code changes, or `canvas config set` or `canvas config unset` through Canvas Platform changes one of its [variables](/sdk/secrets/#configuring-variables-from-the-cli). See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH | Adding a pharmacy for a patient in their profile. Reply with `PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS` to supply the results.  
 FAX__RECIPIENT__PRE_SEARCH | Searching for a fax recipient, before the search runs. Reply with `AUTOCOMPLETE_SEARCH_RESULTS` to supply the results; returning nothing runs the normal search. See [Service Provider search results](/sdk/data-serviceprovider/#search-results).   
 Context object: 
@@ -64126,6 +64126,7 @@ Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset)
     ```console
     $ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
     ```
+For a plugin Canvas Platform manages, when `config set` or `config unset` adds, changes, or clears a value, the instance reloads the plugin so it reads the new values, then sends a [`PLUGIN_UPDATED`](/sdk/events/#other-events) event. Respond to that event to rebuild anything your plugin derives from `self.secrets`, such as a cached client. A command that leaves every value as it was sends no event. The event follows the reload by a few seconds, but if the reload is slow, the plugin can still have its old values when it handles the event.
 > **Warning:** **Deprecated:** `canvas install --secret` and `--variable` set values while installing straight onto an instance with `credentials.ini`. Support ends on December 14, 2026; see [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/). 
 ####  Listing configured values 
 Run `canvas config list <plugin_name>` to see which variables are configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed in the listing.
