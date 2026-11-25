@@ -122,6 +122,31 @@ record = UncategorizedClinicalDocument.objects.get(
 url = record.document_url
 ```
 
+## The latest annotated version
+
+When staff annotate or sign an uncategorized clinical document in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. `document_url` returns the original file, so look for an annotation first and fall back to `document_url` when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the document's `dbid`. Annotations made in Data Integration before the document was filed are linked to the document when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, UncategorizedClinicalDocument
+
+record = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="uncategorizedclinicaldocument").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=record.dbid)
+    .order_by("created")
+    .last()
+)
+
+# The version Canvas shows: the newest annotation, else the original file
+url = latest.document_url if latest else record.document_url
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A document that no one has annotated has no annotations, so handle <code>None</code>." %}
+
 ## The document reference
 
 Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it. The document reference carries the document's coding, category, and status, and represents the document in the FHIR API. Use `document_url` to get the file itself, and the document reference when you want that metadata.

@@ -32,6 +32,7 @@ The revamped note is a redesigned note body that organizes commands into clinica
 - Select anywhere on a collapsed command to open it. The command's title also opens and collapses it from the keyboard with Enter or Space.
 - Collapsing an Assess Condition command also hides the commands nested under it, and a pill beside its title shows how many there are, such as **2 items**. Expanding it shows them again, each open or collapsed as it was.
 - A committed Assess Condition command opens collapsed, with its nested commands hidden.
+- While any command nested under a collapsed Assess Condition command is still uncommitted, all of its nested commands stay in view. Once every one is committed or entered in error, they hide under the collapsed Assess again.
 - Dragging a collapsed Assess Condition command moves its nested commands with it.
 
 **Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.

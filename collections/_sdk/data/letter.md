@@ -98,6 +98,48 @@ url = document.document_url if document else None
 
 {% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. The PDF is rendered after the letter is created rather than with it, so handle <code>None</code>." %}
 
+## Attached documents
+
+Each document attached to a letter is a `LetterDocument`, available through the letter's `documents` attribute. `label` holds the name shown for the attachment. The `related_object` property returns the attached record as its SDK model: a [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/), [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/), [Note](/sdk/data-note/), [PatientChartDocument](#patientchartdocument), [Coverage](/sdk/data-coverage/#coverage), or [PatientIdentificationCard](/sdk/data-patient/#patientidentificationcard). It returns `None` when the record isn't available through the SDK, such as when it was deleted.
+
+```python
+from canvas_sdk.v1.data import Letter
+
+letter = Letter.objects.prefetch_related("documents").get(
+    id="b5a0c1d2-e3f4-5678-9abc-def012345678"
+)
+
+for attachment in letter.documents.all():
+    record = attachment.related_object
+    print(attachment.label, type(record).__name__ if record else None)
+```
+
+A `PatientChartDocument` is a page of the patient's chart that staff can attach to a letter. Every instance has the same four pages, all active:
+
+| `name` | `url` |
+|--------|-------|
+| `Chart summary` | `api/Patient/{key}.html?&usage=chart_summary&audience=care_team` |
+| `Basic information` | `api/Patient/{key}.html?&usage=patient_basic_information&audience=care_team` |
+| `Medications and allergies` | `api/Patient/{key}.html?&usage=medication_allergy_list&audience=care_team` |
+| `Integrated care plan` | `api/CarePlan/{key}.html` |
+
+`{key}` in `url` is a placeholder for the patient's `id`. To find which chart page a letter attachment is, compare its `name`:
+
+```python
+from canvas_sdk.v1.data import Letter, PatientChartDocument
+
+letter = Letter.objects.prefetch_related("documents").get(
+    id="b5a0c1d2-e3f4-5678-9abc-def012345678"
+)
+
+for attachment in letter.documents.all():
+    record = attachment.related_object
+    if isinstance(record, PatientChartDocument) and record.name == "Chart summary":
+        print("The letter includes the chart summary")
+```
+
+When an attached lab, imaging, or referral report, or an administrative or uncategorized clinical document, has been annotated, Canvas prints its newest [DocumentAnnotation](/sdk/data-document-annotation/) in place of the original file.
+
 ## Letter templates
 
 A letter written from a template points to it through `template`. That's a `LetterLanguageTemplate`: the header, content, and footer of a [LetterTemplate](#lettertemplate) in one language. `template` is `None` for a letter that wasn't written from a template. A [Message](/sdk/data-message/#message) written from a template points to one the same way.
@@ -143,6 +185,32 @@ for template in templates:
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
 | template   | [LetterLanguageTemplate](#letterlanguagetemplate) | The template the letter was written from (nullable) |
 | letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |
+| documents  | [LetterDocument](#letterdocument)[] | The documents attached to the letter |
+
+### LetterDocument
+
+| Field Name     | Type                                   | Notes |
+|----------------|----------------------------------------|-------|
+| dbid           | Integer                                |       |
+| created        | DateTime                               |       |
+| modified       | DateTime                               |       |
+| letter         | [Letter](#letter)                      | The letter the document is attached to |
+| label          | String                                 | The name shown for the attachment |
+| category       | String                                 |       |
+| content_type   | [ContentType](/sdk/data-content-type/) | The type of the attached record |
+| object_id      | Integer                                | The `dbid` of the attached record |
+| related_object | [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/), [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/), [Note](/sdk/data-note/), [PatientChartDocument](#patientchartdocument), [Coverage](/sdk/data-coverage/#coverage), or [PatientIdentificationCard](/sdk/data-patient/#patientidentificationcard) (computed) | The attached record, or `None` |
+
+### PatientChartDocument
+
+| Field Name | Type     | Notes |
+|------------|----------|-------|
+| dbid       | Integer  |       |
+| created    | DateTime |       |
+| modified   | DateTime |       |
+| name       | String   | The chart page's name: `Chart summary`, `Basic information`, `Medications and allergies`, or `Integrated care plan` |
+| url        | String   | A path template with a `{key}` placeholder for the patient's `id`. See [Attached documents](#attached-documents). |
+| is_active  | Boolean  | Whether staff can attach the page to a letter. `True` for all four pages. |
 
 ### LetterTemplate
 

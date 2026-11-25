@@ -160,6 +160,7 @@ Canvas copies the item into the order when the command is signed, so later formu
 | ordering_provider | [Staff](/sdk/data-staff/#staff)                       |
 | patient_height    | String                                                |
 | patient_weight    | String                                                |
+| action_events     | [DmeOrderActionEvent](/sdk/data-fax/#dmeorderactionevent)[] |
 
 ### DmeProductCodeSystem
 

@@ -156,6 +156,7 @@ registered = patient.user.is_portal_registered
 | authorizations                          | [Authorization](/sdk/data-authorization/#authorization)[]                                                               |                                                                                                |
 | billing_line_items                      | [BillingLineItem](/sdk/data-billing-line-item/)                                                                         |                                                                                                |
 | business_line                           | [BusinessLine](/sdk/data-business-line/)                                                                                |                                                                                                |
+| care_plans                              | [CarePlan](/sdk/data-care-plan/#careplan)[]                                                                             |                                                                                                |
 | care_team_memberships                   | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]                                                         |                                                                                                |
 | change_medications                      | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]                                                     |                                                                                                |
 | clipboards                              | [Clipboard](/sdk/data-clipboard/#clipboard)[]                                                                           |                                                                                                |
@@ -186,6 +187,7 @@ registered = patient.user.is_portal_registered
 | preferred_pharmacy                      | JSON                                                                                                                    |                                                                                                |
 | preferred_pharmacies                    | JSON                                                                                                                    |                                                                                                |
 | protocol_overrides                      | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]                                                     |                                                                                                |
+| questionnaire_results                   | [QuestionnaireResult](/sdk/data-questionnaire/#questionnaireresult)[]                                                   |                                                                                                |
 | settings                                | [PatientSetting](#patientsetting)                                                                                       |                                                                                                |
 | subscribed_coverages                    | [Coverage](/sdk/data-coverage/#coverage)[]                                                                              |                                                                                                |
 | tasks                                   | [Task](/sdk/data-task/#task)[]                                                                                          |                                                                                                |
@@ -211,6 +213,11 @@ registered = patient.user.is_portal_registered
 | banner_alerts                           | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                                                                    |                                                                                                |
 | immunizations                           | [Immunization](/sdk/data-immunization/#immunization)[]                                                                  |                                                                                                |
 | immunization_statements                 | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]                                                |                                                                                                |
+| consolidated_immunizations              | [ConsolidatedImmunization](/sdk/data-immunization/#consolidatedimmunization)[]                                          | Immunizations and immunization statements in one list                                          |
+| known_locations                         | [PatientKnownLocation](#patientknownlocation)[]                                                                         |                                                                                                |
+| parent_guardian                         | [PatientParentGuardian](#patientparentguardian)                                                                         |                                                                                                |
+| tribal_affiliation_coding               | [PatientTribalAffiliationCoding](#patienttribalaffiliationcoding)[]                                                     |                                                                                                |
+| provenance_set                          | [Provenance](/sdk/data-provenance/#provenance)[]                                                                        | Provenance records for this patient's data                                                     |
 | integration_tasks                       | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]                                                        |                                                                                                |
 | installment_plans                       | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]                                                                   |                                                                                                |
 | uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |                                                                                                |
@@ -225,6 +232,8 @@ registered = patient.user.is_portal_registered
 | referral_reviews                        | [ReferralReview](/sdk/data-referral/#referralreview)[]                                                                  |                                                                                                |
 | referral_reports                        | [ReferralReport](/sdk/data-referral/#referralreport)[]                                                                  |                                                                                                |
 | invoices                                | Invoice[]                                                                                                               |                                                                                                |
+| collection_status_histories             | [CollectionStatusHistory](#collectionstatushistory)[]                                                                   | The patient's collection status over time                                                      |
+| interventions                           | [Intervention](/sdk/data-campaign/#intervention)[]                                                                      |                                                                                                |
 | education_material                      | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]                                            |                                                                                                |
 | procedures                              | [Procedure](/sdk/data-procedure/#procedure)[]                                                                           |                                                                                                |
 | service_requests                        | [ServiceRequest](/sdk/data-service-request/#servicerequest)[]                                                           |                                                                                                |
@@ -476,7 +485,7 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 
 `id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
 
-The model lists the patient's current contacts. When staff remove a contact that had [family portal access](/sdk/patient-portal/#family-portal-access), Canvas keeps it for the records its family member wrote, but it no longer appears here or among the patient's `contacts`. Its [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant) keeps the contact's name and relationship.
+The model lists the patient's current contacts. When staff remove a contact that had [family portal access](/sdk/patient-portal/#family-portal-access) or that a note lists as a participant, Canvas keeps it for the records that refer to it, but it no longer appears here, among the patient's `contacts`, or among a note's `participants`. Its [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant), if it has one, keeps the contact's name and relationship.
 
 A contact's relationship to the patient is held in its `categories`: the ones whose coding system is `http://terminology.hl7.org/CodeSystem/v3-RoleCode`, such as `MTH` (mother) or `SPS` (spouse). Other categories, such as an emergency contact, describe the contact's role rather than the relationship. Family portal access shows the names of a contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". A contact with no relationship category shows no relationship there.
 
@@ -494,6 +503,7 @@ A contact's relationship to the patient is held in its `categories`: the ones wh
 | related_patient | [Patient](#patient)                                                  |
 | categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
 | portal_grants   | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
+| noteparticipant_set | [NoteParticipant](/sdk/data-note/#noteparticipant)[]             |
 
 ```python
 from canvas_sdk.v1.data import PatientContactPerson
@@ -549,7 +559,119 @@ for coding in ContactCategory.objects.order_by("code"):
     log.info(f"{coding.code} / {coding.system} — {coding.name}")  # EMC / INTERNAL — Emergency contact
 ```
 
+### CollectionStatusHistory
+
+Records where a patient's balance stood in collections as of a date. To find the patient's current status, take the entry with the latest `status_date`:
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+latest = patient.collection_status_histories.order_by("-status_date", "-created").first()
+status = latest.status if latest else None
+```
+
+| Field Name  | Type                                  |
+| ----------- | ------------------------------------- |
+| dbid        | Integer                               |
+| patient     | [Patient](#patient)                   |
+| status      | [CollectionStatus](#collectionstatus) |
+| status_date | Date                                  |
+| created     | DateTime                              |
+| modified    | DateTime                              |
+
+### PatientKnownLocation
+
+A free-text place where the patient was last known to be. Staff add and remove known locations on the patient's profile, and removed locations aren't returned:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for location in patient.known_locations.order_by("-created"):
+    log.info(f"Known location: {location.known_location}")
+```
+
+| Field Name       | Type                               |
+| ---------------- | ---------------------------------- |
+| id               | UUID                               |
+| dbid             | Integer                            |
+| created          | DateTime                           |
+| modified         | DateTime                           |
+| originator       | [CanvasUser](/sdk/data-canvasuser) |
+| patient          | [Patient](#patient)                |
+| known_location   | String                             |
+
+### PatientParentGuardian
+
+The parent or guardian recorded on the patient's profile, typically for a minor. A patient has at most one. Reading `patient.parent_guardian` on a patient without one raises `PatientParentGuardian.DoesNotExist`, so query the model when the record may be missing:
+
+```python
+from canvas_sdk.v1.data.patient import PatientParentGuardian
+from logger import log
+
+guardian = PatientParentGuardian.objects.filter(
+    patient__id="d7af3e356368446c85b40a5d6ff7288e"
+).first()
+
+if guardian:
+    log.info(f"Parent or guardian: {guardian.first_name} {guardian.last_name}, {guardian.phone_number}")
+```
+
+| Field Name  | Type                |
+| ----------- | ------------------- |
+| id          | UUID                |
+| dbid        | Integer             |
+| created     | DateTime            |
+| modified    | DateTime            |
+| patient     | [Patient](#patient) |
+| first_name  | String              |
+| middle_name | String              |
+| last_name   | String              |
+| phone_number | String             |
+| line1       | String              |
+| line2       | String              |
+| city        | String              |
+| state_code  | String              |
+| postal_code | String              |
+
+### PatientTribalAffiliationCoding
+
+A coding of the patient's tribal affiliation. Its `system` is `http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS`, and its `code` and `display` come from the HL7 [TribalEntityUS](https://terminology.hl7.org/CodeSystem-v3-TribalEntityUS.html) code system, which lists the Indian entities recognized by the U.S. Bureau of Indian Affairs, for example `40` (Cherokee Nation). A patient's codings are available through `tribal_affiliation_coding`:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for coding in patient.tribal_affiliation_coding.all():
+    log.info(f"Tribal affiliation: {coding.display} ({coding.system}|{coding.code})")
+```
+
+| Field Name    | Type                |
+| ------------- | ------------------- |
+| dbid          | Integer             |
+| created       | DateTime            |
+| modified      | DateTime            |
+| patient       | [Patient](#patient) |
+| system        | String              |
+| version       | String              |
+| code          | String              |
+| display       | String              |
+| user_selected | Boolean             |
+
 ## Enumeration types
+
+### CollectionStatus
+
+| Value    | Label    |
+| -------- | -------- |
+| none     | none     |
+| internal | internal |
+| external | external |
 
 ### SexAtBirth
 
