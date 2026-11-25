@@ -4844,11 +4844,27 @@ If `validate-manifest` detects handlers that won't resolve, it reports which cla
 ###  `canvas logs`
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 `canvas logs` chooses its credential per instance:
-  - **An instance Canvas Platform manages** , when you're signed in with `canvas login` or a service account token: the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, and a live follow reconnects with a new token when the log stream ends the old one, so a long history read or a live follow keeps running.
+  - **An instance Canvas Platform manages** , when you're signed in with `canvas login` or a service account token: the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires and before each live-follow reconnect, so a long history read or a live follow keeps running.
   - **Any other Canvas instance, while you're signed in** : `canvas logs` refuses it with the way to sign out (`canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN`).
   - **Any instance when you're not signed in, or`localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see Instance API credentials). For a Canvas instance, it also prints a deprecation notice.
 When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in Which instances go through Canvas Platform.
 When the log stream doesn't start, `canvas logs` exits with status 1, whichever credential it used, so a script can tell a failed stream from one that ran. When Console, the Canvas log stream service, refuses the stream, the error quotes its answer, for example `Console refused the log stream for <instance>. Console answered: No instance named '<instance>' was found.` When the connection fails before the stream starts, the error gives the connection failure and asks you to run the command again. Stopping a live follow with Ctrl+C exits with status 0.
+####  Reconnecting a live follow 
+A live follow keeps printing until you press Ctrl+C. When its connection drops after the stream has started, `canvas logs` reconnects on its own, so a script or terminal that follows an instance's log doesn't need its own restart logic.
+  - **Detecting a dead connection:** the CLI pings the log stream every 30 seconds, so a connection that stops answering ends within about 40 seconds and then reconnects.
+  - **Waiting between attempts:** before each reconnect, `canvas logs` prints `[notice] Reconnecting to the log stream in <seconds>s.` to stderr. The wait starts near 1 second and doubles after each attempt, up to 60 seconds. After a stream that stayed open for at least 60 seconds, the wait starts over near 1 second.
+  - **Retrying failures:** when a reconnect fails because Console is restarting or unreachable, or Canvas Platform can't be reached or answers with a server error (5xx) when the CLI asks it for a new log token, `canvas logs` keeps retrying. When Console refuses the token on a reconnect, `canvas logs` quotes Console's answer and exits with status 1.
+  - **Using`credentials.ini`:** the CLI reconnects with the same `credentials.ini` token. When Console ends the stream because that token is no longer active, `canvas logs` stops following and exits.
+The live stream can't replay the lines Console sent while the CLI was disconnected, so `canvas logs` fetches them from history. About 10 seconds after the stream resumes, it prints a notice to stderr, then prints the missed lines to stdout, oldest first and formatted like history output, with the live follow's `--plugin` filters applied:
+    ```console
+    [notice] Printing the 3 lines sent while the log stream was down, 2026-11-24T03:12:03+00:00 to 2026-11-24T03:12:46+00:00.
+    ```
+The window starts 5 seconds before the dropped stream last heard from Console and ends 5 seconds after the stream resumed. The margins cover the moment the new stream takes to start delivering lines and any clock difference between your machine and the instance, so the block can repeat a few lines the live follow already printed. Live lines that arrive meanwhile print after the block, not inside it.
+When the history fetch fails, `canvas logs` keeps following and prints a notice with a `canvas logs --no-follow` command that prints the missed lines:
+    ```console
+    [notice] The log stream dropped after 2026-11-24T03:12:03+00:00 and resumed at 2026-11-24T03:12:41+00:00. To print the lines sent in between, run: canvas logs --host my-instance --start 2026-11-24T03:12:03+00:00 --end 2026-11-24T03:12:46+00:00 --no-follow --all
+    ```
+Every notice the reconnect prints starts with `[notice]`, so a script that reads `canvas logs` output can skip those lines.
 **Usage** :
     ```console
     $ canvas logs [OPTIONS]
@@ -5579,11 +5595,9 @@ Here's a complete example of using the S3 client in a Canvas plugin:
     from canvas_sdk.clients.aws import S3, Credentials
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-    from canvas_sdk.handlers.simple_api import Credentials as APICredentials, SimpleAPI, api
-    class S3Handler(SimpleAPI):
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    class S3Handler(StaffSessionAuthMixin, SimpleAPI):
         """Simple API handler for S3 operations."""
-        def authenticate(self, credentials: APICredentials) -> bool:
-            return True
         def _s3_client(self) -> S3:
             """Create S3 client from plugin secrets."""
             return S3(
@@ -6819,17 +6833,15 @@ Here's a complete example of using the LLMs client in a Canvas plugin:
     from canvas_sdk.clients.llms.structures.settings import LlmSettingsGpt4
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-    from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
     from canvas_sdk.handlers.simple_api.api import FileFormPart, StringFormPart
     class AnimalCount(BaseModelLlmJson):
         """Structured response for animal counting."""
         dogs: int = Field(description="Number of dogs in the image")
         cats: int = Field(description="Number of cats in the image")
         total: int = Field(description="Total number of animals")
-    class LlmHandler(SimpleAPI):
+    class LlmHandler(StaffSessionAuthMixin, SimpleAPI):
         """Simple API handler for LLM operations."""
-        def authenticate(self, credentials: Credentials) -> bool:
-            return True
         def _llm_client(self) -> LlmOpenai:
             """Create LLM client from plugin secrets."""
             return LlmOpenai(LlmSettingsGpt4(
@@ -28876,7 +28888,7 @@ Enum | Value
 `CARD` | card  
 `OTHER` | other  
 ####  Example Usage 
-The most common use case for this method will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler.
+The most common use case for this method will be with the [SimpleAPI](/sdk/handlers-simple-api-http/) handler. This route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.v1.data import ClaimLineItem, Claim
@@ -28888,12 +28900,9 @@ The most common use case for this method will be with the [SimpleAPI](/sdk/handl
     )
     from datetime import date
     from canvas_sdk.effects.simple_api import JSONResponse, Response
-    from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
-    class MyAPI(SimpleAPIRoute):
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+    class MyAPI(APIKeyAuthMixin, SimpleAPIRoute):
         PATH = "/routes/post-claim-payment"
-        def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            # replace with desired authentication logic
-            return True
         def get_claim_line_item(self, claim: Claim, proc_code: str) -> ClaimLineItem | None:
             return claim.line_items.active().filter(proc_code=proc_code).first()
         def create_line_item_transactions(
@@ -55211,7 +55220,7 @@ The name of your S3 bucket.
 **Purpose**
 This code defines a SimpleAPI handler that exposes REST endpoints for managing objects in an Amazon S3 bucket using the Canvas SDK's AWS S3 client.
 **Class Overview**
-  - The main class, `AwsManip`, extends `SimpleAPI`.
+  - The main class, `AwsManip`, extends `SimpleAPI` and uses `StaffSessionAuthMixin`, so only signed-in staff can call its routes. The app's requests from the chart already carry the staff session.
   - It creates an S3 client using credentials stored in plugin secrets.
 **Main Workflow**
   - `GET /list_items` — Lists all objects in the configured S3 bucket.
@@ -55229,19 +55238,14 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing o
     from canvas_sdk.clients.aws.structures import Credentials as S3Credentials
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-    from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
-    class AwsManip(SimpleAPI):
-        """Simple API handler for AWS S3 object management operations."""
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    class AwsManip(StaffSessionAuthMixin, SimpleAPI):
+        """Simple API handler for AWS S3 object management operations.
+        Only signed-in staff can call these routes; the app's same-origin requests from the chart
+        already carry the staff session.
+        """
         PREFIX = None
         USER_TYPE_STAFF = "Staff"
-        def authenticate(self, credentials: Credentials) -> bool:
-            """Authenticate API requests.
-            Args:
-                credentials: The credentials provided with the request.
-            Returns:
-                True to allow all requests (authentication bypassed).
-            """
-            return True
         def _s3_client(self) -> S3:
             """Create and configure an S3 client with credentials from secrets.
             Returns:
@@ -56403,7 +56407,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for interactin
     )
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-    from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
     from canvas_sdk.handlers.simple_api.api import FileFormPart, StringFormPart
     from llm_manip.constants.secrets import Secrets
     class Result(BaseModelLlmJson):
@@ -56415,15 +56419,15 @@ This code defines a SimpleAPI handler that exposes REST endpoints for interactin
         """Structured response model for LLM animal analysis with optional result."""
         comment: str = Field(description="the comment")
         result: Result | None
-    class LlmManip(SimpleAPI):
-        """Simple API handler for LLM-based image analysis and chat operations."""
+    class LlmManip(StaffSessionAuthMixin, SimpleAPI):
+        """Simple API handler for LLM-based image analysis and chat operations.
+        Only signed-in staff can call these routes; the app's same-origin requests already carry
+        the staff session.
+        """
         PREFIX = None
         LLM_ANTHROPIC = 0
         LLM_GOOGLE = 1
         LLM_OPENAI = 2
-        def authenticate(self, credentials: Credentials) -> bool:
-            """Authenticate API requests."""
-            return True
         def _llm_client(self, provider: int) -> LlmApi:
             """Create and configure a LLM client with credentials from secrets."""
             if provider == self.LLM_ANTHROPIC:
@@ -57537,6 +57541,10 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
           {
             "class": "email_sender.handlers.email_manip:EmailManip",
             "description": "Emails with Sendgrid"
+          },
+          {
+            "class": "email_sender.handlers.email_manip:SendGridCallbacks",
+            "description": "Receives SendGrid's inbound email and event webhooks"
           }
         ],
         "applications": [
@@ -57567,11 +57575,12 @@ Your [SendGrid API key](https://docs.sendgrid.com/ui/account-and-settings/api-ke
 ##  handlers/ 
 ###  email_manip.py 
 **Purpose**
-This code defines a SimpleAPI handler that exposes REST endpoints for managing email operations via the Canvas SDK's SendGrid client.
+This code defines two SimpleAPI handlers that expose REST endpoints for managing email operations via the Canvas SDK's SendGrid client.
 **Class Overview**
-  - The main class, `EmailManip`, extends `SimpleAPI`.
+  - The main class, `EmailManip`, extends `SimpleAPI` and uses `StaffSessionAuthMixin`, so only signed-in staff can call its routes. The app's requests from the chart already carry the staff session.
   - It creates a SendGrid `EmailClient` using an API key stored in plugin secrets.
   - It uses the plugin cache system for storing webhook callback data.
+  - `SendGridCallbacks` holds the two `POST` routes that SendGrid calls, which arrive without a Canvas session. They store what SendGrid sends, and `EmailManip` reads it back.
 **Main Workflow**
   - `POST /send_email` — Sends an email with optional inline images and file attachments.
   - `POST /emails_sent` — Queries sent emails with optional filters for recipient and date.
@@ -57580,10 +57589,11 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
   - `GET /inbound_webhook` — Gets the current inbound webhook configuration status.
   - `POST /outbound_webhook` — Enables/disables the SendGrid outbound event webhook.
   - `GET /outbound_webhook` — Gets the current outbound webhook configuration status.
-  - `POST /inbound_email` — Receives and caches parsed inbound emails from SendGrid.
   - `GET /inbound_email` — Retrieves the most recent inbound email from cache.
-  - `POST /outbound_email_status` — Receives and caches outbound email status events.
   - `GET /outbound_email_status` — Retrieves the most recent outbound status events from cache.
+`SendGridCallbacks` routes:
+  - `POST /inbound_email` — Receives and caches parsed inbound emails from SendGrid.
+  - `POST /outbound_email_status` — Receives and caches outbound email status events.
 **SendGrid Client Integration**
   - The `_sendgrid_client` method creates an `EmailClient` instance from `canvas_sdk.clients.sendgrid.libraries`.
   - Email composition uses structured types: `Address`, `Recipient`, `BodyContent`, `Attachment`, and `Email`.
@@ -57615,14 +57625,14 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
     )
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.simple_api import JSONResponse, Response
-    from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+    from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, StaffSessionAuthMixin, api
     from logger import log
-    class EmailManip(SimpleAPI):
-        """API handler for SendGrid email operations including sending, webhooks, and logging."""
+    class EmailManip(StaffSessionAuthMixin, SimpleAPI):
+        """API handler for SendGrid email operations including sending, webhooks, and logging.
+        Only signed-in staff can call these routes; the app's same-origin requests already carry
+        the staff session. SendGrid's own callbacks are on ``SendGridCallbacks``.
+        """
         PREFIX = None
-        def authenticate(self, credentials: Credentials) -> bool:
-            """Authenticate the API request. Always returns True (no authentication required)."""
-            return True
         def _sendgrid_client(self) -> EmailClient:
             """Create and return a configured SendGrid email client."""
             settings = Settings(key=self.secrets[Constants.sendgrid_api_key])
@@ -57863,13 +57873,6 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
                     self.cache_retrieve("outbound_email_status"), status_code=HTTPStatus(HTTPStatus.OK)
                 )
             ]
-        @api.post("/outbound_email_status")
-        def outbound_status_save(self) -> list[Response | Effect]:
-            """Receive and cache outbound email status events from SendGrid webhook."""
-            events = [EmailEvent.from_dict(item) for item in self.request.json()]
-            self.cache_save("outbound_email_status", [e.to_dict() for e in events])
-            log.info(f"outbound status received:{len(events)}")
-            return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
         @api.get("/inbound_email")
         def last_inbound_email(self) -> list[Response | Effect]:
             """Retrieve the most recent inbound email from cache."""
@@ -57879,6 +57882,32 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
                     status_code=HTTPStatus(HTTPStatus.OK),
                 )
             ]
+        @classmethod
+        def cache_save(cls, key: str, payload: list) -> None:
+            """Store a payload in the plugin cache under the given key."""
+            get_cache().set(key, payload)
+        @classmethod
+        def cache_retrieve(cls, key: str) -> list:
+            """Retrieve a cached payload by key, returning an empty list if not found."""
+            return get_cache().get(key) or []
+    class SendGridCallbacks(SimpleAPI):
+        """The two routes SendGrid itself posts to, which can't carry a Canvas session.
+        They only store what SendGrid sends; reading it back goes through ``EmailManip``, which
+        requires a staff session. A production plugin should also verify SendGrid's signed event
+        webhook before storing anything.
+        """
+        PREFIX = None
+        PUBLIC_ACCESS = True
+        def authenticate(self, credentials: Credentials) -> bool:
+            """Accept SendGrid's callbacks, which arrive without a Canvas session."""
+            return True
+        @api.post("/outbound_email_status")
+        def outbound_status_save(self) -> list[Response | Effect]:
+            """Receive and cache outbound email status events from SendGrid webhook."""
+            events = [EmailEvent.from_dict(item) for item in self.request.json()]
+            EmailManip.cache_save("outbound_email_status", [e.to_dict() for e in events])
+            log.info(f"outbound status received:{len(events)}")
+            return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
         @api.post("/inbound_email")
         def inbound_email_save(self) -> list[Response | Effect]:
             """Receive and cache parsed inbound emails from SendGrid webhook."""
@@ -57900,17 +57929,9 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing e
                     else:
                         message[key] = str(value)
             parsed = ParsedEmail.from_dict(message)
-            self.cache_save("inbound_treatment", [parsed.to_dict()])
+            EmailManip.cache_save("inbound_treatment", [parsed.to_dict()])
             log.info(f"inbound email received from {parsed.email_from} to {parsed.email_to}")
             return [Response(status_code=HTTPStatus(HTTPStatus.OK))]
-        @classmethod
-        def cache_save(cls, key: str, payload: list) -> None:
-            """Store a payload in the plugin cache under the given key."""
-            get_cache().set(key, payload)
-        @classmethod
-        def cache_retrieve(cls, key: str) -> list:
-            """Retrieve a cached payload by key, returning an empty list if not found."""
-            return get_cache().get(key) or []
     ```
 ###  email_form_app.py 
 **Purpose**
