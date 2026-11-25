@@ -45,7 +45,9 @@ refill_requests = RefillRequest.objects.for_patient(patient_id)
 
 The `pending` method returns the requests in the refill queue, the ones the refill panel shows: requests that aren't ignored and haven't been answered by a sent response.
 
-A response answers its request once the provider sends it, unless it failed to reach the pharmacy (its `status` is [`PrescriptionStatus.ERROR`](/sdk/data-prescription/#prescriptionstatus)) or was entered in error. A request whose only responses are unsent, failed, or entered in error stays in the queue, so the provider can respond to it again.
+A response answers its request once the provider sends it, unless it failed to reach the pharmacy (its `status` is [`PrescriptionStatus.ERROR`](/sdk/data-prescription/#prescriptionstatus)). A request whose only responses are unsent or failed stays in the queue, so the provider can respond to it again.
+
+Entering a response in error doesn't retract a message the pharmacy already received. A response with a `message_id` still answers its request after it's entered in error. A response entered in error before the pharmacy received it, with an empty `message_id`, doesn't answer the request.
 
 ```python
 from canvas_sdk.v1.data.refill_request import RefillRequest
