@@ -52,6 +52,31 @@ document = PatientAdministrativeDocument.objects.exclude(document="").first()
 url = document.document_url
 ```
 
+## The latest annotated version
+
+When staff annotate or sign an administrative document in Canvas, Canvas saves the result as a new PDF in a [DocumentAnnotation](/sdk/data-document-annotation/) and leaves the original file unchanged. The newest annotation is the version Canvas shows. `document_url` returns the original file, so look for an annotation first and fall back to `document_url` when there's none.
+
+Find the annotations through the annotation's link to its document: resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, never the per-environment `dbid`, and match `object_id` against the document's `dbid`. Annotations made in Data Integration before the document was filed are linked to the document when it's filed, so the same lookup finds them.
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentAnnotation, PatientAdministrativeDocument
+
+document = PatientAdministrativeDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="patientadministrativedocument").first()
+
+latest = (
+    DocumentAnnotation.objects.filter(content_type=content_type, object_id=document.dbid)
+    .order_by("created")
+    .last()
+)
+
+# The version Canvas shows: the newest annotation, else the original file
+url = latest.document_url if latest else document.document_url
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A document that no one has annotated has no annotations, so handle <code>None</code>." %}
+
 ## Review assignment
 
 A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.

@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Immunization` model represents a record of immunization events and immunization statements for a patient. Immunizations can be actively administered medications or historical records of immunizations received elsewhere. The `ImmunizationStatement` model represents historical immunization records and vaccination history.
+The `Immunization` model represents a record of immunization events and immunization statements for a patient. Immunizations can be actively administered medications or historical records of immunizations received elsewhere. The `ImmunizationStatement` model represents historical immunization records and vaccination history. The [`ConsolidatedImmunization`](#consolidated-immunizations) model combines both into one record per vaccine.
 
 ## Basic usage
 
@@ -122,6 +122,34 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 ```
 
+## Consolidated immunizations
+
+The `ConsolidatedImmunization` model holds a patient's immunizations and immunization statements as one list, in the form the [FHIR Immunization API](/api/immunization/) returns them. Read it when a plugin needs every vaccine on record for a patient, whether it was administered in Canvas or recorded from history.
+
+Each record links back to the `Immunization` or `ImmunizationStatement` it was built from. The `source` property returns that record, or `None` when the source can't be resolved:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+
+for record in patient.consolidated_immunizations.committed():
+    codes = ", ".join(coding.code for coding in record.coding.all())
+    kind = type(record.source).__name__ if record.source else "unknown"
+    log.info(f"{record.date or record.date_ordered}: {codes} ({kind})")
+```
+
+The `ConsolidatedImmunization` model manager provides the same `for_patient`, `find`, `committed`, and `active` methods as `ImmunizationStatement`. Like `ImmunizationStatement`, it exposes its codings through the singular `coding` accessor:
+
+```python
+from canvas_sdk.v1.data.immunization import ConsolidatedImmunization
+from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
+
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+flu_vaccines = ConsolidatedImmunization.objects.for_patient(patient_id).find(InfluenzaVaccine)
+```
+
 ## Attributes
 
 ### Immunization
@@ -200,6 +228,59 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | display                | String                                            |
 | user_selected          | Boolean                                           |
 | immunization_statement | [ImmunizationStatement](#immunizationstatement)  |
+
+### ConsolidatedImmunization
+
+| Field Name                   | Type                                                         | Description |
+|------------------------------|--------------------------------------------------------------|-------------|
+| id                           | UUID                                                         |             |
+| dbid                         | Integer                                                      |             |
+| created                      | DateTime                                                     |             |
+| modified                     | DateTime                                                     |             |
+| originator                   | [CanvasUser](/sdk/data-canvasuser)                           |             |
+| committer                    | [CanvasUser](/sdk/data-canvasuser)                           |             |
+| entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                           |             |
+| patient                      | [Patient](/sdk/data-patient/#patient)                        |             |
+| note                         | [Note](/sdk/data-note/#note)                                 |             |
+| content_type                 | [ContentType](/sdk/data-content-type/)                       | The content type of the source record: `immunization` or `immunizationstatement` |
+| object_id                    | Integer                                                      | The `dbid` of the source record |
+| primary_source               | Boolean                                                      |             |
+| status                       | [ImmunizationStatus](#immunizationstatus)                    |             |
+| lot_number                   | String                                                       |             |
+| manufacturer                 | String                                                       |             |
+| exp_date_original            | String                                                       |             |
+| exp_date                     | Date                                                         |             |
+| sig_original                 | String                                                       |             |
+| date_ordered                 | Date                                                         |             |
+| given_by                     | [Staff](/sdk/data-staff/#staff)                              |             |
+| consent_given                | Boolean                                                      |             |
+| take_quantity                | Float                                                        |             |
+| dose_form                    | String                                                       |             |
+| route                        | String                                                       |             |
+| frequency_normalized_per_day | Float                                                        |             |
+| evidence                     | String                                                       |             |
+| comment                      | String                                                       |             |
+| reason_not_given             | [ImmunizationReasonsNotGiven](#immunizationreasonsnotgiven)  |             |
+| date_original                | String                                                       |             |
+| date                         | Date                                                         |             |
+| coding                       | [ConsolidatedImmunizationCoding](#consolidatedimmunizationcoding)[] |      |
+| source                       | [Immunization](#immunization) or [ImmunizationStatement](#immunizationstatement) (computed) | The record this one was built from, or `None` |
+
+### ConsolidatedImmunizationCoding
+
+| Field Name                | Type                                                  | Description |
+|---------------------------|-------------------------------------------------------|-------------|
+| dbid                      | Integer                                               |             |
+| created                   | DateTime                                              |             |
+| modified                  | DateTime                                              |             |
+| system                    | String                                                |             |
+| version                   | String                                                |             |
+| code                      | String                                                |             |
+| display                   | String                                                |             |
+| user_selected             | Boolean                                               |             |
+| content_type              | [ContentType](/sdk/data-content-type/)                | The content type of the coding it was copied from |
+| object_id                 | Integer                                               | The `dbid` of the coding it was copied from |
+| consolidated_immunization | [ConsolidatedImmunization](#consolidatedimmunization) |             |
 
 ## Enumeration types
 
