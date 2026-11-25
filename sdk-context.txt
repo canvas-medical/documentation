@@ -11275,7 +11275,8 @@ AttributeHub tables live inside your plugin's custom data namespace, so a plugin
     ```
 Use `read_write` to create hubs or set attributes. `read` is enough to query hubs in a namespace that another plugin already owns.
 A plugin that creates its own namespace needs no access key. Canvas generates `namespace_read_access_key` and `namespace_read_write_access_key` when the first `read_write` plugin initializes the namespace, and stores both on that plugin so you can retrieve them from the Admin UI.
-A plugin joining a namespace another plugin owns declares the matching key as a variable, so that an operator can set the value at install time:
+A plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) that joins a namespace another plugin owns declares only its `custom_data` block. Canvas Platform supplies the access key once the organization that runs the instance consents, and refuses a manifest that declares `namespace_read_access_key` or `namespace_read_write_access_key` in `variables`. See [Custom data on Canvas Platform](/sdk/custom-data-sharing-data/#custom-data-on-canvas-platform).
+A plugin installed with the deprecated `canvas install` that joins a namespace another plugin owns declares the matching key as a variable, so that an operator can set the value at install time:
     ```json
     "variables": [
         {"name": "namespace_read_write_access_key", "sensitive": true}
