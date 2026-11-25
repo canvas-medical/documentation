@@ -22248,7 +22248,7 @@ body | JSON (computed) | Array of objects representing the note structure. Each 
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
 supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
-last_modified_by_staff | [Staff](/sdk/data-staff/#staff) | The staff member who last modified the note  
+last_modified_by_staff | [Staff](/sdk/data-staff/#staff) | The staff member who last edited the note or changed its state, such as locking or signing it. In the [revamped note](/product-updates/note-revamp/), editing a command doesn't change this field. When a plugin effect updates the note or changes its state, this is the staff member who triggered the effect, or Canvas Bot if no user triggered it.  
 checksum | String |   
 billing_note | String |   
 related_data | JSON | Can contain one key, `roomNumber`, if the Note is an inpatient stay.  
@@ -32430,6 +32430,7 @@ Attribute | Type | Description | Required | Updatable
 `provider_id` | `str` | Updated provider | No | Yes  
 `supervising_provider_id` | `str` or `None` | Staff identifier for the supervising provider | No | Yes  
 **Note** : `patient_id` and `note_type_id` cannot be updated after creation.
+Canvas records the staff member who triggered the effect as the note's [`last_modified_by_staff`](/sdk/data-note/#note), or Canvas Bot if no user triggered it. Setting `provider_id` doesn't change `last_modified_by_staff`.
 ####  Example Usage 
     ```python
     import datetime
@@ -38600,7 +38601,7 @@ Target object | Context object
         "id": pt_id  
 NOTE_UPDATED  
 ---  
-Occurs when a note is updated, including changes to fields, commands, or body content.  
+Occurs when a note is updated, including changes to fields, commands, or body content, and when a staff member changes its state, such as locking or signing it. `user.id` is the id of the note's [`last_modified_by_staff`](/sdk/data-note/#note), so after a state change it identifies the staff member who made it. The context has no `user` when the note has no last editor.  
 Target object | Context object  
     "id": note_id
     "type": [Note](/sdk/data-note/)
