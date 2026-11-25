@@ -6,6 +6,8 @@ on:
       - opened
       - reopened
       - synchronize
+  # main's merge queue waits for the required test-code checks on its merge group.
+  merge_group:
   workflow_dispatch:
 
 # Pull requests run code their markdown imports, so the job gets a read-only

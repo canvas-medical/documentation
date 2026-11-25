@@ -90,7 +90,7 @@ This code defines a SimpleAPI handler that exposes REST endpoints for managing o
 
 **Class Overview**
 
-- The main class, `AwsManip`, extends `SimpleAPI`.
+- The main class, `AwsManip`, extends `SimpleAPI` and uses `StaffSessionAuthMixin`, so only signed-in staff can call its routes. The app's requests from the chart already carry the staff session.
 - It creates an S3 client using credentials stored in plugin secrets.
 
 **Main Workflow**
@@ -114,25 +114,18 @@ from canvas_sdk.clients.aws.libraries import S3
 from canvas_sdk.clients.aws.structures import Credentials as S3Credentials
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, PlainTextResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 
 
-class AwsManip(SimpleAPI):
-    """Simple API handler for AWS S3 object management operations."""
+class AwsManip(StaffSessionAuthMixin, SimpleAPI):
+    """Simple API handler for AWS S3 object management operations.
+
+    Only signed-in staff can call these routes; the app's same-origin requests from the chart
+    already carry the staff session.
+    """
 
     PREFIX = None
     USER_TYPE_STAFF = "Staff"
-
-    def authenticate(self, credentials: Credentials) -> bool:
-        """Authenticate API requests.
-
-        Args:
-            credentials: The credentials provided with the request.
-
-        Returns:
-            True to allow all requests (authentication bypassed).
-        """
-        return True
 
     def _s3_client(self) -> S3:
         """Create and configure an S3 client with credentials from secrets.

@@ -6,6 +6,8 @@ on:
 jobs:
   merge-release-branch-to-main:
     runs-on: ubuntu-latest
+    # The App on main's bypass list keeps its key in this environment, which only main can use.
+    environment: github-app
     permissions:
       contents: write
       pull-requests: write
@@ -22,14 +24,15 @@ jobs:
         id: checkout-repo
         uses: actions/checkout@v4
         with:
-          token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
+          persist-credentials: false
       - name: Merge Release Branch
         id: merge-release-branch
         uses: ./.github/actions/merge-release-branch
         with:
           release_name: ${{ github.event.client_payload.release_name }}
           dry_run: ${{ github.event.client_payload.dry_run }}
+          token: ${{ steps.app-token.outputs.token }}
       # The webhook is bound to #phi-release-coordination. toJSON quotes the text, so a
       # release name from the dispatch payload can't break out of the YAML payload.
       - name: Post the failure to Slack

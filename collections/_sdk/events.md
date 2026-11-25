@@ -3375,7 +3375,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">NOTE_SUPERVISING_PROVIDER_CHANGED</th></tr>
-    <tr><td colspan="2">Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider.</td></tr>
+    <tr><td colspan="2">Occurs when a note's supervising provider is changed, including changes made in the note header's provider form and by a <a href="/sdk/effect-notes/#update-note">Note update effect</a>. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider. The event fires after the change is saved, and the note header's supervising provider list has no search hook, so a plugin can't filter that list or block the change. To keep notes to an approved set of supervisors, respond with a Note update effect that sets the value back; see <a href="/sdk/effect-notes/#restricting-a-notes-supervising-provider">Restricting a note's supervising provider</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -30412,7 +30412,7 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
     </tr>
     <tr>
       <td>PLUGIN_UPDATED</td>
-      <td>A plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
+      <td>A plugin is enabled, its code changes, or <code>canvas config set</code> or <code>canvas config unset</code> through Canvas Platform changes one of its <a href="/sdk/secrets/#configuring-variables-from-the-cli">variables</a>. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH</td>

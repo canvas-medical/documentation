@@ -132,6 +132,42 @@ class MyHandler(BaseHandler):
         return [note_effect.update()]
 ```
 
+#### Restricting a note's supervising provider
+
+The supervising provider list in the note header's provider form shows all staff, and no plugin event can filter that list or stop the change from saving. The supervising provider search events (`PRESCRIBE__SUPERVISING_PROVIDER__PRE_SEARCH` and the matching Refill and Adjust Prescription events) apply only to those commands' fields.
+
+A plugin can still enforce an approved list after the fact. [`NOTE_SUPERVISING_PROVIDER_CHANGED`](/sdk/events/#notes) fires once the new value is saved, and its context carries the previous value. When the new supervising provider isn't approved, return an update that restores the previous one if it's approved, or clears the field otherwise. The update fires the event again. This time the supervising provider is approved or empty, so the handler returns nothing. Don't restore a previous value that isn't approved: the two values would keep replacing each other.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.note import Note as NoteEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import Note, Staff
+
+
+class RestrictSupervisingProvider(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_SUPERVISING_PROVIDER_CHANGED)
+
+    def compute(self) -> list[Effect]:
+        note = Note.objects.select_related("supervising_provider").get(id=self.event.target.id)
+        current = note.supervising_provider
+        if current is None or self.is_approved(current.id):
+            return []
+
+        previous_id = (self.event.context.get("previous") or {}).get("id")
+        note_effect = NoteEffect(instance_id=str(note.id))
+        if previous_id and self.is_approved(previous_id):
+            note_effect.supervising_provider_id = previous_id
+        else:
+            note_effect.supervising_provider_id = None
+        return [note_effect.update()]
+
+    def is_approved(self, staff_id: str) -> bool:
+        # Approved: anyone who is some staff member's default supervising provider.
+        return Staff.objects.filter(id=staff_id, supervising_team__isnull=False).exists()
+```
+
 ### Fax Note
 
 `FaxNoteEffect.apply() → Effect`

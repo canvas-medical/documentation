@@ -148,6 +148,13 @@ Notes:
 
 Surescripts staging only returns data for its **canonical test patients**, and the match is strict — name, date of birth, sex, and address (especially ZIP) must match exactly. Create these three with the [FHIR Patient Create](/api/patient/#create) endpoint using the demographics below verbatim.
 
+Give each test patient only the address below. When a patient has more than one address, Canvas picks the one it sends on NewRx, eligibility, and medication history messages in this order:
+
+1. Any `use` other than `old`, ahead of `old`.
+2. `type` `postal` or `both`, ahead of `physical`.
+3. `home`, then `work`, then `temp`.
+4. The newest address.
+
 | Patient | Date of birth | Sex | Address |
 |---|---|---|---|
 | Soloman Bergamel | 1970-03-21 | M | 1948 Bainbridge St, Philadelphia, PA 19146 |

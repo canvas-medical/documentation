@@ -59,6 +59,20 @@ Call it from a handler as `get_access_token(self.secrets)`.
 
 ---
 
+## Storage and Capacity
+
+On a Canvas instance, the plugin cache is a table in the instance's database. Every plugin and every plugin-runner worker on the instance uses the same table. `get_cache()` prefixes each key with your plugin's name, so a plugin only reads and writes its own keys, but the table's capacity is shared by all plugins on the instance.
+
+- **Entry limit:** the cache uses the default limits of Django's database cache backend: 300 entries for the whole instance, counted across all plugins.
+- **When the cache is full:** when a write finds more than 300 entries already in the table, expired ones included, the cache first deletes expired entries. If more than 300 remain, it deletes about a third of the remaining entries, the ones whose keys sort first alphabetically. That can include entries from any plugin, entries that haven't expired, and a whole run of your plugin's keys at once, because they share a prefix.
+- **Key length:** keys are stored in a 255-character column, together with a prefix that includes the instance identifier and the plugin name. Keep keys short.
+- **Values:** values are serialized and stored in the database. The SDK sets no size limit per entry, but the cache is meant for small values.
+- **Configuration:** a plugin can't change these limits.
+
+Because any entry can be removed before it expires, treat a missing key as a normal case and be able to rebuild the value. Don't keep anything in the cache that your plugin's correctness depends on, such as "already sent this message" markers or idempotency records. Store those in [Custom Data](/sdk/custom-data/) instead.
+
+---
+
 ## Supported Methods
 
 ### `get(key: str, default: Any | None = None) -> Any`

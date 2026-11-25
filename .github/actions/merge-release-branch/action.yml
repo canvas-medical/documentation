@@ -11,6 +11,10 @@ inputs:
     type: boolean
     required: false
     default: false
+  token:
+    description: Token of the App on the main ruleset's bypass list, used to push the release branch and merge the release PR
+    required: true
+    type: string
 
 runs:
   using: composite
@@ -24,14 +28,16 @@ runs:
         [[ "$RELEASE_NAME" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release_name must look like release/1.2.3, got: $RELEASE_NAME"; exit 1; }
     # main requires its checks to pass on a branch that is up to date with it, so a release
     # branch cut before the previous release merged can't be merged as is. The caller checks
-    # out the repository with full history and a GitHub App token: a push made with the
-    # workflow's own GITHUB_TOKEN starts no workflows, so the required checks would never run.
+    # out the repository with full history and no stored credentials, and this step pushes
+    # with the App token: a push made with the workflow's own GITHUB_TOKEN starts no
+    # workflows, so the required checks would never run.
     - name: Bring the release branch up to date with main
       id: update-release-branch
       if: inputs.dry_run != 'true'
       shell: bash
       env:
         RELEASE_NAME: ${{ inputs.release_name }}
+        APP_TOKEN: ${{ inputs.token }}
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,7 +51,9 @@ runs:
           echo "::error::$RELEASE_NAME conflicts with main. Merge main into the release branch, resolve the conflict, and run the merge again."
           exit 1
         fi
-        git push origin "HEAD:refs/heads/$RELEASE_NAME"
+        auth=$(printf 'x-access-token:%s' "$APP_TOKEN" | base64 | tr -d '\n')
+        echo "::add-mask::$auth"
+        git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$RELEASE_NAME"
     - name: Wait for the release PR's required checks
       id: wait-for-checks
       if: inputs.dry_run != 'true'
@@ -59,9 +67,14 @@ runs:
         sleep 20
         deadline=$((SECONDS + 1800))
         while :; do
-          state=$(gh pr view "$RELEASE_NAME" --json mergeStateStatus --jq .mergeStateStatus)
+          # Read the state and the head it describes together, so the merge step can refuse
+          # any commit pushed after the checks passed.
+          read -r state head_sha < <(gh pr view "$RELEASE_NAME" --json mergeStateStatus,headRefOid --jq '"\(.mergeStateStatus) \(.headRefOid)"')
           case "$state" in
-            CLEAN|UNSTABLE|HAS_HOOKS) echo "Release PR is ready to merge ($state)."; exit 0 ;;
+            CLEAN|UNSTABLE|HAS_HOOKS)
+              echo "Release PR is ready to merge ($state) at $head_sha."
+              echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+              exit 0 ;;
             DIRTY) echo "::error::$RELEASE_NAME conflicts with main."; exit 1 ;;
           esac
           # gh pr checks exits non-zero while checks are pending, so read its output only.
@@ -78,17 +91,23 @@ runs:
           sleep 30
         done
     # Squash-merging the release PR lands the whole release on main as one commit titled
-    # after the PR, and goes through the main ruleset's required checks like any other PR.
+    # after the PR, once the step above has seen its required checks pass. main requires a
+    # merge queue, and a queue entry made with the workflow's own GITHUB_TOKEN starts no
+    # merge_group checks, so the App on main's bypass list merges it directly with --admin.
+    # --admin skips the ruleset's checks, so --match-head-commit pins the merge to the head
+    # the step above saw pass, and a push after that fails the merge instead of landing.
     - name: squash-merge the release PR
       id: merge-release-branch
       shell: bash
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ inputs.token }}
         GH_REPO: ${{ github.repository }}
         RELEASE_NAME: ${{ inputs.release_name }}
         DRY_RUN: ${{ inputs.dry_run }}
+        HEAD_SHA: ${{ steps.wait-for-checks.outputs.head_sha }}
       run: |
-        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus
+        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus,headRefOid
         if [ "$DRY_RUN" != "true" ]; then
-          gh pr merge "$RELEASE_NAME" --squash
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::No checked head commit recorded for $RELEASE_NAME."; exit 1; }
+          gh pr merge "$RELEASE_NAME" --squash --admin --match-head-commit "$HEAD_SHA"
         fi
