@@ -474,7 +474,7 @@ from canvas_sdk.utils.http import ontologies_http
 response_json = ontologies_http.get_json("/fdb/standard-sig/169434/").json()
 ```
 
-The response gives the id you passed and its sig. `sig` is `null` when FDB has no standard sig for the medication.
+The response gives the id you passed and its sig. `sig` is `null` when FDB has no single standard sig for the medication, meaning it has none or more than one.
 
 ```json
 {
