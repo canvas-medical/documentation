@@ -163,7 +163,8 @@ An empty `XDG_CONFIG_HOME` keeps a personal `uv.toml` `exclude-newer` window fro
 
 ## CI/CD
 
-- **test-code-blocks.yml** — validates Python code examples on PRs
+- **test-code-blocks.yml** — validates Python code examples on PRs and on `main`'s merge queue (`merge_group`)
+  - `main` requires a merge queue, so PRs merge with "Merge when ready" rather than "Update branch". The release merge action merges directly with `--admin` through the App on the ruleset's bypass list, since a queue entry made with `GITHUB_TOKEN` starts no checks.
 - **generate-context.yml** — builds AI context files (`sdk-context.txt`, `fhir-context.txt`) on push to main
 - **update-algolia.yml** — updates search index
 - **merge-release-branch.yml** — auto-merges release branches

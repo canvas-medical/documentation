@@ -37,3 +37,4 @@ jobs:
         with:
           release_name: ${{ inputs.release_name }}
           dry_run: ${{ inputs.dry_run }}
+          token: ${{ steps.app-token.outputs.token }}

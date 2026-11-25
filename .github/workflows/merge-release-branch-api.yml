@@ -30,6 +30,7 @@ jobs:
         with:
           release_name: ${{ github.event.client_payload.release_name }}
           dry_run: ${{ github.event.client_payload.dry_run }}
+          token: ${{ steps.app-token.outputs.token }}
       # The webhook is bound to #phi-release-coordination. toJSON quotes the text, so a
       # release name from the dispatch payload can't break out of the YAML payload.
       - name: Post the failure to Slack

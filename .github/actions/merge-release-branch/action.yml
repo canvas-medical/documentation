@@ -11,6 +11,10 @@ inputs:
     type: boolean
     required: false
     default: false
+  token:
+    description: Token of the App on the main ruleset's bypass list, used to merge the release PR
+    required: true
+    type: string
 
 runs:
   using: composite
@@ -78,17 +82,19 @@ runs:
           sleep 30
         done
     # Squash-merging the release PR lands the whole release on main as one commit titled
-    # after the PR, and goes through the main ruleset's required checks like any other PR.
+    # after the PR, once the step above has seen its required checks pass. main requires a
+    # merge queue, and a queue entry made with the workflow's own GITHUB_TOKEN starts no
+    # merge_group checks, so the App on main's bypass list merges it directly with --admin.
     - name: squash-merge the release PR
       id: merge-release-branch
       shell: bash
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ inputs.token }}
         GH_REPO: ${{ github.repository }}
         RELEASE_NAME: ${{ inputs.release_name }}
         DRY_RUN: ${{ inputs.dry_run }}
       run: |
         gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus
         if [ "$DRY_RUN" != "true" ]; then
-          gh pr merge "$RELEASE_NAME" --squash
+          gh pr merge "$RELEASE_NAME" --squash --admin
         fi
