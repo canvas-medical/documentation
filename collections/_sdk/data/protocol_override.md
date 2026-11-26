@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ProtocolOverride` model represents an instance of a protocol being snoozed for a patient.
+The `ProtocolOverride` model represents an instance of a protocol being snoozed for a patient. The `ProtocolOverrideSnoozeReason` model represents a reason a protocol can be snoozed for.
 
 ## Basic usage
 
@@ -86,6 +86,36 @@ adjustments = (
 )
 ```
 
+## Snooze reasons
+
+When a clinician snoozes a protocol, they choose a reason from a list that Canvas admins maintain. Each override's `reason` attribute is the [ProtocolOverrideSnoozeReason](#protocoloverridesnoozereason) record for that choice. Use it to show or report why a protocol was snoozed:
+
+```python
+from canvas_sdk.v1.data.protocol_override import ProtocolOverride
+
+for override in ProtocolOverride.objects.snoozes("HCC001v1").select_related("reason"):
+    print(override.reason.snooze_reason, override.reason.description)
+```
+
+Every override has a reason. When no reason was chosen, Canvas sets it to the reason whose `snooze_reason` is `OTHER`.
+
+To list the reasons that clinicians can currently choose from, in the order Canvas shows them, filter `ProtocolOverrideSnoozeReason` by `active`:
+
+```python
+from canvas_sdk.v1.data.protocol_override import ProtocolOverrideSnoozeReason
+
+reasons = ProtocolOverrideSnoozeReason.objects.filter(active=True).order_by("sort")
+```
+
+To find the overrides that use a reason, use its `overrides` attribute:
+
+```python
+from canvas_sdk.v1.data.protocol_override import ProtocolOverrideSnoozeReason
+
+reason = ProtocolOverrideSnoozeReason.objects.get(snooze_reason="PATIENT_REFUSED")
+refused = reason.overrides.filter(is_snooze=True)
+```
+
 ## Attributes
 
 ### ProtocolOverride
@@ -107,11 +137,25 @@ adjustments = (
 | is_snooze        | Boolean                               |
 | snooze_date      | Date                                  |
 | snoozed_days     | Integer                               |
+| reason           | [ProtocolOverrideSnoozeReason](#protocoloverridesnoozereason) |
 | snooze_comment   | String                                |
 | narrative        | String                                |
 | cycle_quantity   | Integer                               |
 | cycle_unit       | [IntervalUnit](#intervalunit)         |
 | status           | [Status](#status)                     |
+
+### ProtocolOverrideSnoozeReason
+
+| Field Name    | Type                                    | Description |
+| ------------- | --------------------------------------- | ----------- |
+| id            | UUID                                    | Unique identifier for the snooze reason. |
+| dbid          | Integer                                 | Database identifier. |
+| snooze_reason | String                                  | Unique code for the reason, in capital letters and underscores, such as `PATIENT_REFUSED`. |
+| description   | String                                  | The label clinicians see when they choose a reason, such as `Patient refused`. |
+| snomed_code   | String                                  | The SNOMED CT code for the reason. |
+| active        | Boolean                                 | Whether clinicians can choose the reason when they snooze a protocol. |
+| sort          | Integer                                 | The reason's position in the list of choices. |
+| overrides     | [ProtocolOverride](#protocoloverride)[] | The overrides that use this reason. |
 
 ## Enumeration types
 
