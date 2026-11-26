@@ -840,6 +840,70 @@ matches, for an agent that works for whoever a person asks about. It needs the
 patient: a patient the search names is for the agent to tell the person, or to
 start a run about.
 
+## Visit transcripts
+
+`@transcript_reads` works from a visit transcript your plugin already has,
+such as one a speech-to-text engine produced. Neither tool takes the
+transcript as an argument, so the model never copies a whole visit into a
+tool call. Your code puts the transcript on the tool context with `ctx=`:
+
+```python?partial=true
+result = self.run_tool_loop(
+    gateway,
+    system=SYSTEM_PROMPT,
+    messages=messages,
+    ctx={
+        # Read by structure_note_from_transcript: one utterance per line.
+        "transcript": "Clinician: What brings you in today?\nPatient: My knee hurts.",
+        # Read by identify_speaker_roles: each line with its diarization label.
+        "transcript_lines": [
+            {"speaker": "speaker_0", "text": "What brings you in today?"},
+            {"speaker": "speaker_1", "text": "My knee hurts."},
+        ],
+    },
+)
+```
+
+- `identify_speaker_roles` reads `transcript_lines`, the lines in order,
+  each with the `speaker` label speech-to-text gave the voice (`speaker_0`,
+  `speaker_1`) and the `text` it said. It maps each label to `clinician`,
+  `patient`, `nurse`, `family`, or `other`, judged from what the voice says
+  and never from who spoke first. A lone voice is the clinician, and a voice
+  whose lines don't show its role is `other`. Lines with no label or no text
+  are skipped, and it reads whole lines up to the first 20,000 characters.
+- `structure_note_from_transcript` reads `transcript`, the visit as one
+  string with one utterance per line, naming the speaker when the
+  transcript knows it. It returns the visit filed into the sections of a
+  clinical note, listed in its entry under [Reads](#reads).
+  A section the visit didn't cover comes back as an empty string or an
+  empty list. A problem, diagnosis, finding, or plan item appears only when
+  the clinician stated it. The result is a draft for a clinician to review.
+
+Both tools read without staging anything. To put what they return on the
+chart, the agent calls write tools such as `originate_hpi` and
+`originate_plan`.
+
+When a tool can't produce a result, it returns `ok: false` with an `error`
+and the run continues. That happens when the context has no transcript,
+when the gateway refuses the call with a 400 or 402 (see
+[credentials](/sdk/agents/#credentials)), or when the model stops before it
+finishes. Any other gateway error, such as an outage, ends the run.
+
+To run either step on every visit without the model deciding when,
+call it from your code. `canvas_sdk.agents` exports both as functions that
+take the run's `gateway` and an optional `model` and `effort`:
+
+- `identify_speaker_roles(lines, *, gateway)` returns a dict of label to
+  role, `{}` when no line has a label, or `None` when the model stopped
+  before answering. `SPEAKER_ROLES` lists the roles.
+- `structure_note_from_transcript(transcript, *, gateway)` returns a
+  `StructuredVisitNote`, whose `vitals` and `problems` hold `VisitVital`
+  and `VisitProblem` items, or `None` when the model stopped before
+  finishing. An empty transcript raises `ValueError`.
+
+Both raise `GatewayError` when the gateway refuses the call or can't reach
+the model.
+
 ## Tool surface design tips
 
 - **Be specific in `description`.** The model picks tools based on
@@ -924,6 +988,7 @@ list to opt out of specific tools within a granted category:
 - **`@scheduling_writes`** (3 tools): `book_appointment`, `reschedule_appointment`, `cancel_appointment`
 - **`@task_reads`** (1 tool): `find_tasks`
 - **`@task_writes`** (3 tools): `create_task`, `update_task`, `add_task_comment`
+- **`@transcript_reads`** (2 tools): `identify_speaker_roles`, `structure_note_from_transcript`
 <!-- AUTOGEN:categories END -->
 
 ### Reads
@@ -1865,6 +1930,26 @@ Search the open appointment times the native booking screens offer at one practi
 | `reschedule_appointment_id` | string | no | When rescheduling, the patient's appointment, from find_appointments, so its own time shows as open. |
 
 **Returns:** Array of up to 50 `{provider_id, start, end}`, earliest first.
+
+#### `identify_speaker_roles`
+
+**Category:** `@transcript_reads`
+
+Work out the role of each numbered voice in the run's visit transcript (clinician, patient, nurse, family, or other) from what each voice says. Takes no arguments: it reads the transcript lines the agent was given. Reads the transcript with a separate model call, so call it again only when a new voice has spoken.
+
+**Arguments:** none.
+
+**Returns:** Object with `ok` and `roles`, each voice's label mapped to its role; `ok: false` with `error` when the roles could not be worked out.
+
+#### `structure_note_from_transcript`
+
+**Category:** `@transcript_reads`
+
+File the run's visit transcript into the sections of a clinical note: reason for visit, history of present illness, review of systems, exam, vitals, medications, allergies, histories, each problem with its assessment and plan, other plan items, and follow-up. Takes no arguments: it reads the transcript the agent was given. Reads the whole visit with a separate model call, so it is slow and costly: call it once per visit and work from its result.
+
+**Arguments:** none.
+
+**Returns:** Object with `ok` and `note`, the sections as `reason_for_visit`, `history_of_present_illness`, `review_of_systems`, `physical_exam`, `vitals` (`name`, `value`, `unit`), `current_medications`, `allergies`, `past_medical_history`, `past_surgical_history`, `family_history`, `social_history`, `problems` (`name`, `assessment`, `plan`), `plan`, and `follow_up`; `ok: false` with `error` when the visit could not be structured.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
