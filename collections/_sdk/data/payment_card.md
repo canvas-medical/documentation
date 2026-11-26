@@ -49,6 +49,7 @@ To retrieve the patient's default card:
 | card_holder_name      | String                                |
 | postal_code           | String                                |
 | is_default            | Boolean                               |
+| credit_card_charges   | QuerySet[[CreditCardCharge](/sdk/data-posting/#creditcardcharge)] |
 
 <br/>
 <br/>

@@ -147,6 +147,33 @@ staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 url = staff.signature_url
 ```
 
+## Reading the auth groups a role assigns
+
+A `Role` is a role defined on your instance, such as a registered nurse or a physician. Each role can have role groups, and each [RoleGroup](#rolegroup) lists the auth groups Canvas adds a new staff member to when they are created with that role. Those auth groups set the staff member's initial permissions. Changing a role's groups later doesn't change the groups of staff who already hold the role.
+
+A staff member's [StaffRole](#staffrole) records carry the `internal_code` of the role they hold, and `internal_code` is unique for each `Role`. To list the auth groups behind each of a staff member's roles:
+
+```python
+from canvas_sdk.v1.data import Role, Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+role_codes = staff.roles.values_list("internal_code", flat=True)
+
+roles = Role.objects.filter(internal_code__in=role_codes).prefetch_related("role_groups__groups")
+for role in roles:
+    for role_group in role.role_groups.all():
+        print(role.name, [group.name for group in role_group.groups.all()])
+```
+
+To find the roles that assign a given auth group, start from the [AuthGroup](#authgroup):
+
+```python
+from canvas_sdk.v1.data import AuthGroup
+
+group = AuthGroup.objects.get(name="Nurses")
+roles = {role_group.role.name for role_group in group.role_groups.select_related("role")}
+```
+
 ## Attributes
 
 ### Staff
@@ -324,6 +351,53 @@ url = staff.signature_url
 | domain_privilege_level | Integer                    |
 | permissions            | JSON                       |
 | role_type              | [RoleType](#role-type)     |
+
+### Role
+
+| Field Name             | Type                                  |
+| ---------------------- | ------------------------------------- |
+| dbid                   | Integer                               |
+| created                | DateTime                              |
+| modified               | DateTime                              |
+| internal_code          | String                                |
+| public_abbreviation    | String                                |
+| domain                 | [RoleDomain](#role-domain)            |
+| name                   | String                                |
+| domain_privilege_level | Integer                               |
+| permissions            | JSON                                  |
+| role_type              | [RoleType](#role-type)                |
+| role_groups            | QuerySet[[RoleGroup](#rolegroup)]     |
+
+### RoleGroup
+
+The auth groups a [Role](#role) assigns to staff created with it.
+
+| Field Name | Type                                |
+| ---------- | ----------------------------------- |
+| id         | UUID                                |
+| dbid       | Integer                             |
+| role       | [Role](#role)                       |
+| groups     | QuerySet[[AuthGroup](#authgroup)]   |
+
+### AuthGroup
+
+A named group of permissions that staff users belong to.
+
+| Field Name  | Type                              |
+| ----------- | --------------------------------- |
+| dbid        | Integer                           |
+| name        | String                            |
+| role_groups | QuerySet[[RoleGroup](#rolegroup)] |
+
+### RoleGroupGroup
+
+The join between a [RoleGroup](#rolegroup) and an [AuthGroup](#authgroup). Reach the auth groups through the role group's `groups` attribute rather than querying this model.
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| role_group | [RoleGroup](#rolegroup) |
+| group      | [AuthGroup](#authgroup) |
 
 ### StaffExternalIdentifier
 
