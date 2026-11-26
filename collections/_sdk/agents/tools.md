@@ -870,7 +870,10 @@ result = self.run_tool_loop(
   `patient`, `nurse`, `family`, or `other`, judged from what the voice says
   and never from who spoke first. A lone voice is the clinician, and a voice
   whose lines don't show its role is `other`. Lines with no label or no text
-  are skipped, and it reads whole lines up to the first 20,000 characters.
+  are skipped. It reads the transcript from the start, up to 20,000
+  characters of text, and cuts the line that crosses that limit at a word.
+  A voice first heard after the limit gets no role and is left out of the
+  result.
 - `structure_note_from_transcript` reads `transcript`, the visit as one
   string with one utterance per line, naming the speaker when the
   transcript knows it. It returns the visit filed into the sections of a
@@ -886,20 +889,25 @@ chart, the agent calls write tools such as `originate_hpi` and
 When a tool can't produce a result, it returns `ok: false` with an `error`
 and the run continues. That happens when the context has no transcript,
 when the gateway refuses the call with a 400 or 402 (see
-[credentials](/sdk/agents/#credentials)), or when the model stops before it
-finishes. Any other gateway error, such as an outage, ends the run.
+[credentials](/sdk/agents/#credentials)), or when the model doesn't finish
+an answer that fits the result's schema. Any other gateway error, such as an
+outage, ends the run.
 
 To run either step on every visit without the model deciding when,
 call it from your code. `canvas_sdk.agents` exports both as functions that
 take the run's `gateway` and an optional `model` and `effort`:
 
 - `identify_speaker_roles(lines, *, gateway)` returns a dict of label to
-  role, `{}` when no line has a label, or `None` when the model stopped
-  before answering. `SPEAKER_ROLES` lists the roles.
-- `structure_note_from_transcript(transcript, *, gateway)` returns a
-  `StructuredVisitNote`, whose `vitals` and `problems` hold `VisitVital`
-  and `VisitProblem` items, or `None` when the model stopped before
-  finishing. An empty transcript raises `ValueError`.
+  role for the voices it read, `{}` when no line has a label, or `None` when
+  the model stopped before answering or answered outside the schema.
+  `SPEAKER_ROLES` lists the roles.
+- `structure_note_from_transcript(transcript, *, gateway, max_tokens=8192)`
+  returns a `StructuredVisitNote`, whose `vitals` and `problems` hold
+  `VisitVital` and `VisitProblem` items. It returns `None` when the model
+  doesn't finish the note: the note runs past `max_tokens`, the run has no
+  model calls left, or the answer is outside the schema. Raise `max_tokens`
+  for a long visit with many problems. The standard tool always uses the
+  default. A transcript that isn't text, or is empty, raises `ValueError`.
 
 Both raise `GatewayError` when the gateway refuses the call or can't reach
 the model.
