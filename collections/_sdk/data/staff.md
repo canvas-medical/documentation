@@ -151,18 +151,17 @@ url = staff.signature_url
 
 A `Role` is a role defined on your instance, such as a registered nurse or a physician. Each role can have role groups, and each [RoleGroup](#rolegroup) lists the auth groups Canvas adds a new staff member to when they are created with that role. Those auth groups set the staff member's initial permissions. Changing a role's groups later doesn't change the groups of staff who already hold the role.
 
-A staff member's [StaffRole](#staffrole) records carry the `internal_code` of the role they hold, and `internal_code` is unique for each `Role`. To list the auth groups behind each of a staff member's roles:
+Each of a staff member's [StaffRole](#staffrole) records links to the `Role` it holds through `role`. To list the auth groups behind each of a staff member's roles:
 
 ```python
-from canvas_sdk.v1.data import Role, Staff
+from canvas_sdk.v1.data import Staff
 
 staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
-role_codes = staff.roles.values_list("internal_code", flat=True)
 
-roles = Role.objects.filter(internal_code__in=role_codes).prefetch_related("role_groups__groups")
-for role in roles:
-    for role_group in role.role_groups.all():
-        print(role.name, [group.name for group in role_group.groups.all()])
+staff_roles = staff.roles.select_related("role").prefetch_related("role__role_groups__groups")
+for staff_role in staff_roles:
+    for role_group in staff_role.role.role_groups.all():
+        print(staff_role.role.name, [group.name for group in role_group.groups.all()])
 ```
 
 To find the roles that assign a given auth group, start from the [AuthGroup](#authgroup):
@@ -344,6 +343,7 @@ roles = {role_group.role.name for role_group in group.role_groups.select_related
 | created                | DateTime                   |
 | modified               | DateTime                   |
 | staff                  | [Staff](#staff)            |
+| role                   | [Role](#role)              |
 | internal_code          | String                     |
 | public_abbreviation    | String                     |
 | domain                 | [RoleDomain](#role-domain) |
@@ -356,6 +356,7 @@ roles = {role_group.role.name for role_group in group.role_groups.select_related
 
 | Field Name             | Type                                  |
 | ---------------------- | ------------------------------------- |
+| id                     | UUID                                  |
 | dbid                   | Integer                               |
 | created                | DateTime                              |
 | modified               | DateTime                              |
@@ -367,6 +368,7 @@ roles = {role_group.role.name for role_group in group.role_groups.select_related
 | permissions            | JSON                                  |
 | role_type              | [RoleType](#role-type)                |
 | role_groups            | QuerySet[[RoleGroup](#rolegroup)]     |
+| staff_roles            | QuerySet[[StaffRole](#staffrole)]     |
 
 ### RoleGroup
 
