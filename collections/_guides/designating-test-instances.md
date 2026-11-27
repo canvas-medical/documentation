@@ -45,3 +45,15 @@ acme__paperwork_eviscerator at 3f2a9c1e7b04 isn't on main, so it deploys only to
 ```
 
 When the instance could be a test instance, the message adds who can add it and where. When your organization has no test instances, the message says so and names who can make one. Merge the change to `main` to deploy it to any other instance.
+
+### Deploy a branch that's already on Canvas Platform
+
+To deploy a branch someone else pushed, name it with [`canvas deploy --ref`](/sdk/canvas_cli/#canvas-deploy). Canvas Platform looks the branch up in the plugin's repository, so it doesn't need to be in your local clone, and nothing is pushed. `deploy` reads only the plugin's name and publisher from the folder you give it, so any checkout of the plugin works, such as one from [`canvas clone`](/sdk/canvas_cli/#canvas-clone).
+
+Canvas Studio keeps a project's work in progress on the `canvas-studio` branch, so you can deploy it to any of your organization's test instances:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref canvas-studio --instance acme-staging
+```
+
+`--ref` also takes a tag or a full commit SHA.
