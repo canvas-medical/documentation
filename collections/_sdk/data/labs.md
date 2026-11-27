@@ -778,7 +778,6 @@ A specimen collected for a [LabOrder](#laborder).
 | source               | String                                                |       |
 | source_additional    | String                                                |       |
 | collection_date_time | DateTime                                              |       |
-| body_site_id         | Integer                                               | The `dbid` of the specimen's body site. Body sites have no SDK model. |
 | observations         | [Observation](/sdk/data-observation/#observation)[]   | Observations recorded for the specimen |
 
 ### LabOrderReason
