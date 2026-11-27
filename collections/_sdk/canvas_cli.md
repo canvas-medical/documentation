@@ -296,7 +296,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 **What `deploy` does**
 
 1. Checks the manifest `name` is a valid plugin name, or a name one of your organizations publishes on Canvas Platform, and that the package folder has the same name.
-2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
+2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. The credential rules read the files the deploy pushes (see **Plugin repository layout** below). If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
@@ -403,6 +403,10 @@ paperwork-eviscerator/          # repository root
 `canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. A package nested deeper inside a larger repository is refused unless you pass `--snapshot`; see the next section.
 
 Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
+
+The [credential rules](#static-lint) read the files the push sends, not the files `canvas install` packages. Without `--snapshot`, that's every file in the repository that git tracks or doesn't ignore, including hidden files, files outside the package folder, and files `.canvasignore` lists. With `--snapshot`, it's the files git tracks or doesn't ignore in the package folder. A gitignored file isn't read, and neither is a symbolic link. A finding in a file outside the package folder names the file relative to it, such as `../config/keys.json:1`. When `deploy` creates the repository, it runs the credential rules on the new repository's files before it commits anything.
+
+A push without `--snapshot` also sends the commits Canvas Platform's repository doesn't have yet, so a credential committed and later deleted still reaches Canvas Platform. Before it pushes, `deploy` runs the credential rules on the earlier file versions those commits hold. On a plugin's first push, that's every commit. Warnings print and the push goes ahead. An error stops the deploy before it pushes. Rewrite the commits that add the credential, which aren't pushed yet, and rotate the credential. A `--snapshot` push sends one new commit with the package's current files, so it has no earlier versions to check.
 
 Validation reads the package on disk, so a Python file that git ignores passes validation but never reaches the instance. `deploy` refuses a package that holds one, with or without `--snapshot`, and names the files. Stop ignoring them in `.gitignore`, or move them out of the package, then deploy again. Python files under a folder whose name starts with a dot, such as `.venv`, or under `node_modules` are skipped, since validation skips them too.
 
@@ -522,7 +526,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 `canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
-- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
+- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes, and every packaged file for credentials)
 - Sandbox-load validation (imports every handler in the sandbox)
 
 If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
@@ -667,18 +671,18 @@ $ canvas validate [OPTIONS] PLUGIN_NAME
 This command runs full pre-flight validation combining:
 
 1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
-2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes before any code runs.
+2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes, and every packaged file for credentials, before any code runs.
 3. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
 
 #### Static lint
 
-Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
+Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. The credential rules read every packaged file instead (see **Credentials** below). Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
 
 ```console
 $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
-These issues will fail on the instance (sandbox / Custom Data):
+These issues must be fixed before the plugin can be installed:
   ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
@@ -712,6 +716,15 @@ These issues will fail on the instance (sandbox / Custom Data):
 | --- | --- |
 | `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
 | `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
+
+**Credentials (errors and warnings).** These rules read every text file in the plugin package, not just `.py` files: the files listed under [What gets packaged](#canvas-install), including files under `tests/`. `canvas validate` and `canvas install` read these files. `canvas deploy` reads the files it pushes instead, and the commits it pushes; see **Plugin repository layout** under [`canvas deploy`](#canvas-deploy). Keep each credential in a [plugin variable](/sdk/secrets/) marked `sensitive` and read it with `self.secrets[...]`. When a finding reports a real credential, move it to a variable and rotate it. An API key finding shows the key's first four characters and its length, so you can tell which key it is. The other credential findings show no part of the value.
+
+| Rule code | Flags |
+| --- | --- |
+| `hardcoded-credential` (error) | An API key or token: an Anthropic key (`sk-ant-api`, `sk-ant-admin`), a Slack bot or user token (`xoxb-`, `xoxp-`), a Stripe live secret or restricted key (`sk_live_`, `rk_live_`), a GitHub token (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`), or an OpenAI project key (`sk-proj-`). In a Markdown or reStructuredText file (`.md`, `.rst`), where examples live, it's a warning instead. |
+| `hardcoded-credential` (error) | A service-account private key: a JSON `private_key` field holding a key body, the shape of a downloaded Google service-account file. Store the service-account JSON in a sensitive plugin variable and sign with [`jwt`](/sdk/sandboxing-and-allowed-imports/): `jwt.encode(claims, key, algorithm="RS256")`. In a `.md` or `.rst` file it's a warning instead. |
+| `hardcoded-credential` (warning) | Any other private key header, such as `-----BEGIN PRIVATE KEY-----` or `-----BEGIN RSA PRIVATE KEY-----`, in any packaged file. A mutual-TLS client key stays a warning because plugins can load one only from a file today. |
+| `possible-credential` (warning) | A quoted value of 20 or more characters assigned with `=` or `:` to a name containing `api_key`, `apikey`, `secret`, `token`, `password`, `passwd`, or `private_key`, when the value mixes lowercase letters, uppercase letters, and digits or is a run of 32 or more lowercase hex characters. URLs aren't flagged, and neither are `.md` and `.rst` files or files under a `test` or `tests` folder. |
 
 #### Sandbox-load validation
 
