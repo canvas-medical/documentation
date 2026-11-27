@@ -845,7 +845,8 @@ start a run about.
 `@transcript_reads` works from a visit transcript your plugin already has,
 such as one a speech-to-text engine produced. Neither tool takes the
 transcript as an argument, so the model never copies a whole visit into a
-tool call. Your code puts the transcript on the tool context with `ctx=`:
+tool call. Your code puts the transcript on the tool context once, as
+`transcript_lines` in `ctx=`, and both tools read it from there:
 
 ```python?partial=true
 result = self.run_tool_loop(
@@ -853,9 +854,7 @@ result = self.run_tool_loop(
     system=SYSTEM_PROMPT,
     messages=messages,
     ctx={
-        # Read by structure_note_from_transcript: one utterance per line.
-        "transcript": "Clinician: What brings you in today?\nPatient: My knee hurts.",
-        # Read by identify_speaker_roles: each line with its diarization label.
+        # Each line with its diarization label and what the voice said.
         "transcript_lines": [
             {"speaker": "speaker_0", "text": "What brings you in today?"},
             {"speaker": "speaker_1", "text": "My knee hurts."},
@@ -864,9 +863,9 @@ result = self.run_tool_loop(
 )
 ```
 
-- `identify_speaker_roles` reads `transcript_lines`, the lines in order,
-  each with the `speaker` label speech-to-text gave the voice (`speaker_0`,
-  `speaker_1`) and the `text` it said. It maps each label to `clinician`,
+- `identify_speaker_roles` reads the lines in order, each with the
+  `speaker` label speech-to-text gave the voice (`speaker_0`, `speaker_1`)
+  and the `text` it said. It maps each label to `clinician`,
   `patient`, `nurse`, `family`, or `other`, judged from what the voice says
   and never from who spoke first. A lone voice is the clinician, and a voice
   whose lines don't show its role is `other`. Lines with no label or no text
@@ -877,21 +876,23 @@ result = self.run_tool_loop(
   just before it joins, which often names it, and the lines from its first
   one on. All such voices share 20,000 characters. Once those are spent, a
   voice first heard later gets no role and is left out of the result.
-- `structure_note_from_transcript` reads `transcript`, the visit as one
-  string with one utterance per line, naming the speaker when the
-  transcript knows it. It returns the visit filed into the sections of a
-  clinical note, listed in its entry under [Reads](#reads).
+- `structure_note_from_transcript` joins the lines into one utterance per
+  line under its `speaker` label, skipping lines with no text. It returns
+  the visit filed into the sections of a clinical note, listed in its entry
+  under [Reads](#reads).
   A section the visit didn't cover comes back as an empty string or an
   empty list. A problem, diagnosis, finding, or plan item appears only when
   the clinician stated it. The result is a draft for a clinician to review.
+  When the note is cut off at 8,192 tokens, the tool asks once more with
+  room for 16,384 tokens before it reports that the model didn't finish.
 
 Both tools read without staging anything. To put what they return on the
 chart, the agent calls write tools such as `originate_hpi` and
 `originate_plan`.
 
 When a tool can't produce a result, it returns `ok: false` with an `error`
-and the run continues. That happens when the context has no transcript,
-when the gateway refuses the call with a 400 or 402 (see
+and the run continues. That happens when the context has no transcript
+lines, when the gateway refuses the call with a 400 or 402 (see
 [credentials](/sdk/agents/#credentials)), or when the model doesn't finish
 an answer that fits the result's schema. Any other gateway error, such as an
 outage, ends the run.
@@ -909,8 +910,10 @@ take the run's `gateway` and an optional `model` and `effort`:
   `VisitVital` and `VisitProblem` items. It returns `None` when the model
   doesn't finish the note: the note runs past `max_tokens`, the run has no
   model calls left, or the answer is outside the schema. Raise `max_tokens`
-  for a long visit with many problems. The standard tool always uses the
-  default. A transcript that isn't text, or is empty, raises `ValueError`.
+  for a long visit with many problems. The function takes the visit as one
+  string with one utterance per line, naming the speaker when the
+  transcript knows it. A transcript that isn't text, or is empty, raises
+  `ValueError`.
 
 Both raise `GatewayError` when the gateway refuses the call or can't reach
 the model.
@@ -1956,7 +1959,7 @@ Work out the role of each numbered voice in the run's visit transcript (clinicia
 
 **Category:** `@transcript_reads`
 
-File the run's visit transcript into the sections of a clinical note: reason for visit, history of present illness, review of systems, exam, vitals, medications, allergies, histories, each problem with its assessment and plan, other plan items, and follow-up. Takes no arguments: it reads the transcript the agent was given. Reads the whole visit with a separate model call, so it is slow and costly: call it once per visit and work from its result.
+File the run's visit transcript into the sections of a clinical note: reason for visit, history of present illness, review of systems, exam, vitals, medications, allergies, histories, each problem with its assessment and plan, other plan items, and follow-up. Takes no arguments: it reads the transcript lines the agent was given. Reads the whole visit with a separate model call, so it is slow and costly: call it once per visit and work from its result.
 
 **Arguments:** none.
 
