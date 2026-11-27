@@ -461,6 +461,7 @@ The exceptions the requests library raises, which the [`Http`](/sdk/utils/) util
 
 All Canvas SDK modules are available for import and use within your plugins:
 
+- `canvas_sdk.agents`
 - `canvas_sdk.caching`
 - `canvas_sdk.commands`
 - `canvas_sdk.effects`

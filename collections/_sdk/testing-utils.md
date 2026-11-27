@@ -122,6 +122,12 @@ At this time, Canvas has factory support for the following models:
 
 A complete list of available factories is located [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/test_utils/factories).
 
+### Testing agents
+
+`canvas_sdk.test_utils.agents` has a fake inference gateway and a
+platform-like run for agent plugins. See
+[Testing agents](/sdk/agents-testing/).
+
 ## Local DB Seeding via `run-plugin`
 
 You can run plugins locally with full access to the database using the CLI. Two options are available:
