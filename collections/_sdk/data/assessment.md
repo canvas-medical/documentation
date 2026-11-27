@@ -85,7 +85,15 @@ Plan- and Procedures-section commands, the order, medication, and educational ma
 
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked. [Carrying a command forward](/sdk/commands/#command-actions) into a new note copies its data but not its link, so the new command starts with no `assessment`.
 
-Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
+Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. That includes an ICD-10 code the Assess command picked that isn't on the patient's chart yet. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details.
+
+The link records which codes it added. Clearing the link, or moving it to another assessment, removes only those codes:
+
+- A code the command listed before the link stays, because the link didn't add it.
+- A code the link added and someone has since removed stays removed.
+- Setting the link to the assessment it already has leaves the codes as they are.
+
+When Canvas clears a link automatically, because the assessment is deleted or entered in error or a move puts the two in different notes, the codes stay on the command.
 
 On an instance in the [revamped note beta program](/product-updates/note-revamp/), a [printed note](/sdk/commands/#command-actions) in the revamped format lists each linked command indented under its assessment.
 
