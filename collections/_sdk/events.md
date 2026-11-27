@@ -19587,6 +19587,8 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+The `PRESCRIBE__INDICATIONS__*` events fire each time a user changes the search term in the **Indications** field, with that term in `search_term`. Canvas runs the search on the server for every term, so a `POST_SEARCH` handler sees the results for the current term. The results start with the patient's active conditions that match the term. Each has the condition's id as its `value` and, when the condition has one, its ICD-10 code in `annotations`. When the term isn't empty, ICD-10 conditions follow, each with its ICD-10 code as its `value`. An ICD-10 result whose code an active condition already has is returned as that condition instead. A user can pick up to two indications. When the prescription is committed, Canvas records each ICD-10 pick as the patient's condition with that code, or as a new active encounter diagnosis kept off the problem list. The **Indications** fields of Refill and Adjust Prescription work the same way and fire the `REFILL__INDICATIONS__*` and `ADJUST_PRESCRIPTION__INDICATIONS__*` events.
+
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIBE__PHARMACY__POST_SEARCH</th></tr>
