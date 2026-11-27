@@ -870,10 +870,13 @@ result = self.run_tool_loop(
   `patient`, `nurse`, `family`, or `other`, judged from what the voice says
   and never from who spoke first. A lone voice is the clinician, and a voice
   whose lines don't show its role is `other`. Lines with no label or no text
-  are skipped. It reads the transcript from the start, up to 20,000
-  characters of text, and cuts the line that crosses that limit at a word.
-  A voice first heard after the limit gets no role and is left out of the
-  result.
+  are skipped. It reads the opening of the visit, up to 20,000 characters
+  of text, and cuts the line that crosses that limit at a word. A voice
+  first heard after the opening, such as a nurse or relative who joins a
+  long visit, gets up to 2,000 characters of its own: the start of the line
+  just before it joins, which often names it, and the lines from its first
+  one on. All such voices share 20,000 characters. Once those are spent, a
+  voice first heard later gets no role and is left out of the result.
 - `structure_note_from_transcript` reads `transcript`, the visit as one
   string with one utterance per line, naming the speaker when the
   transcript knows it. It returns the visit filed into the sections of a
