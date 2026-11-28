@@ -88,6 +88,46 @@ The `filter` method can be used to filter by desired attributes. The following e
 | logo         | File (S3 key)                           |
 | logo_url     | String (computed)                       |
 | patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
+| settings     | QuerySet[[BusinessLineSetting](#businesslinesetting)] |
+
+### BusinessLineSetting
+
+A business line's own settings, which Canvas uses for the business line's patients. Each setting has a `name` and a JSON `value`:
+
+| Name                               | Value                                                                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `appointmentReminders`             | A reminder schedule, in the same shape as the [organization's](/sdk/data-organization/#organizationsetting). |
+| `appointmentReminderCustomization` | The text Canvas adds to reminder messages, in the same shape as the [organization's](/sdk/data-organization/#organizationsetting). |
+| `phoneNumber`                      | The phone number Canvas sends the business line's patients text messages from, such as appointment reminders, as a string. Canvas assigns it when the business line is created with an area code. |
+
+Canvas uses a business line's `appointmentReminderCustomization` or `phoneNumber` for a patient when all of these are true:
+
+- Business lines are enabled on the instance.
+- The business line is active.
+- The patient belongs to the business line.
+- The business line's value isn't empty.
+
+Otherwise, Canvas uses the instance-wide value, such as the organization's `appointmentReminderCustomization`. The reminder schedule always comes from the organization's `appointmentReminders`.
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+
+if patient.business_line:
+    customization = patient.business_line.settings.filter(
+        name="appointmentReminderCustomization"
+    ).first()
+```
+
+| Field Name    | Type                          |
+| ------------- | ----------------------------- |
+| dbid          | Integer                       |
+| created       | DateTime                      |
+| modified      | DateTime                      |
+| business_line | [BusinessLine](#businessline) |
+| name          | String                        |
+| value         | JSON                          |
 
 ## Enumeration types
 

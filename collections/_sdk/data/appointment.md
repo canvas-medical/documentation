@@ -74,6 +74,26 @@ Listen for `APPOINTMENT_RESCHEDULED` rather than handling `APPOINTMENT_CREATED` 
 
 The SDK can produce either shape, so which one your plugin sees depends on what the calling code chose. A plugin that has to catch every move of an appointment needs to handle both `APPOINTMENT_RESCHEDULED` and `APPOINTMENT_UPDATED`.
 
+## Reading appointment reminders
+
+Canvas records each reminder it sends, or tries to send, for an appointment as an [AppointmentReminder](#appointmentreminder). Read them through the appointment's `reminders` attribute, for example to find reminders that failed so your plugin can follow up another way:
+
+```python
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentReminderStatus
+from logger import log
+
+appointment = Appointment.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
+
+for reminder in appointment.reminders.filter(status=AppointmentReminderStatus.FAILED):
+    log.info(f"Reminder to {reminder.phone_number or reminder.email} failed at {reminder.created}")
+```
+
+Canvas records one reminder for each channel it tries: `phone_number` is set for a text message, and `email` is set for an email. `status` is `None` while the send is in progress, and stays `None` if the attempt ended before Canvas recorded a result.
+
+For telehealth appointments, Canvas also records the connection instructions it sends before the visit, and any resend from the note, as reminders. A reminder doesn't record which of these messages it was.
+
+To find when and how far ahead Canvas sends reminders, and the text it adds to them, read the organization's [reminder settings](/sdk/data-organization/#organizationsetting).
+
 ## Filtering
 
 Appointments can be filtered by any attribute that exists on the model.
@@ -133,6 +153,7 @@ appointment = Appointment.objects.filter(
 | appointment_rescheduled_to   | [Appointment](#appointment)[]                                     |
 | labels                       | [TaskLabel](/sdk/data-task/#tasklabel)[]                          |
 | scheduled_together           | [Appointment](#appointment)[]                                     |
+| reminders                    | [AppointmentReminder](#appointmentreminder)[]                     |
 
 
 ### AppointmentExternalIdentifier
@@ -210,6 +231,30 @@ appointment_metadata = appointment.metadata.all()
 for metadata in appointment_metadata:
    log.info(f"Appointment metadata: {metadata.key}, {metadata.value}")
 ```
+
+### AppointmentReminder
+
+Unlike most models, `dbid` is a UUID rather than an integer. It holds the same value as `id`.
+
+| Field Name   | Type                                                    |
+|--------------|---------------------------------------------------------|
+| dbid         | UUID                                                    |
+| id           | UUID                                                    |
+| created      | DateTime                                                |
+| modified     | DateTime                                                |
+| appointment  | [Appointment](#appointment)                             |
+| phone_number | String                                                  |
+| email        | String                                                  |
+| status       | [AppointmentReminderStatus](#appointmentreminderstatus) |
+
+## Enumeration types
+
+### AppointmentReminderStatus
+
+| Value  | Label             |
+|--------|-------------------|
+| sent   | Successfully sent |
+| failed | Failed to send    |
 
 <br/>
 <br/>

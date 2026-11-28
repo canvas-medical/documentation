@@ -53,6 +53,7 @@ organization = Organization.objects.first()
 | addresses             | QuerySet[[OrganizationAddress](#organizationaddress)]                       |
 | telecom               | QuerySet[[OrganizationContactPoint](#organizationcontactpoint)]             |
 | business_lines        | QuerySet[[BusinessLine](/sdk/data-business-line/#businessline)]             |
+| settings              | QuerySet[[OrganizationSetting](#organizationsetting)]                       |
 
 ## OrganizationAddress
 
@@ -102,6 +103,43 @@ The `OrganizationContactPoint` model represents a contact method (such as phone,
 | use_notes    | String                                                                |
 | rank         | Integer                                                               |
 | state        | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
+
+## OrganizationSetting
+
+The `OrganizationSetting` model holds the organization's appointment reminder configuration and the staff roles Canvas treats as schedulable or as prescribers. Each setting has a `name` and a JSON `value`:
+
+| Name                               | Value                                                                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appointmentReminders`             | The reminder schedule, as `{"daysAhead": int, "hourOfDay": int}`. Canvas sends reminders for appointments from tomorrow through `daysAhead` days ahead, starting at `hourOfDay` in the instance's time zone. |
+| `appointmentReminderCustomization` | The text Canvas adds to reminder messages. It can contain `{{...}}` template variables, which Canvas fills in when it sends the reminder.          |
+| `SCHEDULABLE_STAFF_ROLES`          | The role codes that make a staff member schedulable, as a list such as `["MD", "DO", "NP", "PA"]`. A staff member is schedulable when any of their [roles](/sdk/data-staff/#staffrole) has an `internal_code` in the list. |
+| `PRESCRIBER_STAFF_ROLES`           | The role codes Canvas treats as prescriber roles, as a list such as `["MD", "DO", "NP", "PA"]`. See [Finding staff who can e-prescribe](/sdk/data-staff/#finding-staff-who-can-e-prescribe). |
+
+When an instance has no `SCHEDULABLE_STAFF_ROLES` or `PRESCRIBER_STAFF_ROLES` setting, Canvas uses `MD`, `DO`, `NP`, and `PA`.
+
+The reminder schedule always comes from the organization. A [business line](/sdk/data-business-line/#businesslinesetting) can replace the organization's `appointmentReminderCustomization` for its own patients.
+
+```python
+from canvas_sdk.v1.data.organization import Organization
+
+organization = Organization.objects.first()
+schedule = organization.settings.filter(name="appointmentReminders").first()
+
+if schedule:
+    days_ahead = schedule.value.get("daysAhead")
+    hour_of_day = schedule.value.get("hourOfDay")
+```
+
+### Attributes
+
+| Field Name   | Type                          |
+| ------------ | ----------------------------- |
+| dbid         | Integer                       |
+| created      | DateTime                      |
+| modified     | DateTime                      |
+| organization | [Organization](#organization) |
+| name         | String                        |
+| value        | JSON                          |
 
 <br/>
 <br/>
