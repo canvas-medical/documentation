@@ -97,6 +97,7 @@ faxes = IntegrationTask.objects.faxes()
 uploads = IntegrationTask.objects.uploads()
 engine_tasks = IntegrationTask.objects.from_integration_engine()
 portal_tasks = IntegrationTask.objects.from_patient_portal()
+lab_tasks = IntegrationTask.objects.electronic_labs()
 ```
 
 ### By patient
@@ -190,6 +191,7 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | document_upload          | Document Upload          |
 | from_integration_engine  | From Integration Engine  |
 | from_patient_portal      | From Patient Portal      |
+| electronic_lab           | Electronic Lab           |
 
 <br/>
 <br/>
