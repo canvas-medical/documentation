@@ -104,7 +104,7 @@ note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 print(json.dumps(note.body, indent=2))
 ```
 
-The body array contains objects of two types:
+The body array contains these types of objects:
 
 1. **Text objects**: Represent free-form text content
    ```json
@@ -130,6 +130,16 @@ The body array contains objects of two types:
    refactored structure never carries one, so read the
    [Command](/sdk/data-command/) through `command_uuid` and take
    `anchor_object` from it instead.
+
+3. **Imported text objects**: Represent free-form text that a data import
+   brought into the note
+   ```json
+   {"type": "text_import", "value": "Imported history of present illness"}
+   ```
+
+   Only a note that has not yet moved to the refactored body structure returns
+   `text_import` objects. On a note that has moved, `body` returns these lines
+   as text objects.
 
 #### Querying on the body
 
