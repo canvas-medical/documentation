@@ -681,12 +681,14 @@ Beyond medications and allergens, the ontologies service resolves coded concepts
 
 Search ICD-10 conditions by text, or resolve a specific code. This backs the condition/diagnosis autocompletes on commands such as [Diagnose](/sdk/commands/#diagnose), [Assess](/sdk/commands/#assess), and [Medical History](/sdk/commands/#medicalhistory). Query parameters:
 
-| Parameter    | Type   | Description                                                                        |
-|--------------|--------|-----------------------------------------------------------------------------------|
-| `search`     | string | Full-text search over ICD-10 conditions.                                          |
-| `icd10_code` | string | Resolve an exact ICD-10 code instead of searching. Dots optional (`E119` / `E11.9`). |
-| `date`       | string | Optional. `YYYY-MM-DD`; resolves codes as of that date.                           |
-| `limit`      | int    | Optional. Maximum number of results.                                              |
+| Parameter        | Type   | Description                                                                                          |
+|------------------|--------|------------------------------------------------------------------------------------------------------|
+| `search`         | string | Full-text search over ICD-10 conditions. A code or code prefix, with or without dots, matches by code. |
+| `icd10_code`     | string | Resolve one exact ICD-10 code instead of searching. Pass the code without dots (`E119`).              |
+| `icd10_code__in` | string | Resolve several exact ICD-10 codes in one request. Pass a comma-separated list without dots (`E784,E7841`). |
+| `date`           | string | Optional. `YYYY-MM-DD`; returns only codes effective on that date.                                   |
+| `limit`          | int    | Optional. Number of results per page. Defaults to 1000.                                              |
+| `page`           | int    | Optional. Page number to return, starting at 1.                                                      |
 
 ```python
 from urllib.parse import urlencode
@@ -701,22 +703,36 @@ response_json = ontologies_http.get_json(
 response_json = ontologies_http.get_json(
     f"/icd/condition/?{urlencode({'icd10_code': 'E119'})}"
 ).json()
+
+# resolve several codes in one request
+codes = ["E784", "E7841", "E119"]
+response_json = ontologies_http.get_json(
+    f"/icd/condition/?{urlencode({'icd10_code__in': ','.join(codes)})}"
+).json()
 ```
 
-Returns a `results` list of matching conditions:
+Returns a page of matching conditions in `results`, with the total match count in `count`:
 
 ```json
 {
+  "count": 1,
+  "next": null,
+  "previous": null,
   "results": [
     {
-      "icd10_code": "E11.9",
+      "icd10_code": "E119",
       "icd10_text": "Type 2 diabetes mellitus without complications",
       "snomed_concept_id": "44054006",
-      "preferred_snomed_term": "Type 2 diabetes mellitus"
+      "preferred_snomed_term": "Type 2 diabetes mellitus",
+      "end_effective_date": null
     }
   ]
 }
 ```
+
+Each result's `end_effective_date` is the last day that result is valid (`YYYY-MM-DD`), or `null` while the result is current, so a `date` on its end date still returns it. One code can return several results: one for each SNOMED mapping, plus an end-dated result for each earlier period. A release that changes a code's description, or brings back a code an earlier release retired, adds a result and keeps the earlier one. A code is retired only when every result for it has an end date. To find charted conditions that still carry a retired code, look up their codes with `icd10_code__in` and leave out `date`, which would drop retired codes from the results. A code that doesn't exist returns no result.
+
+When `next` isn't `null`, more results remain. Request the next `page` with the same parameters until `next` is `null`. Code lookups with `icd10_code` or `icd10_code__in` return results in a fixed order, so paging through them returns each result once.
 
 #### `GET /cpt/immunization/` — search immunizations
 
