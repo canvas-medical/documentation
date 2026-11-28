@@ -48,6 +48,121 @@ and you'll get back a JSON which will contain an `access_token` that'll be valid
 
 The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
 
+### Authenticate with a signed JWT instead of a client secret
+
+Your application can prove its identity with a short-lived JSON Web Token (JWT) that it signs with its own private key, instead of sending the `Client Secret`. Canvas verifies the signature against public keys that your application publishes. Your private key never leaves your system, and you rotate keys by updating the key set you publish. This is the client authentication method that [SMART Backend Services](https://hl7.org/fhir/smart-app-launch/backend-services.html) clients use, also called `private_key_jwt`.
+
+Before you begin, you need:
+
+- An application registered with the `client-credentials` grant type, as described in [Registering a third-party application on Canvas](#registering-a-third-party-application-on-canvas).
+- A signing key pair: an EC key on the P-384 curve, which signs with `ES384`, or an RSA key, which signs with `RS384`. Canvas accepts no other signing algorithms.
+- A JSON Web Key Set (JWKS) URL that serves your public key over HTTPS from a public address. Give each key in the set a `kid` (key ID).
+
+#### Add your JWKS URL to the application
+
+You add the JWKS URL after you register the application, because the registration form doesn't include it.
+
+1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` and select your application.
+2. Select **Edit**.
+3. In **JSON Web Key Set URL**, enter your JWKS URL, such as `https://your-app.example.com/.well-known/jwks.json`.
+4. Select **Save**.
+
+Canvas fetches the key set from this URL each time it verifies an assertion, so a key you add to or remove from the set takes effect without changing the application. Canvas fetches it only under these conditions:
+
+- The URL uses `https`, and its host resolves only to public IP addresses. Canvas refuses a URL that resolves to any non-public address, such as a private or loopback address.
+- The URL returns the key set directly with `200 OK`. Canvas doesn't follow redirects.
+- The full response arrives within 5 seconds and is no larger than 64 KB.
+
+#### Build the client assertion
+
+Sign a JWT with these header fields:
+
+| Header field | Value |
+|---|---|
+| `alg` | `ES384` or `RS384`, matching your key. |
+| `kid` | The key ID of the signing key in your JWKS. Canvas uses the key whose `kid` matches. That key's `use` must be `sig` or absent. |
+| `jku` | Optional. If present, it must exactly match the application's **JSON Web Key Set URL**. |
+
+The JWT must carry these claims:
+
+| Claim | Value |
+|---|---|
+| `iss` | Your `Client ID`. |
+| `sub` | Your `Client ID`, the same value as `iss`. |
+| `aud` | The token endpoint URL, `{YOUR_CANVAS_EHR_INSTANCE}/auth/token/`, including the trailing slash. |
+| `exp` | The expiration time, in seconds since the Unix epoch. Set it no more than five minutes after you create the assertion. |
+| `jti` | A unique identifier for this assertion, up to 255 characters, such as a random UUID. |
+
+Canvas rejects an assertion that is missing any of these claims. When it checks `exp`, and `iat` or `nbf` if you include them, Canvas allows up to 30 seconds of clock difference between your system and your Canvas instance. Canvas also rejects an assertion whose `exp` is more than 10 minutes in the future: the five-minute limit plus five minutes for clock difference.
+
+Canvas accepts each `jti` only once, to prevent replay. It remembers a `jti` until five minutes after the assertion's `exp`, so create a new assertion with a new `jti` for every token request.
+
+#### Request a token
+
+Send the assertion to the token endpoint in place of the `client_secret`:
+
+```shell
+curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'grant_type=client_credentials' \
+--data-urlencode 'client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer' \
+--data-urlencode 'client_assertion={SIGNED_JWT}' \
+--data-urlencode 'scope={SCOPES}'
+```
+
+The `client_assertion_type` must be `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`. Canvas returns `400 Bad Request` with an `invalid_request` error for any other value. The response matches a client credentials response that used a client secret. The same [scope rules](#scopes) apply.
+
+The following Python example builds the assertion with [PyJWT](https://pyjwt.readthedocs.io/) and requests a token. It needs the `pyjwt`, `cryptography`, and `requests` packages, and reads the private key from a PEM file:
+
+```python
+import time
+import uuid
+
+import jwt
+import requests
+
+token_url = "{YOUR_CANVAS_EHR_INSTANCE}/auth/token/"
+client_id = "{YOUR_CLIENT_ID}"
+
+with open("private_key.pem") as key_file:
+    private_key = key_file.read()
+
+client_assertion = jwt.encode(
+    {
+        "iss": client_id,
+        "sub": client_id,
+        "aud": token_url,
+        "exp": int(time.time()) + 300,
+        "jti": str(uuid.uuid4()),
+    },
+    private_key,
+    algorithm="ES384",  # Use "RS384" for an RSA key.
+    headers={"kid": "{YOUR_KEY_ID}"},
+)
+
+response = requests.post(
+    token_url,
+    data={
+        "grant_type": "client_credentials",
+        "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+        "client_assertion": client_assertion,
+        "scope": "{SCOPES}",
+    },
+)
+response.raise_for_status()
+access_token = response.json()["access_token"]
+```
+
+If Canvas can't verify the assertion, it responds with `401 Unauthorized` and an `invalid_client` error. Check these causes:
+
+- The `iss` doesn't match a registered `Client ID`, or `sub` differs from `iss`.
+- The application has no **JSON Web Key Set URL**, or a `jku` header doesn't match it.
+- Canvas can't fetch the key set. For example, the URL isn't `https`, resolves to a non-public address, redirects, takes longer than 5 seconds, or returns more than 64 KB.
+- The key set has no signing key with the assertion's `kid`.
+- The signature doesn't verify, or the JWT uses an algorithm other than `ES384` or `RS384`.
+- The `aud` isn't the token endpoint URL, a required claim is missing, the assertion expired more than 30 seconds ago, or its `exp` is more than 10 minutes in the future.
+- The `jti` was already used.
+
 ## Authorization Code
 
 The Authorization Code flow ensures a user of the Canvas EHR explicitly approves the token request. It's typically used by web/mobile applications that act on behalf of a specific user (staff or patient).
