@@ -1663,6 +1663,18 @@ lab_review = LabReviewCommand(
 Backfills a condition the patient had in the past that is not active now. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess and AddCondition.
 
+MedicalHistory records a condition only when the patient's chart doesn't already have its ICD-10
+code. Codes match regardless of dots and case. For a code that's on the chart as active, use
+[Resolve Condition](#resolve-condition) to move it to past medical history. For a code that's on
+the chart as resolved, use [Assess](#assess) with `icd10_code`. A staged MedicalHistory with a
+charted code shows a message naming the command to use, and committing it records nothing. When a
+plugin commits one with `commit()`, the command stays staged and the plugin gets no error.
+
+The condition is recorded as a problem list item. Clinicians can also pick an optional
+**Category Domain**. `MedicalHistoryCommand` has no parameter for it, so a plugin's MedicalHistory
+records no domain. Plugins can read the choice as `category_domain` in the command's data: `sdoh`,
+`functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+
 **Command-specific parameters**:
 
 | Name                     | Type      | Required to commit | Description                                                |
@@ -1697,6 +1709,8 @@ MedicalHistoryCommand(
     comments="Controlled with medication."
 )
 ```
+
+{% include alert.html type="info" content="Once another command, such as an Assess, has a committed assessment of the condition this command recorded, the command can no longer be entered in error. This holds for plugins as well as for the note: an <code>ENTER_IN_ERROR</code> effect against such a command is rejected with <em>Command could not be entered in error due to command-specific business logic</em>. It can be entered in error again once that assessment is entered in error." %}
 
 ---
 

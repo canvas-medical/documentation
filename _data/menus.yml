@@ -1459,6 +1459,9 @@ data_module:
   - title: "Stop Medication Event"
     url: /sdk/data-stop-medication-event/
     description: A record of a Stop Medication Event, when a medication is removed from a patient's medication list.
+  - title: "SuspectHCC"
+    url: /sdk/data-suspect-hcc/
+    description: Hierarchical Condition Categories (HCCs) suspected on a patient.
   - title: "Task"
     url: /sdk/data-task/
     description: Data associated with Tasks.
