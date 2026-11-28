@@ -233,6 +233,7 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 | EVENT_VALIDATION_ERROR                  | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/).                                                               |
 | BATCH_ORIGINATE_COMMANDS                | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/).                                                                   |
 | COMMAND__FORM__CREATE_ADDITIONAL_FIELDS | Returns additional fields to be displayed on a command and stored as command metadata. Check out [Command Metadata Create Form](/sdk/command-metadata-create-form-effect/). |
+| FIELD_ACTION_VALUE                      | Supply the text a command field action, such as Use standard sig, fills into its field. Check out [Field Action Value](/sdk/effect-field-action-value/). |
 
 
 ### Notes

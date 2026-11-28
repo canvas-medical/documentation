@@ -987,6 +987,9 @@ effects_module:
   - title: "Fax"
     url: /sdk/effect-fax/
     description: Fax a note, referral, imaging order, lab order or letter.
+  - title: "Field Action Value"
+    url: /sdk/effect-field-action-value/
+    description: Supply the text a command field action, such as Use standard sig, fills in.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.

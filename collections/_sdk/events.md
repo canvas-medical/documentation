@@ -64,6 +64,7 @@ The actor is available in the following contexts:
 - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
 - **Homepage events** — `GET_HOMEPAGE_CONFIGURATION`
 - **Command additional-fields events** — `COMMAND__FORM__GET_ADDITIONAL_FIELDS`
+- **Command field action events** — `COMMAND__FIELD_ACTION__VALUE`
 - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
@@ -30480,6 +30481,17 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 Context object:
       <pre>"schema_key": str
 "purpose": "form" | "print"</pre></td>
+    </tr>
+    <tr>
+      <td>COMMAND__FIELD_ACTION__VALUE</td>
+      <td>A command field with an action, such as the standard sig action on a prescription's sig, needs the text the action fills in. See <a href="{% link _sdk/effects/field_action_value.md %}" target="_blank">Field Action Value</a> for how to use this event.
+      <br />Target:
+      <pre>"command_uuid": str</pre>
+Context object:
+      <pre>"schema_key": str
+"field": str
+"action": str
+"fields": dict</pre></td>
     </tr>
   </tbody>
 </table>
