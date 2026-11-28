@@ -53,6 +53,8 @@ for coding in medication.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
+A medication recorded with a dose has an FDB coding (system `http://www.fdbhealth.com/`), plus an RxNorm coding when FDB links one. A medication statement can also record a medication without a dose, such as "warfarin oral". That medication has one coding, with the system `http://www.fdbhealth.com/routed-med-id` and the FDB [routed medication](/sdk/utils/#get-fdbrouted-medication--search-dose-agnostic-medications) ID as its code. It has no FDB or RxNorm coding, so code that looks up a medication by FDB code or RxNorm code won't find it.
+
 ## Filtering
 
 Medications can be filtered by any attribute that exists on the model.
