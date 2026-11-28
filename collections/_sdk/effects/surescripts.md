@@ -1,13 +1,15 @@
 ---
 title: "Surescripts Effects"
 slug: "effect-surescripts"
-excerpt: "Effects for sending Surescripts eligibility, medication history, and benefits requests."
+excerpt: "Effects for sending Surescripts eligibility, medication history, and benefits requests, and for overriding pharmacy benefit identifiers on outbound prescriptions."
 hidden: false
 ---
 
 {% include alert.html type="warning" content="<b>This feature must be enabled by Canvas.</b> To use the Surescripts effects, <a href='https://portal.usepylon.com/canvas-medical/forms/standard'>contact Canvas Support</a> to have these Surescripts effects enabled for your instance. Until it is enabled, these effects will not send requests." %}
 
 Surescripts effects let plugins query insurance eligibility, benefits, and medication history through Surescripts. Eligibility and benefits requests receive responses asynchronously as corresponding events; medication history is handled by Canvas without a plugin-facing response.
+
+A separate effect, [`SurescriptsBenefitsCoordinationOverride`](#benefits-coordination-override), sets the pharmacy benefit identifiers (BIN, PCN, group ID, and member ID) that Canvas sends with a new prescription.
 
 ## Eligibility
 
@@ -353,6 +355,70 @@ class RequestMedicationHistoryOnAppointment(BaseHandler):
         ]
 ```
 
+## Benefits coordination override
+
+Set the pharmacy benefit identifiers that Canvas sends to the pharmacy with a new electronic prescription. Use it when your plugin has the correct BIN, PCN, group ID, or member ID for a patient. For example, a program or benefit manager might supply these values. Canvas then sends those values even when they differ from the Surescripts eligibility response, or when no eligibility check was run.
+
+By default, Canvas fills the `BenefitsCoordination` segment of the outbound Surescripts NewRx message from the patient's Surescripts eligibility response. Right before it sends the NewRx, Canvas fires the [`PRESCRIBE_COMMAND__PRE_SEND`](/sdk/events/#prescribe-command) event. A handler for that event can return a `SurescriptsBenefitsCoordinationOverride` effect to replace any of those values.
+
+### SurescriptsBenefitsCoordinationOverride
+
+Overrides fields in the `BenefitsCoordination` segment of the outbound NewRx message. Return it from a handler that responds to `PRESCRIBE_COMMAND__PRE_SEND`.
+
+#### Methods
+
+##### apply() → Effect
+
+Overrides each benefits coordination field you set. No attribute is required.
+
+#### Behavior
+
+- Each attribute is optional and independent. An attribute you set replaces the value Canvas derived from eligibility for that field. An attribute you leave unset, or set to an empty string, keeps the eligibility-derived value.
+- When you set at least one attribute, Canvas includes the `BenefitsCoordination` segment in the NewRx even if no eligibility check was run for the patient.
+- When more than one effect sets the same attribute for a prescription, the last one wins.
+
+#### Attributes
+
+| Attribute                         | Type  | Description                                                                              | Required |
+|-----------------------------------|-------|------------------------------------------------------------------------------------------|----------|
+| `iin_number`                      | `str` | The BIN (issuer identification number), sent as `PayerIdentification/IINNumber`.        | No       |
+| `processor_identification_number` | `str` | The PCN (processor control number), sent as `PayerIdentification/ProcessorIdentificationNumber`. | No       |
+| `group_id`                        | `str` | The pharmacy benefit group ID, sent as `GroupID`.                                        | No       |
+| `pbm_member_id`                   | `str` | The patient's member ID with the pharmacy benefit manager, sent as `PBMMemberID`.        | No       |
+
+#### Event data
+
+The `PRESCRIBE_COMMAND__PRE_SEND` event carries the following identifiers:
+
+| Location                                   | Value                                                         |
+|--------------------------------------------|---------------------------------------------------------------|
+| `self.event.target.id`                     | The ID of the [Prescription](/sdk/data-prescription/) being sent. |
+| `self.event.context["prescription"]["id"]` | The same prescription ID.                                     |
+| `self.event.context["patient"]["id"]`      | The ID of the patient the prescription is for.                |
+
+#### Example
+
+This handler sends a program's BIN, PCN, and group ID, stored as [plugin secrets](/sdk/secrets/), on every new prescription. Fields it doesn't set, such as the member ID, keep their eligibility-derived values.
+
+```python
+from canvas_sdk.effects.surescripts import SurescriptsBenefitsCoordinationOverride
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class OverridePharmacyBenefits(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PRESCRIBE_COMMAND__PRE_SEND)
+
+    def compute(self):
+        return [
+            SurescriptsBenefitsCoordinationOverride(
+                iin_number=self.secrets["RX_BIN"],
+                processor_identification_number=self.secrets["RX_PCN"],
+                group_id=self.secrets["RX_GROUP_ID"],
+            ).apply()
+        ]
+```
+
 ## Imports
 
 ```python
@@ -362,6 +428,9 @@ from canvas_sdk.effects.surescripts.surescripts_messages import (
     SendSurescriptsEligibilityRequestEffect,
     SendSurescriptsMedicationHistoryRequestEffect,
 )
+
+# Effect for overriding benefits coordination on outbound prescriptions
+from canvas_sdk.effects.surescripts import SurescriptsBenefitsCoordinationOverride
 
 # Data classes for parsing responses
 from canvas_sdk.events.surescripts import (
