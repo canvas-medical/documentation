@@ -291,7 +291,7 @@ def compute():
 
 #### set_custom_html
 
-Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), a collapsed command shows the HTML on its own line below the command's summary, so the provider sees it without opening the command. An open command shows the HTML under its title.
 
 The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state. Calling this method on a committed command raises a validation error.
 
