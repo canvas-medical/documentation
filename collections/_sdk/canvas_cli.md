@@ -18,6 +18,19 @@ To install the Canvas CLI using `uv`, execute `uv tool install canvas`. `uv` wil
 
 To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade canvas`.
 
+### Installing the plugin runner's packages
+
+`canvas` installs the CLI and what [`canvas validate`](#canvas-validate) and [`canvas deploy`](#canvas-deploy) need to load a plugin in the sandbox. The packages a running plugin runner uses come with the `runner` extra. Install it when you:
+
+- Run plugins on your machine with `canvas run-plugin`, `canvas run-plugins`, or `canvas emit`. Without the extra, these commands exit with code 1 and print the command that installs it.
+- Validate or deploy a plugin that imports a package only the extra installs, such as `snowflake.connector`, `rapidfuzz`, `defusedxml`, or `jwt`, or that uses the SDK's Stripe client or HTML sanitizer. See [Sandbox-load validation](#sandbox-load-validation).
+
+```console
+$ pip install 'canvas[runner]'
+```
+
+With `uv`, execute `uv tool install 'canvas[runner]'`. The [`test-utils` extra](/sdk/testing-utils/) for plugin test suites includes the runner's packages.
+
 ### Signing in to Canvas Platform
 
 The Canvas CLI signs in to [Canvas Platform](https://platform.canvasmedical.com), which hosts each plugin's git repository and deploys it to the instances your organizations manage. Sign in once per machine:
@@ -283,6 +296,7 @@ $ canvas deploy --plugin [PUBLISHER/]NAME@VERSION [--plugin ...] [OPTIONS]
 - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's [test instances](/guides/designating-test-instances/). Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
 - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See [Deploying from a larger repository](#deploying-from-a-larger-repository). Takes no `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
+- `--no-validate`: Push without first loading the plugin's handlers in the sandbox. A plugin the sandbox refuses still reaches the instance, where it fails to load.
 - `--help`: Show this message and exit.
 
 **Example**:
@@ -296,7 +310,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 **What `deploy` does**
 
 1. Checks the manifest `name` is a valid plugin name, or a name one of your organizations publishes on Canvas Platform, and that the package folder has the same name.
-2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
+2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything. `--no-validate` skips these checks.
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
@@ -734,6 +748,8 @@ Loading 2 handler(s) in the sandbox:
 ```
 
 The command exits with code 1 if any handler fails validation.
+
+When a handler fails because a module is missing, and the [`runner` extra](#installing-the-plugin-runners-packages) isn't installed, the output ends by naming the module. Install the extra with `pip install 'canvas[runner]'` and validate again, or deploy without these checks with `canvas deploy --no-validate`.
 
 If your handlers read attributes that don't exist while they load, the output ends with a warning that lists them. In the sandbox those reads return `None` for now, and a future release will raise `AttributeError` instead (see [Attributes that don't exist](/sdk/sandboxing-and-allowed-imports/#attributes-that-dont-exist)). The warning doesn't fail validation:
 

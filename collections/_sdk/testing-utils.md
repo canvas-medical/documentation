@@ -30,7 +30,7 @@ plugin-folder/
 
 ## Plugin Testing with Pytest
 
-Installing the `test-utils` extra provides everything needed to test plugins with pytest.
+Installing the `test-utils` extra provides everything needed to test plugins with pytest. It includes the [`runner` extra](/sdk/canvas_cli/#installing-the-plugin-runners-packages), so tests can run handlers that use any package the plugin runner provides.
 
 ### Features
 
@@ -124,7 +124,7 @@ A complete list of available factories is located [here](https://github.com/canv
 
 ## Local DB Seeding via `run-plugin`
 
-You can run plugins locally with full access to the database using the CLI. Two options are available:
+You can run plugins locally with full access to the database using the CLI. `canvas run-plugin` and `canvas emit` need the plugin runner's packages, which `canvas[test-utils]` and [`canvas[runner]`](/sdk/canvas_cli/#installing-the-plugin-runners-packages) install. Two options are available:
 
 | Option           | Description                                                                                                         |
 |------------------|---------------------------------------------------------------------------------------------------------------------|
