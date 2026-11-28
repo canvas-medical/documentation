@@ -57,6 +57,21 @@ for remark in posting.remark_codes.all():
 
 {% include alert.html type="warning" content="<b>Deprecation Notice:</b> The <code>billing_line_item</code> attribute on <code>NewLineItemPayment</code>, <code>NewLineItemAdjustment</code>, and <code>LineItemTransfer</code> is deprecated. It can return an unrelated charge, because the stored ID belongs to a claim line item, not a billing line item. Use <code>claim_line_item.billing_line_item</code> instead. <code>billing_line_item_id</code> holds the same claim line item ID as <code>claim_line_item_id</code>." %}
 
+To see the card charges behind a payment collection, and whether each one went through:
+
+```python
+from canvas_sdk.v1.data import CreditCardChargeState, PaymentCollection
+
+collection = PaymentCollection.objects.get(id="f47ac10b-58cc-4372-a567-0e02b2c3d479")
+
+for charge in collection.credit_card_charges.select_related("payment_method"):
+    card = charge.payment_method
+    last_four = card.card_last_four_digits if card else None
+    print(charge.state, charge.provider, last_four)
+
+failed = collection.credit_card_charges.filter(state=CreditCardChargeState.FAILED)
+```
+
 ## Remits
 
 A remit is a payer's payment and explanation for one or more claims. Canvas stores each one as a [BaseRemittanceAdvice](#baseremittanceadvice), which is either an [ElectronicRemittanceAdvice](#electronicremittanceadvice) received from a clearinghouse or a [ManualRemittanceAdvice](#manualremittanceadvice) posted by hand. Query the subtype to get only one kind, along with its own fields:
@@ -242,6 +257,27 @@ Captures metadata about the method and details of a collected payment.
 | modified         | DateTime                          |
 | postings         | QuerySet[[BasePosting](#baseposting)] |
 | receipt          | [Receipt](/sdk/data-receipt/#receipt) |
+| credit\_card\_charges | QuerySet[[CreditCardCharge](#creditcardcharge)] |
+
+### CreditCardCharge
+
+A card charge made through a payment provider for a payment collection. Deleted charges aren't returned.
+
+| Field Name           | Type                                                  | Description |
+|----------------------|-------------------------------------------------------|-------------|
+| id                   | UUID                                                  | |
+| dbid                 | Integer                                               | |
+| created              | DateTime                                              | |
+| modified             | DateTime                                              | |
+| payment\_collection  | [PaymentCollection](#paymentcollection)               | |
+| payment\_method      | [PaymentCard](/sdk/data-payment-card/#paymentcard)    | The card charged, or `None` when the card has since been removed |
+| state                | [CreditCardChargeState](#creditcardchargestate)       | Defaults to `Pending` |
+| provider             | String                                                | The payment provider, for example `stripe` |
+| originator           | [CanvasUser](/sdk/data-canvasuser/)                   | |
+| editors              | Integer[]                                             | The `dbid` of each [CanvasUser](/sdk/data-canvasuser/) who edited the charge |
+| committer            | [CanvasUser](/sdk/data-canvasuser/)                   | |
+| entered\_in\_error   | [CanvasUser](/sdk/data-canvasuser/)                   | |
+| deleted              | Boolean                                               | |
 
 ### NewLineItemPayment
 
@@ -353,3 +389,13 @@ Represents a discount applied to a claim or patient posting, linked by adjustmen
 | check | Check |
 | card  | Card  |
 | other | Other |
+
+### CreditCardChargeState
+
+| Value      | Label      |
+|------------|------------|
+| Pending    | Pending    |
+| Charged    | Charged    |
+| Successful | Successful |
+| Failed     | Failed     |
+
