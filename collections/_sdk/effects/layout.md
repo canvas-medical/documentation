@@ -179,7 +179,6 @@ PanelConfiguration(
   sections=[
     PanelConfiguration.PanelPatientSection.REFILL_REQUEST,
     PanelConfiguration.PanelPatientSection.LAB_REPORT,
-    PanelConfiguration.PanelPatientSection.CHANGE_REQUEST,
     PanelConfiguration.PanelPatientSection.TASK,
 ], page=PanelConfiguration.Page.PATIENT).apply()
 
@@ -233,6 +232,8 @@ Values in the `PanelPatientSection` enum are:
 | REFILL_REQUEST         | refillRequest         |
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
+
+Both enums still accept `CHANGE_REQUEST`, but it doesn't add a button to either page.
 
 ## Patient Note Header Dropdown Configuration
 
